@@ -1,0 +1,13 @@
+torch
+torchvision
+transformers
+sentence-transformers
+rank-bm25
+faiss-cpu
+numpy
+pandas
+pyyaml
+opencv-python
+tqdm
+qwen-vl-utils
+accelerate

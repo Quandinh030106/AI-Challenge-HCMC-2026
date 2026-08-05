@@ -1,0 +1,19 @@
+# Data
+data/
+*.npy
+*.pt
+*.pth
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
