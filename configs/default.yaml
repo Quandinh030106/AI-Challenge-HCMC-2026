@@ -7,7 +7,7 @@ data:
 
 models:
   clip_model: "google/siglip-so400m-patch14-384"
-  vlm_model: "Qwen/Qwen2-VL-7B-Instruct"
+  vlm_model: "Qwen/Qwen3-VL-8B-Instruct"
 
 search:
   top_k_videos: 10
