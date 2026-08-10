@@ -25,15 +25,17 @@ class SparseSearcher:
         """Đọc toàn bộ file metadata và OCR của các video để dựng chỉ mục BM25."""
         print(f"SparseSearcher: Đang xây dựng chỉ mục BM25 từ thư mục: {self.metadata_dir}")
         
-        # Quét tất cả các file .json và .JSON trong thư mục metadata (bao gồm thư mục con)
-        json_files = (
-            glob.glob(os.path.join(self.metadata_dir, "**/*.json"), recursive=True) +
-            glob.glob(os.path.join(self.metadata_dir, "**/*.JSON"), recursive=True)
-        )
+        # Sử dụng os.walk để đảm bảo tìm thấy tất cả các file .json nằm ở bất kỳ độ sâu thư mục nào
+        json_files = []
+        for root, _, files in os.walk(self.metadata_dir):
+            for file in files:
+                if file.lower().endswith(".json"):
+                    json_files.append(os.path.join(root, file))
         
         print(f"SparseSearcher: Tìm thấy {len(json_files)} file JSON trong thư mục metadata.")
         if json_files:
             print(f"SparseSearcher: 3 file JSON đầu tiên tìm được: {json_files[:3]}")
+
             
         # Gom dữ liệu văn bản theo từng video_id
         video_texts = {}

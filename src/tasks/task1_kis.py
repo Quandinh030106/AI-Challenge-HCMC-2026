@@ -7,18 +7,18 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx):
     Ánh xạ từ chỉ số vector đặc trưng (0, 1, 2...) sang frame_id thực tế (ví dụ: '0000', '0005')
     bằng cách quét danh sách file ảnh thực tế của video đó.
     """
-    # Tìm kiếm thư mục chứa video_id trong tất cả các folder con của keyframes_dir
-    search_path = os.path.join(keyframes_dir, "**", video_id)
-    video_folders = glob.glob(search_path, recursive=True)
-    
-    if video_folders:
-        video_folder = video_folders[0]
-        img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
-        if 0 <= frame_idx < len(img_paths):
-            return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+    # Sử dụng os.walk để quét tìm thư mục có tên trùng với video_id (ví dụ: L21_V001)
+    for root, dirs, _ in os.walk(keyframes_dir):
+        if video_id in dirs:
+            video_folder = os.path.join(root, video_id)
+            img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
+            if 0 <= frame_idx < len(img_paths):
+                return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+            break
             
-    # Fallback nếu không tìm thấy ảnh (giả định 1-to-1)
+    # Fallback nếu không tìm thấy ảnh
     return f"{frame_idx:04d}"
+
 
 def solve_task1(query_text, fused_candidates, keyframes_dir, window_size=5):
     """

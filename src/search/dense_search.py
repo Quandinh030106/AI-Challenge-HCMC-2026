@@ -34,10 +34,22 @@ class DenseSearcher:
         """Mã hóa văn bản truy vấn thành vector đặc trưng và chuẩn hóa L2."""
         inputs = self.processor(text=[text], padding=True, return_tensors="pt").to(self.device)
         with torch.no_grad():
-            text_features = self.model.get_text_features(**inputs)
+            text_outputs = self.model.get_text_features(**inputs)
+            
+            # Xử lý tương thích với các phiên bản khác nhau của thư viện transformers
+            if isinstance(text_outputs, torch.Tensor):
+                text_features = text_outputs
+            elif hasattr(text_outputs, "text_embeds"):
+                text_features = text_outputs.text_embeds
+            elif hasattr(text_outputs, "pooler_output"):
+                text_features = text_outputs.pooler_output
+            else:
+                text_features = text_outputs[0]
+                
             # Chuẩn hóa L2-norm
             text_features = text_features / text_features.norm(p=2, dim=-1, keepdim=True)
             return text_features.cpu().numpy()[0]
+
 
             
     def search(self, query_text, top_k_videos=10):
