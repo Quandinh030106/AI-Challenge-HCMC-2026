@@ -23,11 +23,18 @@ class SparseSearcher:
         
     def build_index(self):
         """Đọc toàn bộ file metadata và OCR của các video để dựng chỉ mục BM25."""
-        print("SparseSearcher: Đang xây dựng chỉ mục tìm kiếm từ khóa (BM25)...")
+        print(f"SparseSearcher: Đang xây dựng chỉ mục BM25 từ thư mục: {self.metadata_dir}")
         
-        # Quét tất cả các file JSON trong thư mục metadata (bao gồm thư mục con)
-        json_files = glob.glob(os.path.join(self.metadata_dir, "**/*.json"), recursive=True)
+        # Quét tất cả các file .json và .JSON trong thư mục metadata (bao gồm thư mục con)
+        json_files = (
+            glob.glob(os.path.join(self.metadata_dir, "**/*.json"), recursive=True) +
+            glob.glob(os.path.join(self.metadata_dir, "**/*.JSON"), recursive=True)
+        )
         
+        print(f"SparseSearcher: Tìm thấy {len(json_files)} file JSON trong thư mục metadata.")
+        if json_files:
+            print(f"SparseSearcher: 3 file JSON đầu tiên tìm được: {json_files[:3]}")
+            
         # Gom dữ liệu văn bản theo từng video_id
         video_texts = {}
         
@@ -73,7 +80,8 @@ class SparseSearcher:
             self.bm25 = BM25Okapi(self.corpus)
             print(f"SparseSearcher: Đã hoàn thành chỉ mục BM25 cho {len(self.video_ids)} videos.")
         else:
-            print("SparseSearcher: Cảnh báo: Không có văn bản nào được index cho BM25!")
+            print("SparseSearcher: Cảnh báo: Không có văn bản nào được index cho BM25! (Có thể thư mục chứa metadata rỗng hoặc không đúng cấu trúc)")
+
             
     def search(self, query_text, top_k_videos=10):
         """Tìm kiếm video theo từ khóa câu hỏi, trả về điểm số BM25."""

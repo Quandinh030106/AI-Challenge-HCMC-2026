@@ -16,12 +16,28 @@ def extract_all_features(config_path="configs/default.yaml", batch_size=32):
     
     os.makedirs(features_dir, exist_ok=True)
     
-    # 2. Khởi tạo mô hình SigLIP
+    # 2. Khởi tạo mô hình chuyên biệt
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Đang khởi tạo SigLIP: {model_name} trên thiết bị: {device}...")
-    processor = AutoProcessor.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to(device)
+    print(f"Đang khởi tạo model: {model_name} trên thiết bị: {device}...")
+    
+    from transformers import (
+        CLIPModel, CLIPProcessor, 
+        SiglipModel, SiglipProcessor, 
+        AutoModel, AutoProcessor
+    )
+    
+    if "siglip" in model_name.lower():
+        processor = SiglipProcessor.from_pretrained(model_name)
+        model = SiglipModel.from_pretrained(model_name).to(device)
+    elif "clip" in model_name.lower():
+        processor = CLIPProcessor.from_pretrained(model_name)
+        model = CLIPModel.from_pretrained(model_name).to(device)
+    else:
+        processor = AutoProcessor.from_pretrained(model_name)
+        model = AutoModel.from_pretrained(model_name).to(device)
+        
     model.eval()
+
     
     # 3. Lấy tất cả các thư mục chứa keyframe (mỗi thư mục tương ứng với một video_id)
     video_dirs = [d for d in glob.glob(os.path.join(keyframes_dir, "*")) if os.path.isdir(d)]

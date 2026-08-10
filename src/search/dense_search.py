@@ -2,7 +2,11 @@ import os
 import glob
 import numpy as np
 import torch
-from transformers import AutoProcessor, AutoModel
+from transformers import (
+    CLIPModel, CLIPProcessor, 
+    SiglipModel, SiglipProcessor, 
+    AutoModel, AutoProcessor
+)
 
 class DenseSearcher:
     def __init__(self, config):
@@ -12,8 +16,18 @@ class DenseSearcher:
         self.features_dir = config["data"]["features_dir"]
         
         print(f"DenseSearcher: Đang khởi tạo mô hình {self.model_name}...")
-        self.processor = AutoProcessor.from_pretrained(self.model_name)
-        self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
+        
+        # Sử dụng đúng class chuyên biệt để get_text_features và get_image_features hoạt động chuẩn xác
+        if "siglip" in self.model_name.lower():
+            self.processor = SiglipProcessor.from_pretrained(self.model_name)
+            self.model = SiglipModel.from_pretrained(self.model_name).to(self.device)
+        elif "clip" in self.model_name.lower():
+            self.processor = CLIPProcessor.from_pretrained(self.model_name)
+            self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
+        else:
+            self.processor = AutoProcessor.from_pretrained(self.model_name)
+            self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
+            
         self.model.eval()
         
     def encode_text(self, text):
@@ -24,6 +38,7 @@ class DenseSearcher:
             # Chuẩn hóa L2-norm
             text_features = text_features / text_features.norm(p=2, dim=-1, keepdim=True)
             return text_features.cpu().numpy()[0]
+
             
     def search(self, query_text, top_k_videos=10):
         """Tìm kiếm video có độ tương đồng cosine lớn nhất với câu truy vấn."""
