@@ -56,14 +56,31 @@ class DenseSearcher:
         """Tìm kiếm video có độ tương đồng cosine lớn nhất với câu truy vấn."""
         query_vector = self.encode_text(query_text)
         
-        # Quét tất cả các file vector .npy trong thư mục features (kể cả thư mục con)
-        feature_files = glob.glob(os.path.join(self.features_dir, "**/*.npy"), recursive=True)
+        # Quét tất cả các file .npy đặc trưng của các video
+        feature_files = []
+        if os.path.exists(self.features_dir):
+            for root, _, files in os.walk(self.features_dir):
+                for file in files:
+                    if file.lower().endswith(".npy"):
+                        feature_files.append(os.path.join(root, file))
+                        
+        # Fallback: Nếu không tìm thấy trong features_dir, tự động tìm kiếm trong thư mục cha /kaggle/input
         if not feature_files:
-            feature_files = glob.glob(os.path.join(self.features_dir, "*.npy"))
-            
+            parent_dir = os.path.dirname(self.features_dir.rstrip('/'))
+            if os.path.exists(parent_dir):
+                print(f"DenseSearcher: Không thấy .npy trong {self.features_dir}. Đang tự động quét trong {parent_dir}...")
+                for root, _, files in os.walk(parent_dir):
+                    if "feature" in root.lower() or "clip" in root.lower():
+                        for file in files:
+                            if file.lower().endswith(".npy"):
+                                feature_files.append(os.path.join(root, file))
+
         if not feature_files:
-            print(f"Cảnh báo: Không tìm thấy file .npy nào trong thư mục {self.features_dir}")
+            print(f"Cảnh báo: Không tìm thấy file .npy nào trong hệ thống!")
             return []
+            
+        print(f"DenseSearcher: Tìm thấy {len(feature_files)} file .npy đặc trưng.")
+
             
         results = []
         for file_path in feature_files:

@@ -38,16 +38,29 @@ class SparseSearcher:
         """Đọc toàn bộ file metadata và OCR của các video để dựng chỉ mục BM25."""
         print(f"SparseSearcher: Đang xây dựng chỉ mục BM25 từ thư mục: {self.metadata_dir}")
         
-        # Sử dụng os.walk để quét triệt để tất cả các file JSON (bao gồm media-info)
         json_files = []
-        for root, _, files in os.walk(self.metadata_dir):
-            for file in files:
-                if file.lower().endswith(".json"):
-                    json_files.append(os.path.join(root, file))
+        # Thử 1: Quét trong thư mục metadata_dir được cấu hình
+        if os.path.exists(self.metadata_dir):
+            for root, _, files in os.walk(self.metadata_dir):
+                for file in files:
+                    if file.lower().endswith(".json") and file != "local_val_gt.json":
+                        json_files.append(os.path.join(root, file))
         
-        print(f"SparseSearcher: Tìm thấy {len(json_files)} file JSON trong thư mục metadata.")
+        # Thử 2 (Fallback): Nếu không tìm thấy, tự động quét thư mục cha (ví dụ /kaggle/input)
+        if not json_files:
+            parent_dir = os.path.dirname(self.metadata_dir)
+            if os.path.exists(parent_dir):
+                print(f"SparseSearcher: Không thấy JSON trong {self.metadata_dir}. Đang tự động quét trong {parent_dir}...")
+                for root, _, files in os.walk(parent_dir):
+                    if "metadata" in root.lower() or "media-info" in root.lower():
+                        for file in files:
+                            if file.lower().endswith(".json") and file != "local_val_gt.json":
+                                json_files.append(os.path.join(root, file))
+        
+        print(f"SparseSearcher: Tìm thấy {len(json_files)} file JSON trong hệ thống.")
         if json_files:
             print(f"SparseSearcher: Ví dụ 3 file JSON tìm thấy: {[os.path.basename(f) for f in json_files[:3]]}")
+
             
         # Gom dữ liệu văn bản theo từng video_id
         video_texts = {}
