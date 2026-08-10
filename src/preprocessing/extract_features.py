@@ -1,56 +1,80 @@
+import os
+import glob
+import numpy as np
 import torch
 from PIL import Image
+from tqdm import tqdm
 from transformers import AutoProcessor, AutoModel
+from src.utils import load_config
 
-def test_siglip():
-    # 1. Định nghĩa model SigLIP (Sử dụng bản base-patch16-224 để tải nhanh khi test)
-    model_name = "google/siglip-base-patch16-224"
-    print(f"Đang tải mô hình SigLIP: {model_name}...")
+def extract_all_features(config_path="configs/default.yaml", batch_size=32):
+    # 1. Load cấu hình đường dẫn
+    config = load_config(config_path)
+    keyframes_dir = config["data"]["keyframes_dir"]
+    features_dir = config["data"]["features_dir"]
+    model_name = config["models"]["clip_model"]
     
+    os.makedirs(features_dir, exist_ok=True)
+    
+    # 2. Khởi tạo mô hình SigLIP
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Đang khởi tạo SigLIP: {model_name} trên thiết bị: {device}...")
     processor = AutoProcessor.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name).to(device)
-    print(f"Đã load model thành công trên thiết bị: {device}")
-
-    # 2. Tạo dữ liệu giả lập để test
-    # Tạo một ảnh ngẫu nhiên kích thước 224x224 để test (trong thực tế sẽ load ảnh từ đường dẫn)
-    print("Tạo ảnh test ngẫu nhiên...")
-    test_image = Image.new('RGB', (224, 224), color = (73, 109, 137))
+    model.eval()
     
-    # Định nghĩa câu mô tả để so khớp
-    test_texts = [
-        "a blue background image", 
-        "a red car on the street", 
-        "a speaker in a conference"
-    ]
-
-    # 3. Tiền xử lý (Tokenize text và Process image)
-    inputs = processor(
-        text=test_texts, 
-        images=test_image, 
-        padding="max_length", 
-        return_tensors="pt"
-    ).to(device)
-
-    # 4. Trích xuất Embeddings và tính toán tương đồng
-    with torch.no_grad():
-        outputs = model(**inputs)
+    # 3. Lấy tất cả các thư mục chứa keyframe (mỗi thư mục tương ứng với một video_id)
+    video_dirs = [d for d in glob.glob(os.path.join(keyframes_dir, "*")) if os.path.isdir(d)]
+    print(f"Tìm thấy {len(video_dirs)} thư mục keyframe video cần xử lý.")
+    
+    for video_dir in tqdm(video_dirs, desc="Trích xuất đặc trưng"):
+        video_id = os.path.basename(video_dir)
+        output_path = os.path.join(features_dir, f"{video_id}.npy")
         
-        # Lấy đặc trưng dạng normalized (đã L2-normalized sẵn để tính Cosine Similarity trực tiếp)
-        image_embeds = outputs.image_embeds # Shape: [1, feature_dim]
-        text_embeds = outputs.text_embeds   # Shape: [num_texts, feature_dim]
+        # Bỏ qua nếu đã trích xuất trước đó
+        if os.path.exists(output_path):
+            continue
+            
+        # Lấy và sắp xếp thứ tự các keyframe
+        image_paths = sorted(glob.glob(os.path.join(video_dir, "*.jpg")))
+        if not image_paths:
+            print(f"Cảnh báo: Không tìm thấy ảnh trong thư mục {video_dir}")
+            continue
+            
+        video_features = []
         
-        # Tính tương đồng Cosine bằng phép nhân ma trận (Dot Product)
-        # Vì SigLIP embeds đã được normalized, dot product chính là Cosine Similarity
-        similarity = torch.matmul(image_embeds, text_embeds.T) # Shape: [1, num_texts]
-        
-    print("\n--- KẾT QUẢ TEST SIGLIP ---")
-    print(f"Kích thước Vector ảnh: {image_embeds.shape}")
-    print(f"Kích thước Vector text: {text_embeds.shape}")
-    print("\nĐiểm số tương đồng giữa ảnh test (màu xanh lam) và các câu mô tả:")
-    for text, score in zip(test_texts, similarity[0].tolist()):
-        print(f" - '{text}': {score:.4f}")
+        # 4. Xử lý ảnh theo từng Batch để tối ưu tài nguyên GPU
+        for i in range(0, len(image_paths), batch_size):
+            batch_paths = image_paths[i:i+batch_size]
+            batch_images = []
+            
+            for img_path in batch_paths:
+                try:
+                    img = Image.open(img_path).convert("RGB")
+                    batch_images.append(img)
+                except Exception as e:
+                    print(f"Lỗi đọc ảnh {img_path}: {e}")
+                    
+            if not batch_images:
+                continue
+                
+            # Đưa qua bộ tiền xử lý và trích xuất vector đặc trưng
+            inputs = processor(images=batch_images, return_tensors="pt").to(device)
+            with torch.no_grad():
+                outputs = model.get_image_features(**inputs)
+                # Chuẩn hóa L2-norm để có thể tính Cosine Similarity trực tiếp bằng Dot Product
+                outputs = outputs / outputs.norm(p=2, dim=-1, keepdim=True)
+                features = outputs.cpu().numpy()
+                video_features.append(features)
+                
+        if video_features:
+            # Ghép nối các batch lại thành 1 tensor dạng [num_frames, feature_dim]
+            video_features = np.concatenate(video_features, axis=0)
+            np.save(output_path, video_features)
+            
+    print("Quá trình trích xuất đặc trưng ảnh SigLIP hoàn thành!")
 
 if __name__ == "__main__":
-    test_siglip()
+    extract_all_features()
+
 

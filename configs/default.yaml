@@ -1,13 +1,16 @@
-# Configuration for HCMC AI Challenge 2026
+# Configuration for HCMC AI Challenge 2026 on Kaggle
 data:
-  raw_dir: "data/raw"
-  keyframes_dir: "data/keyframes"
-  features_dir: "data/features"
-  metadata_dir: "data/metadata"
+  raw_dir: "/kaggle/input/ai-challenge-hcmc-2026-videos"
+  keyframes_dir: "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
+  features_dir: "/kaggle/input/ai-challenge-hcmc-2026-features/clip-features-32"
+  metadata_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata"
+  output_dir: "/kaggle/working/output"
 
 models:
-  clip_model: "google/siglip-so400m-patch14-384"
-  vlm_model: "Qwen/Qwen3-VL-8B-Instruct"
+  # NOTE: Sử dụng "openai/clip-vit-base-patch32" vì đặc trưng ảnh có sẵn của BTC là CLIP ViT-B-32.
+  # Nếu nhóm tự trích xuất đặc trưng mới bằng SigLIP, hãy đổi thành "google/siglip-base-patch16-224" hoặc "google/siglip-so400m-patch14-384".
+  clip_model: "openai/clip-vit-base-patch32"
+  vlm_model: "Qwen/Qwen2-VL-7B-Instruct"
 
 search:
   top_k_videos: 10

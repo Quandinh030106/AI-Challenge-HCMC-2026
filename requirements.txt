@@ -12,3 +12,4 @@ tqdm
 qwen-vl-utils
 accelerate
 pillow
+easyocr
