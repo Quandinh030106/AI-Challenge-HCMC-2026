@@ -21,11 +21,24 @@ class SparseSearcher:
         words = re.findall(r'\b\w+\b', text)
         return words
         
+    def extract_text_from_obj(self, obj):
+        """Bóc tách đệ quy tất cả các chuỗi văn bản trong file JSON (kể cả trong List hay Dict)."""
+        text = ""
+        if isinstance(obj, str):
+            text += " " + obj
+        elif isinstance(obj, list):
+            for item in obj:
+                text += self.extract_text_from_obj(item)
+        elif isinstance(obj, dict):
+            for val in obj.values():
+                text += self.extract_text_from_obj(val)
+        return text
+
     def build_index(self):
         """Đọc toàn bộ file metadata và OCR của các video để dựng chỉ mục BM25."""
         print(f"SparseSearcher: Đang xây dựng chỉ mục BM25 từ thư mục: {self.metadata_dir}")
         
-        # Sử dụng os.walk để đảm bảo tìm thấy tất cả các file .json nằm ở bất kỳ độ sâu thư mục nào
+        # Sử dụng os.walk để quét triệt để tất cả các file JSON (bao gồm media-info)
         json_files = []
         for root, _, files in os.walk(self.metadata_dir):
             for file in files:
@@ -34,36 +47,25 @@ class SparseSearcher:
         
         print(f"SparseSearcher: Tìm thấy {len(json_files)} file JSON trong thư mục metadata.")
         if json_files:
-            print(f"SparseSearcher: 3 file JSON đầu tiên tìm được: {json_files[:3]}")
-
+            print(f"SparseSearcher: Ví dụ 3 file JSON tìm thấy: {[os.path.basename(f) for f in json_files[:3]]}")
             
         # Gom dữ liệu văn bản theo từng video_id
         video_texts = {}
         
         for file_path in json_files:
             filename = os.path.basename(file_path)
-            # Bỏ qua file Ground Truth của local validation
             if filename == "local_val_gt.json":
                 continue
                 
-            # Xác định video_id từ tên file (ví dụ: L01_V001.json hoặc L01_V001_ocr.json)
+            # Xác định video_id từ tên file (ví dụ: L21_V001.json -> L21_V001)
             video_id = filename.split('_ocr')[0].split('.')[0]
             
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     
-                text_content = ""
-                if isinstance(data, dict):
-                    # Nếu là file OCR dạng {"frame_id": "text"}
-                    for val in data.values():
-                        if isinstance(val, str):
-                            text_content += " " + val
-                    # Nếu là file Youtube metadata có title, description
-                    if "title" in data:
-                        text_content += " " + str(data["title"])
-                    if "description" in data:
-                        text_content += " " + str(data["description"])
+                # Trích xuất toàn bộ chữ từ file JSON (title, description, tags, keywords...)
+                text_content = self.extract_text_from_obj(data)
                 
                 if video_id not in video_texts:
                     video_texts[video_id] = ""
@@ -82,7 +84,8 @@ class SparseSearcher:
             self.bm25 = BM25Okapi(self.corpus)
             print(f"SparseSearcher: Đã hoàn thành chỉ mục BM25 cho {len(self.video_ids)} videos.")
         else:
-            print("SparseSearcher: Cảnh báo: Không có văn bản nào được index cho BM25! (Có thể thư mục chứa metadata rỗng hoặc không đúng cấu trúc)")
+            print("SparseSearcher: Cảnh báo: Không có văn bản nào được index cho BM25!")
+
 
             
     def search(self, query_text, top_k_videos=10):

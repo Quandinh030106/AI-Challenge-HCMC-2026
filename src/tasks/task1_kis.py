@@ -2,22 +2,40 @@ import os
 import glob
 import numpy as np
 
-def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx):
+def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
     """
-    Ánh xạ từ chỉ số vector đặc trưng (0, 1, 2...) sang frame_id thực tế (ví dụ: '0000', '0005')
-    bằng cách quét danh sách file ảnh thực tế của video đó.
+    Ánh xạ từ chỉ số vector đặc trưng (0, 1, 2...) sang frame_id thực tế
+    bằng cách quét ảnh keyframe thực tế hoặc file CSV map-keyframes từ BTC.
     """
-    # Sử dụng os.walk để quét tìm thư mục có tên trùng với video_id (ví dụ: L21_V001)
-    for root, dirs, _ in os.walk(keyframes_dir):
-        if video_id in dirs:
-            video_folder = os.path.join(root, video_id)
-            img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
-            if 0 <= frame_idx < len(img_paths):
-                return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
-            break
-            
-    # Fallback nếu không tìm thấy ảnh
+    # 1. Thử quét thư mục chứa ảnh keyframe thực tế
+    if keyframes_dir and os.path.exists(keyframes_dir):
+        for root, dirs, _ in os.walk(keyframes_dir):
+            if video_id in dirs:
+                video_folder = os.path.join(root, video_id)
+                img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
+                if 0 <= frame_idx < len(img_paths):
+                    return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+                break
+
+    # 2. Nếu không tìm thấy ảnh, thử đọc file CSV mapping (ví dụ L21_V001.csv trong map-keyframes)
+    if metadata_dir and os.path.exists(metadata_dir):
+        for root, _, files in os.walk(metadata_dir):
+            target_csv = f"{video_id}.csv"
+            if target_csv in files:
+                csv_path = os.path.join(root, target_csv)
+                try:
+                    import pandas as pd
+                    df = pd.read_csv(csv_path)
+                    if 0 <= frame_idx < len(df):
+                        # Lấy giá trị ở cột đầu tiên làm frame_id
+                        first_col_val = df.iloc[frame_idx, 0]
+                        return str(first_col_val)
+                except Exception:
+                    pass
+
+    # Fallback nếu không tìm thấy dữ liệu
     return f"{frame_idx:04d}"
+
 
 
 def solve_task1(query_text, fused_candidates, keyframes_dir, window_size=5):
