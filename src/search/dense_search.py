@@ -64,22 +64,22 @@ class DenseSearcher:
                     if file.lower().endswith(".npy"):
                         feature_files.append(os.path.join(root, file))
                         
-        # Fallback: Nếu không tìm thấy trong features_dir, tự động tìm kiếm trong thư mục cha /kaggle/input
+        # Fallback: Nếu không tìm thấy trong features_dir, tự động quét toàn bộ /kaggle/input
         if not feature_files:
-            parent_dir = os.path.dirname(self.features_dir.rstrip('/'))
-            if os.path.exists(parent_dir):
-                print(f"DenseSearcher: Không thấy .npy trong {self.features_dir}. Đang tự động quét trong {parent_dir}...")
-                for root, _, files in os.walk(parent_dir):
-                    if "feature" in root.lower() or "clip" in root.lower():
-                        for file in files:
-                            if file.lower().endswith(".npy"):
-                                feature_files.append(os.path.join(root, file))
+            base_input = "/kaggle/input"
+            if os.path.exists(base_input):
+                print(f"DenseSearcher: Không thấy .npy trong {self.features_dir}. Đang tự động quét toàn bộ {base_input}...")
+                for root, _, files in os.walk(base_input):
+                    for file in files:
+                        if file.lower().endswith(".npy"):
+                            feature_files.append(os.path.join(root, file))
 
         if not feature_files:
             print(f"Cảnh báo: Không tìm thấy file .npy nào trong hệ thống!")
             return []
             
-        print(f"DenseSearcher: Tìm thấy {len(feature_files)} file .npy đặc trưng.")
+        print(f"DenseSearcher: Đã tìm thấy thành công {len(feature_files)} file .npy đặc trưng.")
+
 
             
         results = []
