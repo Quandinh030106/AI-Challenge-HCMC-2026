@@ -8,7 +8,6 @@ data:
 
 models:
   # NOTE: Sử dụng "openai/clip-vit-base-patch32" vì đặc trưng ảnh có sẵn của BTC là CLIP ViT-B-32.
-  # Nếu nhóm tự trích xuất đặc trưng mới bằng SigLIP, hãy đổi thành "google/siglip-base-patch16-224" hoặc "google/siglip-so400m-patch14-384".
   clip_model: "openai/clip-vit-base-patch32"
   vlm_model: "Qwen/Qwen2-VL-7B-Instruct"
 
