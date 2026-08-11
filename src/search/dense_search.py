@@ -39,26 +39,35 @@ class DenseSearcher:
         self.load_and_build_global_matrix()
 
     def load_and_build_global_matrix(self):
-        """Quét và gộp tất cả các file .npy thành 1 Ma trận GPU duy nhất để tăng tốc 100 lần."""
+        """Quét và gộp tất cả các file .npy thành 1 Ma trận GPU duy nhất siêu tốc."""
         print("DenseSearcher: Đang nạp toàn bộ vector đặc trưng vào GPU/RAM...")
+        
         feature_files = []
+        target_dirs = []
+        
         if os.path.exists(self.features_dir):
-            for root, _, files in os.walk(self.features_dir):
+            target_dirs.append(self.features_dir)
+            
+        # Nếu thư mục mặc định không đúng, chỉ quét các thư mục con trong /kaggle/input chứa từ 'feature' hoặc 'clip'
+        if os.path.exists("/kaggle/input"):
+            for item in os.listdir("/kaggle/input"):
+                full_p = os.path.join("/kaggle/input", item)
+                if os.path.isdir(full_p) and ("feature" in item.lower() or "clip" in item.lower()):
+                    if full_p not in target_dirs:
+                        target_dirs.append(full_p)
+
+        for t_dir in target_dirs:
+            for root, _, files in os.walk(t_dir):
                 for file in files:
                     if file.lower().endswith(".npy"):
                         feature_files.append(os.path.join(root, file))
-                        
-        if not feature_files:
-            base_input = "/kaggle/input"
-            if os.path.exists(base_input):
-                for root, _, files in os.walk(base_input):
-                    for file in files:
-                        if file.lower().endswith(".npy"):
-                            feature_files.append(os.path.join(root, file))
+            if feature_files:
+                break # Đã tìm thấy thư mục npy chuẩn, dừng tìm kiếm tiếp
 
         if not feature_files:
             print("Cảnh báo: Không tìm thấy file .npy nào!")
             return
+
 
         all_vectors = []
         current_idx = 0
