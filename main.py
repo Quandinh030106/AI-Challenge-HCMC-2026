@@ -6,6 +6,7 @@ from src.utils import load_config
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
+from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3
@@ -19,9 +20,10 @@ def main():
     config = load_config(args.config)
     print("--- KÍCH HOẠT PIPELINE TÌM KIẾM VIDEO ---")
     
-    # 1. Khởi tạo các module tìm kiếm
+    # 1. Khởi tạo các module tìm kiếm & xử lý query
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
+    query_processor = QueryProcessor()
     
     keyframes_dir = config["data"]["keyframes_dir"]
     metadata_dir = config["data"]["metadata_dir"]
@@ -29,7 +31,6 @@ def main():
     # 2. Tìm kiếm file Ground Truth của tập Validation cục bộ
     gt_path = os.path.join(metadata_dir, "local_val_gt.json")
     if not os.path.exists(gt_path):
-        # Fallback check trong data/metadata
         gt_path = "data/metadata/local_val_gt.json"
         
     if os.path.exists(gt_path):
@@ -46,10 +47,19 @@ def main():
                 query_id = q["query_id"]
                 query_text = q["query"]
                 
-                # Thực hiện tìm kiếm
-                dense_res = dense_searcher.search(query_text, top_k_videos=20)
+                # Tiền xử lý & Dịch thuật Query
+                q_info = query_processor.process(query_text)
+                query_en = q_info["query_en"]
+                intent = q_info["intent_info"]
+                
+                # Thực hiện tìm kiếm kết hợp Dense (English) + Sparse (Vietnamese)
+                dense_res = dense_searcher.search(query_en, top_k_videos=20)
                 sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
-                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                fused = reciprocal_rank_fusion(
+                    dense_res, sparse_res, 
+                    dense_weight=intent["dense_weight"], 
+                    sparse_weight=intent["sparse_weight"]
+                )
                 
                 # Sinh danh sách 100 câu trả lời để Evaluator tính R@k
                 preds = []
@@ -58,10 +68,9 @@ def main():
                     dense_info = cand["dense_info"]
                     if dense_info is not None and "all_scores" in dense_info:
                         scores = dense_info["all_scores"]
-                        # Lấy top 10 frame khớp nhất của video này
                         top_frame_idxs = np.argsort(scores)[::-1][:10]
                         for idx in top_frame_idxs:
-                            fid = get_frame_id_from_idx(keyframes_dir, video_id, idx)
+                            fid = get_frame_id_from_idx(keyframes_dir, video_id, idx, metadata_dir=metadata_dir)
                             preds.append({"video_id": video_id, "frame_id": fid})
                     else:
                         preds.append({"video_id": video_id, "frame_id": "0000"})
@@ -75,15 +84,21 @@ def main():
                 query_text = q["query"]
                 question = q["question"]
                 
-                dense_res = dense_searcher.search(query_text, top_k_videos=20)
-                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
-                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                q_info = query_processor.process(query_text)
+                query_en = q_info["query_en"]
+                intent = q_info["intent_info"]
                 
-                # Sinh câu trả lời tốt nhất bằng VLM
+                dense_res = dense_searcher.search(query_en, top_k_videos=20)
+                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
+                fused = reciprocal_rank_fusion(
+                    dense_res, sparse_res, 
+                    dense_weight=intent["dense_weight"], 
+                    sparse_weight=intent["sparse_weight"]
+                )
+                
+                # Sinh câu trả lời bằng VLM Qwen2-VL
                 ans_res = solve_task2(query_text, question, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
                 
-                # Để tính R@100, ta gán câu trả lời tốt nhất này cho Top 1,
-                # và tạo các dự đoán fallback cho 99 vị trí sau
                 preds = [{"video_id": ans_res["video_id"], "frame_id": ans_res["frame_id"], "answer": ans_res["answer"]}]
                 for cand in fused[1:]:
                     video_id = cand["video_id"]
@@ -97,15 +112,21 @@ def main():
                 query_id = q["query_id"]
                 query_text = q["query"]
                 
-                # Chuỗi hành động con
                 events = [ev["name"] for ev in q["events"]]
                 
-                # Search video ứng viên dựa trên câu mô tả tổng quát
-                dense_res = dense_searcher.search(query_text, top_k_videos=20)
-                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
-                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                q_info = query_processor.process(query_text)
+                query_en = q_info["query_en"]
+                intent = q_info["intent_info"]
                 
-                # Chạy căn chỉnh chuỗi sự kiện bằng DTW
+                dense_res = dense_searcher.search(query_en, top_k_videos=20)
+                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
+                fused = reciprocal_rank_fusion(
+                    dense_res, sparse_res, 
+                    dense_weight=intent["dense_weight"], 
+                    sparse_weight=intent["sparse_weight"]
+                )
+                
+                # Căn chỉnh chuỗi sự kiện bằng Dynamic Programming
                 align_res = solve_task3(events, fused, keyframes_dir, dense_searcher)
                 
                 preds = [{"video_id": align_res["video_id"], "frame_ids": align_res["frame_ids"]}]
@@ -132,8 +153,9 @@ def main():
         print(f"\nKhông tìm thấy file Ground Truth tại {gt_path}.")
         print("Chạy thử 1 câu query mẫu để kiểm tra:")
         test_query = "một diễn giả đang phát biểu trước máy quay"
-        dense_res = dense_searcher.search(test_query, top_k_videos=3)
-        print(f"Kết quả tìm kiếm cho query '{test_query}':")
+        q_info = query_processor.process(test_query)
+        dense_res = dense_searcher.search(q_info["query_en"], top_k_videos=3)
+        print(f"Kết quả tìm kiếm cho query '{test_query}' (English: '{q_info['query_en']}'):")
         for idx, res in enumerate(dense_res):
             print(f"Top {idx+1}: Video={res['video_id']}, Score={res['max_score']:.4f}, Best Frame Index={res['best_frame_idx']}")
 
