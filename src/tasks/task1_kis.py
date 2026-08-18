@@ -3,11 +3,7 @@ import glob
 import numpy as np
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
-    """
-    Ánh xạ từ chỉ số vector đặc trưng (0, 1, 2...) sang frame_id thực tế
-    bằng cách quét ảnh keyframe thực tế hoặc file CSV map-keyframes từ BTC.
-    """
-    # 1. Thử quét thư mục chứa ảnh keyframe thực tế
+    """Anh xa tu chi so vector sang frame_id thuc te (doc tu anh .jpg hoac file CSV map-keyframes)."""
     if keyframes_dir and os.path.exists(keyframes_dir):
         for root, dirs, _ in os.walk(keyframes_dir):
             if video_id in dirs:
@@ -17,7 +13,6 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                     return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
                 break
 
-    # 2. Nếu không tìm thấy ảnh, thử đọc file CSV mapping (ví dụ L21_V001.csv trong map-keyframes)
     if metadata_dir and os.path.exists(metadata_dir):
         for root, _, files in os.walk(metadata_dir):
             target_csv = f"{video_id}.csv"
@@ -27,57 +22,68 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                     import pandas as pd
                     df = pd.read_csv(csv_path)
                     if 0 <= frame_idx < len(df):
-                        # Lấy giá trị ở cột đầu tiên làm frame_id
-                        first_col_val = df.iloc[frame_idx, 0]
-                        return str(first_col_val)
+                        return str(df.iloc[frame_idx, 0])
                 except Exception:
                     pass
 
-    # Fallback nếu không tìm thấy dữ liệu
     return f"{frame_idx:04d}"
 
+def gaussian_smooth_scores(scores, sigma=1.5):
+    """Lam min chuoi diem thoi gian bang Gaussian Kernel."""
+    if len(scores) < 3:
+        return scores
+    radius = int(3 * sigma)
+    x = np.arange(-radius, radius + 1)
+    kernel = np.exp(-0.5 * (x / sigma) ** 2)
+    kernel = kernel / np.sum(kernel)
+    return np.convolve(scores, kernel, mode='same')
 
-
-def solve_task1(query_text, fused_candidates, keyframes_dir, window_size=5):
-    """
-    Giải quyết Task 1: Tìm kiếm chính xác (KIS)
-    1. Nhận video ứng viên hàng đầu từ kết quả Fusion.
-    2. Áp dụng bộ lọc làm mịn (Rolling Average) trên các frame để khử nhiễu.
-    3. Trả về video_id và frame_id của điểm tương đồng cao nhất.
-    """
+def solve_task1(query_text, fused_candidates, keyframes_dir, metadata_dir=None, sigma=1.5):
+    """Giai quyet Task 1 (Textual KIS)."""
     if not fused_candidates:
         return {"video_id": "none", "frame_id": "0000", "score": 0.0}
         
-    # Chọn ứng viên tốt nhất từ kết quả Fusion
     best_candidate = fused_candidates[0]
     video_id = best_candidate["video_id"]
-    dense_info = best_candidate["dense_info"]
+    dense_info = best_candidate.get("dense_info")
     
     if dense_info is None or "all_scores" not in dense_info:
-        # Nếu chỉ tìm thấy qua BM25 không có thông tin vector đặc trưng
-        return {
-            "video_id": video_id,
-            "frame_id": "0000",
-            "score": best_candidate.get("rrf_score", 0.0)
-        }
+        return {"video_id": video_id, "frame_id": "0000", "score": best_candidate.get("rrf_score", 0.0)}
         
     scores = dense_info["all_scores"]
-    
-    # Áp dụng bộ lọc làm mịn (Moving Average)
-    if len(scores) >= window_size:
-        smoothed_scores = np.convolve(scores, np.ones(window_size) / window_size, mode='same')
-    else:
-        smoothed_scores = scores
-        
-    # Tìm chỉ số frame có điểm cao nhất sau khi lọc
+    smoothed_scores = gaussian_smooth_scores(scores, sigma=sigma)
     best_frame_idx = int(np.argmax(smoothed_scores))
-    best_score = float(smoothed_scores[best_frame_idx])
+    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
-    # Ánh xạ chỉ số sang frame_id thực tế (ví dụ: '0150')
-    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx)
+    return {"video_id": video_id, "frame_id": frame_id, "score": float(smoothed_scores[best_frame_idx])}
+
+def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=None, total_preds=100):
+    """Phan bo 100 cau tra loi trai dai qua nhieu video ung vien de toi uu R@k."""
+    predictions = []
     
-    return {
-        "video_id": video_id,
-        "frame_id": frame_id,
-        "score": best_score
-    }
+    for rank, cand in enumerate(fused_candidates):
+        video_id = cand["video_id"]
+        dense_info = cand.get("dense_info")
+        
+        n_peaks = 4 if rank < 2 else (3 if rank < 10 else (2 if rank < 30 else 1))
+            
+        if dense_info is not None and "all_scores" in dense_info:
+            scores = dense_info["all_scores"]
+            smoothed = gaussian_smooth_scores(scores, sigma=1.5)
+            top_frame_idxs = np.argsort(smoothed)[::-1][:n_peaks]
+            for f_idx in top_frame_idxs:
+                fid = get_frame_id_from_idx(keyframes_dir, video_id, int(f_idx), metadata_dir=metadata_dir)
+                predictions.append({"video_id": video_id, "frame_id": fid})
+                if len(predictions) >= total_preds:
+                    break
+        else:
+            fid = get_frame_id_from_idx(keyframes_dir, video_id, 0, metadata_dir=metadata_dir)
+            predictions.append({"video_id": video_id, "frame_id": fid})
+            
+        if len(predictions) >= total_preds:
+            break
+            
+    while len(predictions) < total_preds:
+        predictions.append({"video_id": "none", "frame_id": "0000"})
+        
+    return predictions[:total_preds]
