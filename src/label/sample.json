@@ -1,0 +1,41 @@
+{
+  "task1": [
+    {
+      "query_id": "t1_01",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L01_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    }
+  ],
+
+
+
+  "task2": [
+    {
+      "query_id": "t2_01",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    }
+  ],
+
+
+  
+  "task3": [
+    {
+      "query_id": "t3_01",
+      "query": "Chuỗi hành động cú nhảy cao của vận động viên.",
+      "video_id": "L10_V010",
+      "events": [
+        {"event_id": 1, "name": "Chạy đà", "frame_start": 95, "frame_end": 105},
+        {"event_id": 2, "name": "Giậm nhảy", "frame_start": 145, "frame_end": 155},
+        {"event_id": 3, "name": "Bay qua xà", "frame_start": 195, "frame_end": 205},
+        {"event_id": 4, "name": "Tiếp đất", "frame_start": 245, "frame_end": 255}
+      ]
+    }
+  ]
+}
