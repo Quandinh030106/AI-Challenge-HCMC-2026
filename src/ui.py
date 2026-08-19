@@ -1,0 +1,176 @@
+import streamlit as st
+import os
+import glob
+import numpy as np
+from PIL import Image
+from src.utils import load_config
+from src.search.dense_search import DenseSearcher
+from src.search.sparse_search import SparseSearcher
+from src.search.fusion import reciprocal_rank_fusion
+from src.preprocessing.query_processor import QueryProcessor
+from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx
+from src.tasks.task2_vqa import solve_task2
+from src.tasks.task3_trake import solve_task3
+
+st.set_page_config(
+    page_title="AI Challenge HCMC 2026 - Video Search System",
+    page_icon="🎬",
+    layout="wide"
+)
+
+@st.cache_resource(show_spinner="Dang khoi tao he thong tim kiem...")
+def init_engine():
+    config = load_config("configs/default.yaml")
+    dense = DenseSearcher(config)
+    sparse = SparseSearcher(config)
+    qp = QueryProcessor()
+    return config, dense, sparse, qp
+
+config, dense_searcher, sparse_searcher, query_processor = init_engine()
+keyframes_dir = config["data"]["keyframes_dir"]
+metadata_dir = config["data"]["metadata_dir"]
+
+st.title("🎬 AI Challenge HCMC 2026 - He Thong Truy Xuat Video")
+st.markdown("*He thong tim kiem video da phuong thuc sieu toc danh cho Vong So Tuyen AIC 2026*")
+
+# Sidebar
+st.sidebar.header("Cai Dat & Chuc Nang")
+task_mode = st.sidebar.radio(
+    "Chon Dạng Bai Thi:",
+    ["Task 1: Textual KIS (Tim kiem su kien)", "Task 2: Visual Q&A (Hoi - Dap)", "Task 3: TRAKE (Chuoi su kien)"]
+)
+top_k = st.sidebar.slider("So luong ket qua hien thi (Top K):", 1, 20, 5)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown(f"**Device:** `{dense_searcher.device}`")
+st.sidebar.markdown(f"**So video da index:** `{len(dense_searcher.all_video_ids)} videos`")
+
+def find_keyframe_image(video_id, frame_id):
+    """Tim duong dan file anh keyframe truc tiep cho moi batch tu L01 den Lxx."""
+    level = video_id.split('_')[0] if '_' in video_id else ""
+    fid_str = f"{int(frame_id):04d}" if str(frame_id).isdigit() else str(frame_id)
+    
+    # Kiem tra truc tiep cac duong dan toi uu
+    direct_candidates = [
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{fid_str}.jpg"),
+        os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{fid_str}.jpg"),
+        os.path.join(keyframes_dir, "keyframes", video_id, f"{fid_str}.jpg"),
+        os.path.join(keyframes_dir, video_id, f"{fid_str}.jpg"),
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{frame_id}.jpg"),
+        os.path.join(keyframes_dir, video_id, f"{frame_id}.jpg")
+    ]
+    for p in direct_candidates:
+        if os.path.exists(p):
+            return p
+            
+    # Fallback tim kiem neu khong dung quy uoc chuan
+    search_paths = [
+        os.path.join(keyframes_dir, "**", video_id, f"{fid_str}.jpg"),
+        os.path.join(keyframes_dir, "**", video_id, f"{frame_id}.jpg")
+    ]
+    for p in search_paths:
+        matches = glob.glob(p, recursive=True)
+        if matches:
+            return matches[0]
+    return None
+
+
+# --- TASK 1: TEXTUAL KIS ---
+if "Task 1" in task_mode:
+    st.subheader("📌 Task 1: Tim Kiem Chinh Xac Theo Van Ban (Textual KIS)")
+    query_input = st.text_input("Nhap cau mo ta su kien can tim:", "mot dien gia dang phat bieu truoc may quay")
+    
+    if st.button("🔍 Tim Kiem Video", key="btn_task1"):
+        with st.spinner("Dang tim kiem..."):
+            q_info = query_processor.process(query_input)
+            intent = q_info["intent_info"]
+            
+            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=top_k*2)
+            sparse_res = sparse_searcher.search(query_input, top_k_videos=top_k*2)
+            fused = reciprocal_rank_fusion(
+                dense_res, sparse_res, 
+                dense_weight=intent["dense_weight"], 
+                sparse_weight=intent["sparse_weight"]
+            )
+            
+            st.success(f"Da dich sang English: **{q_info['query_en']}** | Y dinh: `{intent['intent']}`")
+            
+            cols = st.columns(min(top_k, 5))
+            for idx, cand in enumerate(fused[:top_k]):
+                vid = cand["video_id"]
+                dense_info = cand.get("dense_info")
+                
+                best_frame_idx = dense_info["best_frame_idx"] if dense_info else 0
+                frame_id = get_frame_id_from_idx(keyframes_dir, vid, best_frame_idx, metadata_dir=metadata_dir)
+                img_path = find_keyframe_image(vid, frame_id)
+                
+                col = cols[idx % 5]
+                with col:
+                    st.markdown(f"### Top {idx+1}")
+                    st.markdown(f"**Video ID:** `{vid}`")
+                    st.markdown(f"**Frame ID:** `{frame_id}`")
+                    
+                    if img_path and os.path.exists(img_path):
+                        img = Image.open(img_path)
+                        st.image(img, use_container_width=True)
+                    else:
+                        st.info("Chua co anh keyframe vat ly")
+
+# --- TASK 2: VISUAL Q&A ---
+elif "Task 2" in task_mode:
+    st.subheader("❓ Task 2: Truy Van Hoi - Dap Truc Quan (Visual Q&A)")
+    query_input = st.text_input("Mo ta boi canh / su kien:", "dien gia phat bieu tai cuoc hop bao")
+    question_input = st.text_input("Cau hoi can tra loi:", "Nguoi dien gia mac ao mau gi?")
+    
+    if st.button("🔍 Tim Kiem & Tra Loi", key="btn_task2"):
+        with st.spinner("Dang tim kiem va goi VLM Qwen2-VL..."):
+            q_info = query_processor.process(query_input)
+            intent = q_info["intent_info"]
+            
+            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=10)
+            sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
+            fused = reciprocal_rank_fusion(dense_res, sparse_res)
+            
+            ans_res = solve_task2(query_input, question_input, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
+            
+            st.success(f"**Dap An Tu VLM:** `{ans_res['answer']}`")
+            st.markdown(f"- **Video:** `{ans_res['video_id']}` | **Frame:** `{ans_res['frame_id']}`")
+            
+            img_path = find_keyframe_image(ans_res['video_id'], ans_res['frame_id'])
+            if img_path and os.path.exists(img_path):
+                st.image(Image.open(img_path), caption=f"Keyframe {ans_res['frame_id']}", width=400)
+
+# --- TASK 3: TRAKE ---
+elif "Task 3" in task_mode:
+    st.subheader("⏱️ Task 3: Can Chinh Chuoi Su Kien (TRAKE)")
+    query_input = st.text_input("Mo ta tong quat chuoi su kien:", "Hoi thao va phat bieu")
+    
+    events_str = st.text_area(
+        "Danh sach cac su kien con (moi dong 1 su kien):",
+        "Dien gia buoc len san khau\nDien gia phat bieu truoc micro\nKhan gia vo tay"
+    )
+    events_list = [e.strip() for e in events_str.split("\n") if e.strip()]
+    
+    if st.button("🔍 Can Chinh Chuoi Su Kien", key="btn_task3"):
+        with st.spinner("Dang can chinh thoi gian bang Quy hoach dong (DP)..."):
+            q_info = query_processor.process(query_input)
+            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=10)
+            sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
+            fused = reciprocal_rank_fusion(dense_res, sparse_res)
+            
+            align_res = solve_task3(events_list, fused, keyframes_dir, dense_searcher)
+            vid = align_res["video_id"]
+            frame_ids = align_res["frame_ids"]
+            
+            st.success(f"Video khop nhat: **{vid}**")
+            st.markdown("### Dòng Thoi Gian Su Kien (Timeline):")
+            
+            cols = st.columns(len(events_list))
+            for i, ev_name in enumerate(events_list):
+                fid = frame_ids[i] if i < len(frame_ids) else "0000"
+                with cols[i]:
+                    st.markdown(f"**Event {i+1}:** {ev_name}")
+                    st.markdown(f"**Frame:** `{fid}`")
+                    img_path = find_keyframe_image(vid, fid)
+                    if img_path and os.path.exists(img_path):
+                        st.image(Image.open(img_path), use_container_width=True)

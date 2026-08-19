@@ -35,23 +35,22 @@ class SparseSearcher:
         """Doc file metadata/OCR de dung chi muc BM25."""
         print(f"SparseSearcher: Dang xay dung chi muc BM25 tu: {self.metadata_dir}")
         json_files = []
-        
-        if os.path.exists(self.metadata_dir):
-            for root, _, files in os.walk(self.metadata_dir):
+        # Tu dong quet toan bo thu muc /kaggle/input hoac metadata_dir
+        scan_dir = self.metadata_dir if os.path.exists(self.metadata_dir) else "/kaggle/input"
+
+        if os.path.exists(scan_dir):
+            for root, _, files in os.walk(scan_dir):
+                root_lower = root.lower()
+                # Bo qua cac thu muc objects, keyframes, videos de tranh quet hang trieu file khong phai metadata
+                if "object" in root_lower or "keyframe" in root_lower or "video" in root_lower:
+                    continue
                 for file in files:
-                    if file.lower().endswith(".json") and file != "local_val_gt.json":
+                    file_lower = file.lower()
+                    if file_lower.endswith(".json") and file != "local_val_gt.json":
                         json_files.append(os.path.join(root, file))
         
-        if not json_files:
-            parent_dir = os.path.dirname(self.metadata_dir)
-            if os.path.exists(parent_dir):
-                for root, _, files in os.walk(parent_dir):
-                    if "metadata" in root.lower() or "media-info" in root.lower():
-                        for file in files:
-                            if file.lower().endswith(".json") and file != "local_val_gt.json":
-                                json_files.append(os.path.join(root, file))
-        
-        print(f"SparseSearcher: Tim thay {len(json_files)} file JSON.")
+        print(f"SparseSearcher: Tim thay {len(json_files)} file JSON metadata.")
+
         video_texts = {}
         
         for file_path in json_files:

@@ -25,8 +25,10 @@ def main():
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
     
-    keyframes_dir = config["data"]["keyframes_dir"]
-    metadata_dir = config["data"]["metadata_dir"]
+    keyframes_dir = config["data"].get("keyframes_dir")
+    metadata_dir = config["data"].get("metadata_dir")
+    map_keyframes_dir = config["data"].get("map_keyframes_dir", metadata_dir)
+
     
     # 2. Tim kiem file Ground Truth tap Validation cuc bo
     gt_path = os.path.join(metadata_dir, "local_val_gt.json")
@@ -61,8 +63,9 @@ def main():
                 )
                 
                 preds = generate_diversity_top100_kis(
-                    fused, keyframes_dir, metadata_dir=metadata_dir, total_preds=100
+                    fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
                 )
+
                 predictions_dict["task1"][query_id] = preds
                 
         # Task 2 (Visual Q&A)

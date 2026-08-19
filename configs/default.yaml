@@ -1,13 +1,23 @@
 # Configuration for HCMC AI Challenge 2026 on Kaggle
 data:
-  raw_dir: "/kaggle/input/ai-challenge-hcmc-2026-videos"
-  keyframes_dir: "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
-  features_dir: "/kaggle/input/ai-challenge-hcmc-2026-features/clip-features-32"
-  metadata_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata"
+  # Thu muc cha chua toan bo cac video tu L21 den Lxx
+  raw_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-videos"
+  
+  # Thu muc cha chua toan bo cac thu muc Keyframes_L21, Keyframes_L22, ..., Keyframes_Lxx
+  keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-keyframes"
+  
+  # Thu muc chua toan bo cac file vector dac trung .npy
+  features_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-features/clip-features-32"
+  
+  # Thu muc chua cac file JSON thong tin YouTube (Media-info)
+  metadata_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/media-info-aic25-b1/media-info"
+  
+  # Thu muc chua cac file CSV mapping khung hinh
+  map_keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes"
+  
   output_dir: "/kaggle/working/output"
 
 models:
-  # NOTE: Sử dụng "openai/clip-vit-base-patch32" vì đặc trưng ảnh có sẵn của BTC là CLIP ViT-B-32.
   clip_model: "openai/clip-vit-base-patch32"
   vlm_model: "Qwen/Qwen2-VL-7B-Instruct"
 

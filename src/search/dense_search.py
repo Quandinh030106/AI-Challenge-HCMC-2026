@@ -41,7 +41,15 @@ class DenseSearcher:
         print(f"DenseSearcher: Dang nap vector tu thu muc: {self.features_dir}")
         feature_files = []
         
-        if os.path.exists("/kaggle/input"):
+        # 1. Uu tien doc truc tiep tu duong dan features_dir duoc cau hinh (sieu nhanh < 0.01s)
+        if self.features_dir and os.path.exists(self.features_dir):
+            for root, _, files in os.walk(self.features_dir):
+                for file in files:
+                    if file.lower().endswith(".npy"):
+                        feature_files.append(os.path.join(root, file))
+
+        # 2. Fallback: Neu chua tim thay, moi quet trong /kaggle/input
+        if not feature_files and os.path.exists("/kaggle/input"):
             for root, _, files in os.walk("/kaggle/input"):
                 root_lower = root.lower()
                 if "keyframe" in root_lower or "video" in root_lower:
@@ -50,11 +58,13 @@ class DenseSearcher:
                     if file.lower().endswith(".npy"):
                         feature_files.append(os.path.join(root, file))
 
+        feature_files = sorted(feature_files)
         if not feature_files:
             print("DenseSearcher: Canh bao: Khong tim thay file .npy nao!")
             return
 
         print(f"DenseSearcher: Tim thay {len(feature_files)} file .npy.")
+
         all_vectors = []
         current_idx = 0
         

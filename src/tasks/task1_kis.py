@@ -2,33 +2,88 @@ import os
 import glob
 import numpy as np
 
-def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
-    """Anh xa tu chi so vector sang frame_id thuc te (doc tu anh .jpg hoac file CSV map-keyframes)."""
-    if keyframes_dir and os.path.exists(keyframes_dir):
-        for root, dirs, _ in os.walk(keyframes_dir):
-            if video_id in dirs:
-                video_folder = os.path.join(root, video_id)
-                img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
-                if 0 <= frame_idx < len(img_paths):
-                    return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
-                break
+_video_folder_cache = {}
+_csv_map_cache = {}
 
-    if metadata_dir and os.path.exists(metadata_dir):
-        for root, _, files in os.walk(metadata_dir):
-            target_csv = f"{video_id}.csv"
-            if target_csv in files:
-                csv_path = os.path.join(root, target_csv)
-                try:
-                    import pandas as pd
-                    df = pd.read_csv(csv_path)
-                    if 0 <= frame_idx < len(df):
-                        return str(df.iloc[frame_idx, 0])
-                except Exception:
-                    pass
+def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
+    """Anh xa tu chi so vector sang frame_id thuc te ho tro moi batch tu L01 den Lxx."""
+    global _video_folder_cache, _csv_map_cache
+    
+    # 1. Thu tim trong anh Keyframe (.jpg)
+    if video_id in _video_folder_cache:
+        img_paths = _video_folder_cache[video_id]
+        if 0 <= frame_idx < len(img_paths):
+            return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+    elif keyframes_dir and os.path.exists(keyframes_dir):
+        level = video_id.split('_')[0] if '_' in video_id else "" # Vi du: 'L21', 'L22', 'L01'
+        
+        # Danh sach cac duong dan truc tiep toi uu (khong can duyet toan bo o dia)
+        candidate_dirs = [
+            os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
+            os.path.join(keyframes_dir, f"Keyframes_{level}", video_id),
+            os.path.join(keyframes_dir, level, "keyframes", video_id),
+            os.path.join(keyframes_dir, "keyframes", video_id),
+            os.path.join(keyframes_dir, video_id)
+        ]
+        
+        video_folder = None
+        for cand in candidate_dirs:
+            if os.path.exists(cand):
+                video_folder = cand
+                break
+                
+        # Neu khong thay truc tiep, fallback quet nhanh
+        if not video_folder:
+            for root, dirs, _ in os.walk(keyframes_dir):
+                if video_id in dirs:
+                    video_folder = os.path.join(root, video_id)
+                    break
+                    
+        if video_folder:
+            img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
+            _video_folder_cache[video_id] = img_paths
+            if 0 <= frame_idx < len(img_paths):
+                return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+
+    # 2. Thu tim trong file CSV Mapping (vi du map-keyframes/L21_V001.csv)
+    if video_id in _csv_map_cache:
+        df_col = _csv_map_cache[video_id]
+        if 0 <= frame_idx < len(df_col):
+            return str(df_col[frame_idx])
+    elif metadata_dir and os.path.exists(metadata_dir):
+        # Kiem tra truc tiep file csv
+        candidate_csvs = [
+            os.path.join(metadata_dir, f"{video_id}.csv"),
+            os.path.join(metadata_dir, "map-keyframes", f"{video_id}.csv"),
+            os.path.join(os.path.dirname(metadata_dir), "map-keyframes-aic25-b1", "map-keyframes", f"{video_id}.csv")
+        ]
+        
+        target_csv_path = None
+        for c_path in candidate_csvs:
+            if os.path.exists(c_path):
+                target_csv_path = c_path
+                break
+                
+        if not target_csv_path:
+            for root, _, files in os.walk(metadata_dir):
+                if f"{video_id}.csv" in files:
+                    target_csv_path = os.path.join(root, f"{video_id}.csv")
+                    break
+                    
+        if target_csv_path:
+            try:
+                import pandas as pd
+                df = pd.read_csv(target_csv_path)
+                _csv_map_cache[video_id] = df.iloc[:, 0].tolist()
+                if 0 <= frame_idx < len(df):
+                    return str(df.iloc[frame_idx, 0])
+            except Exception:
+                pass
 
     return f"{frame_idx:04d}"
 
 def gaussian_smooth_scores(scores, sigma=1.5):
+
     """Lam min chuoi diem thoi gian bang Gaussian Kernel."""
     if len(scores) < 3:
         return scores
