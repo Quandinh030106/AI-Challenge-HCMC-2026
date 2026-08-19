@@ -31,13 +31,22 @@ def main():
 
     
     # 2. Tim kiem file Ground Truth tap Validation cuc bo
-    gt_path = os.path.join(metadata_dir, "local_val_gt.json")
-    if not os.path.exists(gt_path):
-        gt_path = "data/metadata/local_val_gt.json"
+    candidate_gt_paths = [
+        os.path.join(metadata_dir, "local_val_gt.json") if metadata_dir else "",
+        "data/metadata/local_val_gt.json",
+        "src/label/sample.json",
+        "src/label/Task1.json"
+    ]
+    gt_path = None
+    for p in candidate_gt_paths:
+        if p and os.path.exists(p) and os.path.getsize(p) > 5:
+            gt_path = p
+            break
         
-    if os.path.exists(gt_path):
+    if gt_path and os.path.exists(gt_path):
         print(f"\nTim thay file Ground Truth tai: {gt_path}. Bat dau danh gia...")
         with open(gt_path, "r", encoding="utf-8") as f:
+
             gt_data = json.load(f)
             
         predictions_dict = {"task1": {}, "task2": {}, "task3": {}}
