@@ -21,6 +21,8 @@ from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
+from src.search.object_search import ObjectSearcher
+
 
 
 def parse_query_file(file_path):
@@ -140,6 +142,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
+    object_searcher = ObjectSearcher(config)
     
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
@@ -180,6 +183,9 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             sparse_weight=intent["sparse_weight"]
         )
         
+        # Tang cuong diem thuong tu Objects neu co
+        fused = object_searcher.boost_candidates(fused, q_info["english_query"])
+        
         # --- TASK 1: TEXTUAL KIS ---
         if task_type == "kis":
             # Sinh 100 dong theo format: <Tên file video>, <Frame Idx> (KHONG HEADER)
@@ -196,8 +202,14 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         # --- TASK 2: VISUAL Q&A ---
         elif task_type == "qa":
             question = parsed["question"]
-            ans_res = solve_task2(query_text, question, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
+            ans_res = solve_task2(
+                query_text, question, fused, keyframes_dir, 
+                model_id=config["models"]["vlm_model"],
+                metadata_dir=map_keyframes_dir,
+                object_searcher=object_searcher
+            )
             vlm_answer = format_answer_for_csv(ans_res["answer"])
+
             
             top100_preds = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100

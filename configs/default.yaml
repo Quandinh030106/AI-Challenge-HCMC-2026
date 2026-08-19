@@ -15,7 +15,11 @@ data:
   # Thu muc chua cac file CSV mapping khung hinh
   map_keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes"
   
+  # Thu muc chua cac file JSON phat hien vat the (Objects)
+  objects_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/objects-aic25-b1/objects"
+  
   output_dir: "/kaggle/working/output"
+
 
 models:
   clip_model: "openai/clip-vit-base-patch32"

@@ -24,8 +24,10 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             os.path.join(metadata_dir, f"{video_id}.csv"),
             os.path.join(metadata_dir, "map-keyframes", f"{video_id}.csv"),
             os.path.join(metadata_dir, f"map-keyframes-{level}", f"{video_id}.csv"),
+            os.path.join(metadata_dir, "map-keyframes-aic25-b1", "map-keyframes", f"{video_id}.csv"),
             os.path.join(os.path.dirname(metadata_dir), "map-keyframes-aic25-b1", "map-keyframes", f"{video_id}.csv"),
-            os.path.join(os.path.dirname(metadata_dir), "map-keyframes", f"{video_id}.csv")
+            os.path.join(os.path.dirname(metadata_dir), "map-keyframes", f"{video_id}.csv"),
+            os.path.join(os.path.dirname(metadata_dir), f"{video_id}.csv")
         ]
         
         target_csv_path = None
@@ -33,12 +35,6 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             if os.path.exists(c_path):
                 target_csv_path = c_path
                 break
-                
-        if not target_csv_path:
-            for root, _, files in os.walk(metadata_dir):
-                if f"{video_id}.csv" in files:
-                    target_csv_path = os.path.join(root, f"{video_id}.csv")
-                    break
                     
         if target_csv_path:
             try:
@@ -52,7 +48,6 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                 if col_name:
                     values = df[col_name].tolist()
                 else:
-                    # Chon cot so co gia tri lon nhat (chinh la so frame thoi gian thuc cua video hang nghin frames)
                     numeric_cols = df.select_dtypes(include=[np.number]).columns
                     if len(numeric_cols) > 0:
                         best_col = max(numeric_cols, key=lambda c: df[c].max())
@@ -64,43 +59,11 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                 if 0 <= frame_idx < len(values):
                     return str(int(values[frame_idx]))
             except Exception:
-
                 pass
 
-    # 2. FALLBACK SO 2: Neu khong co file CSV map-keyframes, moi lay ten file anh (.jpg)
-    if video_id in _video_folder_cache:
-        img_paths = _video_folder_cache[video_id]
-        if 0 <= frame_idx < len(img_paths):
-            return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
-    elif keyframes_dir and os.path.exists(keyframes_dir):
-        level = video_id.split('_')[0] if '_' in video_id else ""
-        candidate_dirs = [
-            os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
-            os.path.join(keyframes_dir, f"Keyframes_{level}", video_id),
-            os.path.join(keyframes_dir, level, "keyframes", video_id),
-            os.path.join(keyframes_dir, "keyframes", video_id),
-            os.path.join(keyframes_dir, video_id)
-        ]
-        
-        video_folder = None
-        for cand in candidate_dirs:
-            if os.path.exists(cand):
-                video_folder = cand
-                break
-                
-        if not video_folder:
-            for root, dirs, _ in os.walk(keyframes_dir):
-                if video_id in dirs:
-                    video_folder = os.path.join(root, video_id)
-                    break
-                    
-        if video_folder:
-            img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
-            _video_folder_cache[video_id] = img_paths
-            if 0 <= frame_idx < len(img_paths):
-                return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
-
+    # 2. FALLBACK SO 2: Neu khong co file CSV map-keyframes, tra ve frame_idx dang so
     return f"{frame_idx:04d}"
+
 
 
 def gaussian_smooth_scores(scores, sigma=1.5):

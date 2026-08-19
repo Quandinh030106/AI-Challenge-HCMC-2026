@@ -25,7 +25,7 @@ def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
         print("VQA: Mo hinh VLM da duoc load thanh cong.")
     return _vlm_model, _vlm_processor
 
-def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct"):
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct", metadata_dir=None, object_searcher=None):
     """Giai quyet Task 2 (Visual Q&A)."""
     if not fused_candidates:
         return {"video_id": "none", "frame_id": "0000", "answer": "không rõ"}
@@ -40,7 +40,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     else:
         best_frame_idx = 0
         
-    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx)
+    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
     # Tim truc tiep file anh vat ly bang Direct Candidate Path (sieu toc < 0.001s, khong dung recursive scan)
     level = video_id.split('_')[0] if '_' in video_id else ""
@@ -68,13 +68,21 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         
     model, processor = load_vlm(model_id)
 
+    # Kiem tra xem co the ho tro dem thuc the tu Object Detection khong
+    hint_text = ""
+    if object_searcher:
+        objs = object_searcher.get_frame_objects(video_id, best_frame_idx)
+        if objs:
+            top_entities = [o["entity"] for o in objs[:8]]
+            hint_text = f" (Các vật thể nhận diện được trong ảnh: {', '.join(top_entities)})."
     
     # Prompt toi uu cho Task 2 VQA: ep model tra ve truc dien tu khoa (Mau sac, So luong, Ten vat the)
     prompt_text = (
-        f"Dựa vào bức ảnh này, hãy trả lời câu hỏi sau bằng Tiếng Việt một cách ngắn gọn, trực diện nhất "
+        f"Dựa vào bức ảnh này{hint_text}, hãy trả lời câu hỏi sau bằng Tiếng Việt một cách ngắn gọn, trực diện nhất "
         f"(chỉ trả lời 1 đến 3 từ, chỉ nêu đúng từ khóa đáp án như màu sắc, con số, hoặc tên vật thể; "
         f"không giải thích, không dùng câu dẫn dài dòng): '{question}'"
     )
+
     
     messages = [
         {
