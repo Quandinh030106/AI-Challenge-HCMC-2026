@@ -44,22 +44,27 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             try:
                 import pandas as pd
                 df = pd.read_csv(target_csv_path)
-                # Lay cot frame_idx hoac cot cuoi cung/dau tien chua so frame thoi gian thuc
                 col_name = None
-                for c in ["frame_idx", "frame_id", "frame", "frameIdx", "pts_frame"]:
-                    if c in df.columns:
+                for c in df.columns:
+                    if any(k in str(c).lower() for k in ["frame_idx", "frame_id", "frame", "frameidx", "pts_frame"]):
                         col_name = c
                         break
                 if col_name:
                     values = df[col_name].tolist()
                 else:
-                    # Neu khong co ten cot chuan, lay cot co gia tri so lon nhat (thuong la frame_idx)
-                    values = df.iloc[:, 0].tolist()
+                    # Chon cot so co gia tri lon nhat (chinh la so frame thoi gian thuc cua video hang nghin frames)
+                    numeric_cols = df.select_dtypes(include=[np.number]).columns
+                    if len(numeric_cols) > 0:
+                        best_col = max(numeric_cols, key=lambda c: df[c].max())
+                        values = df[best_col].tolist()
+                    else:
+                        values = df.iloc[:, 0].tolist()
                     
                 _csv_map_cache[video_id] = values
                 if 0 <= frame_idx < len(values):
-                    return str(values[frame_idx])
+                    return str(int(values[frame_idx]))
             except Exception:
+
                 pass
 
     # 2. FALLBACK SO 2: Neu khong co file CSV map-keyframes, moi lay ten file anh (.jpg)

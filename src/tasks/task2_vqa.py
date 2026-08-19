@@ -69,12 +69,19 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     model, processor = load_vlm(model_id)
 
     
+    # Prompt toi uu cho Task 2 VQA: ep model tra ve truc dien tu khoa (Mau sac, So luong, Ten vat the)
+    prompt_text = (
+        f"Dựa vào bức ảnh này, hãy trả lời câu hỏi sau bằng Tiếng Việt một cách ngắn gọn, trực diện nhất "
+        f"(chỉ trả lời 1 đến 3 từ, chỉ nêu đúng từ khóa đáp án như màu sắc, con số, hoặc tên vật thể; "
+        f"không giải thích, không dùng câu dẫn dài dòng): '{question}'"
+    )
+    
     messages = [
         {
             "role": "user",
             "content": [
                 {"type": "image", "image": image_path},
-                {"type": "text", "text": f"Dựa vào bức ảnh này, trả lời câu hỏi: '{question}'. Hãy trả lời cực kỳ ngắn gọn (dưới 5 từ, chỉ nêu đáp án)."}
+                {"type": "text", "text": prompt_text}
             ]
         }
     ]
@@ -91,7 +98,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     ).to(model.device)
     
     with torch.no_grad():
-        generated_ids = model.generate(**inputs, max_new_tokens=30)
+        generated_ids = model.generate(**inputs, max_new_tokens=25)
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
@@ -101,8 +108,23 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             clean_up_tokenization_spaces=False
         )
         
+    raw_answer = output_text[0].strip()
+    
+    # Loc bo cac tien to va tu dem thua (vi du: "Dap an: ", "La ", "Do la ")
+    clean_ans = raw_answer
+    for prefix in ["đáp án:", "đáp án là:", "trả lời:", "câu trả lời:", "là", "đó là", "nó là", "có"]:
+        if clean_ans.lower().startswith(prefix):
+            clean_ans = clean_ans[len(prefix):].strip()
+            
+    clean_ans = clean_ans.rstrip('.!?,;:')
+    if clean_ans:
+        clean_ans = clean_ans[0].upper() + clean_ans[1:]
+    else:
+        clean_ans = "Không rõ"
+        
     return {
         "video_id": video_id,
         "frame_id": frame_id,
-        "answer": output_text[0].strip()
+        "answer": clean_ans
     }
+

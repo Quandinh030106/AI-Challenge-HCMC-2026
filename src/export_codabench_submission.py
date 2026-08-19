@@ -106,21 +106,18 @@ def parse_query_file(file_path):
 
 def format_answer_for_csv(ans_text):
     """
-    Format answer cho Q&A theo dung quy chuan BTC:
-    - Bo dau xuong dong thua
-    - Escape dau ngoac kep neu can
-    - Giu do dai duoi 100 ky tu
+    Format answer cho Q&A theo dung quy chuan vang cua BTC:
+    - Luon bao quanh bang dau ngoac kep de an toan tuyet doi tren Codabench
+    - Escape dau ngoac kep ben trong thanh double quotes ("")
+    - Do dai duoi 100 ky tu, chuan UTF-8 Tieng Viet
     """
     if not ans_text:
-        return "không rõ"
+        return '"Không rõ"'
     ans_clean = str(ans_text).replace("\r", "").replace("\n", " ").strip()
     ans_clean = ans_clean[:95]
-    
-    # Neu chua dau phay hoac ngoac kep -> bao quanh bang ngoac kep
-    if ',' in ans_clean or '"' in ans_clean:
-        ans_escaped = ans_clean.replace('"', '""')
-        return f'"{ans_escaped}"'
-    return ans_clean
+    ans_escaped = ans_clean.replace('"', '""')
+    return f'"{ans_escaped}"'
+
 
 def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip"):
     """
