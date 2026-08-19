@@ -1,17 +1,24 @@
 import numpy as np
+from src.utils import normalize_query_item
 
 class Evaluator:
     def __init__(self, ground_truth):
-        """Khoi tao bo danh gia tu ground_truth dict."""
+        """Khoi tao bo danh gia tu ground_truth dict voi co che chuan hoa schema tu dong."""
         self.gt = {}
         for task in ["task1", "task2", "task3"]:
             self.gt[task] = {}
             if task in ground_truth:
-                if isinstance(ground_truth[task], list):
-                    for item in ground_truth[task]:
-                        self.gt[task][item["query_id"]] = item
-                elif isinstance(ground_truth[task], dict):
-                    self.gt[task] = ground_truth[task]
+                items = ground_truth[task]
+                if isinstance(items, list):
+                    for item in items:
+                        norm_item = normalize_query_item(item)
+                        self.gt[task][norm_item["query_id"]] = norm_item
+                elif isinstance(items, dict):
+                    for k, item in items.items():
+                        norm_item = normalize_query_item(item)
+                        if norm_item["query_id"] == "unknown":
+                            norm_item["query_id"] = str(k)
+                        self.gt[task][norm_item["query_id"]] = norm_item
         
     def check_answer_match(self, pred, gt):
         """Kiem tra do khop cau tra loi Q&A."""
@@ -59,7 +66,7 @@ class Evaluator:
                     r_scores.append(0.0)
                     
             elif task_type == "task3":
-                events = gt_item["events"]
+                events = gt_item["events_dicts"] or [{"frame_start": 0, "frame_end": 0}]
                 pred_frames = pred.get("frame_ids", [])
                 if len(pred_frames) != len(events):
                     r_scores.append(0.0)

@@ -2,7 +2,7 @@ import argparse
 import os
 import json
 import numpy as np
-from src.utils import load_config
+from src.utils import load_config, normalize_query_item
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
@@ -43,9 +43,11 @@ def main():
         # Task 1 (Textual KIS)
         if "task1" in gt_data:
             print("\nDang xu ly Task 1 (Textual KIS)...")
-            for q in gt_data["task1"]:
-                query_id = q["query_id"]
-                query_text = q["query"]
+            task1_items = gt_data["task1"] if isinstance(gt_data["task1"], list) else gt_data["task1"].values()
+            for raw_q in task1_items:
+                norm_q = normalize_query_item(raw_q)
+                query_id = norm_q["query_id"]
+                query_text = norm_q["query"]
                 
                 q_info = query_processor.process(query_text)
                 intent = q_info["intent_info"]
@@ -66,10 +68,12 @@ def main():
         # Task 2 (Visual Q&A)
         if "task2" in gt_data:
             print("\nDang xu ly Task 2 (Visual Q&A)...")
-            for q in gt_data["task2"]:
-                query_id = q["query_id"]
-                query_text = q["query"]
-                question = q["question"]
+            task2_items = gt_data["task2"] if isinstance(gt_data["task2"], list) else gt_data["task2"].values()
+            for raw_q in task2_items:
+                norm_q = normalize_query_item(raw_q)
+                query_id = norm_q["query_id"]
+                query_text = norm_q["query"]
+                question = norm_q["question"]
                 
                 q_info = query_processor.process(query_text)
                 intent = q_info["intent_info"]
@@ -92,10 +96,12 @@ def main():
         # Task 3 (TRAKE)
         if "task3" in gt_data:
             print("\nDang xu ly Task 3 (TRAKE)...")
-            for q in gt_data["task3"]:
-                query_id = q["query_id"]
-                query_text = q["query"]
-                events = [ev["name"] for ev in q["events"]]
+            task3_items = gt_data["task3"] if isinstance(gt_data["task3"], list) else gt_data["task3"].values()
+            for raw_q in task3_items:
+                norm_q = normalize_query_item(raw_q)
+                query_id = norm_q["query_id"]
+                query_text = norm_q["query"]
+                events = norm_q["events"]
                 
                 q_info = query_processor.process(query_text)
                 intent = q_info["intent_info"]
