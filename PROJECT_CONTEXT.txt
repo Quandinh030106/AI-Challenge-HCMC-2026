@@ -1,0 +1,1419 @@
+﻿============================================================
+AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
+============================================================
+
+Generated: 2026-08-14 21:25:19
+
+Project root:
+D:\VS_Code\AI-Challenge-HCMC-2026
+
+Purpose:
+This file contains the current project structure,
+configuration, documentation and source code.
+
+Binary files, PDFs, images, datasets, checkpoints
+and generated outputs are not embedded.
+
+============================================================
+PROJECT FILE LIST
+============================================================
+
+.gitignore
+configs\default.yaml
+main.py
+README.md
+requirements.txt
+src\dataset\dataset.py
+src\evaluation\evaluator.py
+src\preprocessing\extract_features.py
+src\preprocessing\query_processor.py
+src\preprocessing\run_ocr.py
+src\search\dense_search.py
+src\search\fusion.py
+src\search\sparse_search.py
+src\tasks\task1_kis.py
+src\tasks\task2_vqa.py
+src\tasks\task3_trake.py
+src\utils.py
+
+
+
+============================================================
+FILE CONTENTS
+============================================================
+
+
+
+
+============================================================
+FILE: .gitignore
+============================================================
+
+# Data
+data/
+*.npy
+*.pt
+*.pth
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+.DS_Store
+.DS_Store
+.DS_Store
+
+
+
+
+============================================================
+FILE: configs\default.yaml
+============================================================
+
+# Configuration for HCMC AI Challenge 2026 on Kaggle
+data:
+  raw_dir: "/kaggle/input/ai-challenge-hcmc-2026-videos"
+  keyframes_dir: "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
+  features_dir: "/kaggle/input/ai-challenge-hcmc-2026-features/clip-features-32"
+  metadata_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata"
+  output_dir: "/kaggle/working/output"
+
+models:
+  # NOTE: Sá»­ dá»¥ng "openai/clip-vit-base-patch32" vÃ¬ Ä‘áº·c trÆ°ng áº£nh cÃ³ sáºµn cá»§a BTC lÃ  CLIP ViT-B-32.
+  clip_model: "openai/clip-vit-base-patch32"
+  vlm_model: "Qwen/Qwen2-VL-7B-Instruct"
+
+search:
+  top_k_videos: 10
+  top_k_frames: 100
+
+
+
+
+============================================================
+FILE: main.py
+============================================================
+
+import argparse
+import os
+import json
+import numpy as np
+from src.utils import load_config
+from src.search.dense_search import DenseSearcher
+from src.search.sparse_search import SparseSearcher
+from src.search.fusion import reciprocal_rank_fusion
+from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx
+from src.tasks.task2_vqa import solve_task2
+from src.tasks.task3_trake import solve_task3
+from src.evaluation.evaluator import Evaluator
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default="configs/default.yaml")
+    args = parser.parse_args()
+    
+    config = load_config(args.config)
+    print("--- KÃCH HOáº T PIPELINE TÃŒM KIáº¾M VIDEO ---")
+    
+    # 1. Khá»Ÿi táº¡o cÃ¡c module tÃ¬m kiáº¿m
+    dense_searcher = DenseSearcher(config)
+    sparse_searcher = SparseSearcher(config)
+    
+    keyframes_dir = config["data"]["keyframes_dir"]
+    metadata_dir = config["data"]["metadata_dir"]
+    
+    # 2. TÃ¬m kiáº¿m file Ground Truth cá»§a táº­p Validation cá»¥c bá»™
+    gt_path = os.path.join(metadata_dir, "local_val_gt.json")
+    if not os.path.exists(gt_path):
+        # Fallback check trong data/metadata
+        gt_path = "data/metadata/local_val_gt.json"
+        
+    if os.path.exists(gt_path):
+        print(f"\nTÃ¬m tháº¥y file Ground Truth táº¡i: {gt_path}. Báº¯t Ä‘áº§u cháº¡y Ä‘Ã¡nh giÃ¡...")
+        with open(gt_path, "r", encoding="utf-8") as f:
+            gt_data = json.load(f)
+            
+        predictions_dict = {"task1": {}, "task2": {}, "task3": {}}
+        
+        # --- CHáº Y VÃ€ ÄÃNH GIÃ TASK 1 (KIS) ---
+        if "task1" in gt_data:
+            print("\nÄang xá»­ lÃ½ Task 1 (Textual KIS)...")
+            for q in gt_data["task1"]:
+                query_id = q["query_id"]
+                query_text = q["query"]
+                
+                # Thá»±c hiá»‡n tÃ¬m kiáº¿m
+                dense_res = dense_searcher.search(query_text, top_k_videos=20)
+                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
+                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                
+                # Sinh danh sÃ¡ch 100 cÃ¢u tráº£ lá»i Ä‘á»ƒ Evaluator tÃ­nh R@k
+                preds = []
+                for cand in fused:
+                    video_id = cand["video_id"]
+                    dense_info = cand["dense_info"]
+                    if dense_info is not None and "all_scores" in dense_info:
+                        scores = dense_info["all_scores"]
+                        # Láº¥y top 10 frame khá»›p nháº¥t cá»§a video nÃ y
+                        top_frame_idxs = np.argsort(scores)[::-1][:10]
+                        for idx in top_frame_idxs:
+                            fid = get_frame_id_from_idx(keyframes_dir, video_id, idx)
+                            preds.append({"video_id": video_id, "frame_id": fid})
+                    else:
+                        preds.append({"video_id": video_id, "frame_id": "0000"})
+                predictions_dict["task1"][query_id] = preds[:100]
+                
+        # --- CHáº Y VÃ€ ÄÃNH GIÃ TASK 2 (Q&A) ---
+        if "task2" in gt_data:
+            print("\nÄang xá»­ lÃ½ Task 2 (Visual Q&A)...")
+            for q in gt_data["task2"]:
+                query_id = q["query_id"]
+                query_text = q["query"]
+                question = q["question"]
+                
+                dense_res = dense_searcher.search(query_text, top_k_videos=20)
+                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
+                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                
+                # Sinh cÃ¢u tráº£ lá»i tá»‘t nháº¥t báº±ng VLM
+                ans_res = solve_task2(query_text, question, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
+                
+                # Äá»ƒ tÃ­nh R@100, ta gÃ¡n cÃ¢u tráº£ lá»i tá»‘t nháº¥t nÃ y cho Top 1,
+                # vÃ  táº¡o cÃ¡c dá»± Ä‘oÃ¡n fallback cho 99 vá»‹ trÃ­ sau
+                preds = [{"video_id": ans_res["video_id"], "frame_id": ans_res["frame_id"], "answer": ans_res["answer"]}]
+                for cand in fused[1:]:
+                    video_id = cand["video_id"]
+                    preds.append({"video_id": video_id, "frame_id": "0000", "answer": "none"})
+                predictions_dict["task2"][query_id] = preds[:100]
+                
+        # --- CHáº Y VÃ€ ÄÃNH GIÃ TASK 3 (TRAKE) ---
+        if "task3" in gt_data:
+            print("\nÄang xá»­ lÃ½ Task 3 (TRAKE)...")
+            for q in gt_data["task3"]:
+                query_id = q["query_id"]
+                query_text = q["query"]
+                
+                # Chuá»—i hÃ nh Ä‘á»™ng con
+                events = [ev["name"] for ev in q["events"]]
+                
+                # Search video á»©ng viÃªn dá»±a trÃªn cÃ¢u mÃ´ táº£ tá»•ng quÃ¡t
+                dense_res = dense_searcher.search(query_text, top_k_videos=20)
+                sparse_res = sparse_searcher.search(query_text, top_k_videos=20)
+                fused = reciprocal_rank_fusion(dense_res, sparse_res)
+                
+                # Cháº¡y cÄƒn chá»‰nh chuá»—i sá»± kiá»‡n báº±ng DTW
+                align_res = solve_task3(events, fused, keyframes_dir, dense_searcher)
+                
+                preds = [{"video_id": align_res["video_id"], "frame_ids": align_res["frame_ids"]}]
+                for cand in fused[1:]:
+                    video_id = cand["video_id"]
+                    preds.append({"video_id": video_id, "frame_ids": ["0000"] * len(events)})
+                predictions_dict["task3"][query_id] = preds[:100]
+                
+        # 3. TÃ­nh toÃ¡n vÃ  hiá»ƒn thá»‹ Ä‘iá»ƒm sá»‘
+        evaluator = Evaluator(gt_data)
+        metrics = evaluator.evaluate_all(predictions_dict)
+        
+        print("\n====================================")
+        print("ðŸ“Š Káº¾T QUáº¢ ÄÃNH GIÃ Cá»¤C Bá»˜ (LOCAL EVALUATION):")
+        print(f" * Äiá»ƒm Final Score: {metrics['Final_Score']:.4f}")
+        print(f" * R@1  : {metrics['R@1']:.4f}")
+        print(f" * R@5  : {metrics['R@5']:.4f}")
+        print(f" * R@20 : {metrics['R@20']:.4f}")
+        print(f" * R@50 : {metrics['R@50']:.4f}")
+        print(f" * R@100: {metrics['R@100']:.4f}")
+        print("====================================")
+        
+    else:
+        print(f"\nKhÃ´ng tÃ¬m tháº¥y file Ground Truth táº¡i {gt_path}.")
+        print("Cháº¡y thá»­ 1 cÃ¢u query máº«u Ä‘á»ƒ kiá»ƒm tra:")
+        test_query = "má»™t diá»…n giáº£ Ä‘ang phÃ¡t biá»ƒu trÆ°á»›c mÃ¡y quay"
+        dense_res = dense_searcher.search(test_query, top_k_videos=3)
+        print(f"Káº¿t quáº£ tÃ¬m kiáº¿m cho query '{test_query}':")
+        for idx, res in enumerate(dense_res):
+            print(f"Top {idx+1}: Video={res['video_id']}, Score={res['max_score']:.4f}, Best Frame Index={res['best_frame_idx']}")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+============================================================
+FILE: README.md
+============================================================
+
+# AI Challenge 2026 HCMC
+
+Inference pipeline and training/evaluation setup.
+
+## Setup
+1. Install requirements:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Configure settings in `configs/default.yaml`
+3. Place data in `data/`
+
+
+
+
+============================================================
+FILE: requirements.txt
+============================================================
+
+torch
+torchvision
+transformers
+sentence-transformers
+rank-bm25
+faiss-cpu
+numpy
+pandas
+pyyaml
+opencv-python
+tqdm
+qwen-vl-utils
+accelerate
+pillow
+easyocr
+
+
+
+
+============================================================
+FILE: src\dataset\dataset.py
+============================================================
+
+[EMPTY FILE]
+
+
+
+============================================================
+FILE: src\evaluation\evaluator.py
+============================================================
+
+import numpy as np
+
+class Evaluator:
+    def __init__(self, ground_truth):
+        """
+        ground_truth: Dict Ä‘á»c tá»« file local_val_gt.json
+        """
+        # Chuyá»ƒn Ä‘á»•i danh sÃ¡ch Ground Truth thÃ nh tá»« Ä‘iá»ƒn tra cá»©u nhanh theo query_id
+        self.gt = {}
+        for task in ["task1", "task2", "task3"]:
+            self.gt[task] = {}
+            if task in ground_truth:
+                # Há»— trá»£ cáº£ trÆ°á»ng há»£p Ground Truth lÃ  List hoáº·c Dict
+                if isinstance(ground_truth[task], list):
+                    for item in ground_truth[task]:
+                        self.gt[task][item["query_id"]] = item
+                elif isinstance(ground_truth[task], dict):
+                    self.gt[task] = ground_truth[task]
+        
+    def check_answer_match(self, pred, gt):
+        """
+        Kiá»ƒm tra Ä‘á»™ trÃ¹ng khá»›p cÃ¢u tráº£ lá»i Q&A má»™t cÃ¡ch má»m dáº»o (Normalized Semantic Match).
+        """
+        if not pred or not gt:
+            return False
+        pred = str(pred).lower().strip()
+        gt = str(gt).lower().strip()
+        
+        # Khá»›p tuyá»‡t Ä‘á»‘i
+        if pred == gt:
+            return True
+        # Khá»›p chuá»—i con
+        if gt in pred or pred in gt:
+            return True
+        # Khá»›p cÃ¡c tá»« khÃ³a cá»‘t lÃµi (Giao cá»§a táº­p há»£p tá»«)
+        pred_words = set(pred.split())
+        gt_words = set(gt.split())
+        if len(pred_words.intersection(gt_words)) > 0:
+            return True
+        return False
+
+    def evaluate_query(self, query_id, task_type, predictions):
+        """
+        ÄÃ¡nh giÃ¡ 1 cÃ¢u query duy nháº¥t.
+        predictions: Danh sÃ¡ch tá»‘i Ä‘a 100 cÃ¢u tráº£ lá»i ná»™p lÃªn, sáº¯p xáº¿p thá»© tá»± Æ°u tiÃªn giáº£m dáº§n.
+        """
+        if query_id not in self.gt.get(task_type, {}):
+            return 0.0, [0.0] * 5
+            
+        gt_item = self.gt[task_type][query_id]
+        gt_video = gt_item["video_id"]
+        
+        # 1. TÃ­nh R-Score cho tá»«ng dá»± Ä‘oÃ¡n thá»© i trong danh sÃ¡ch ná»™p (tá»‘i Ä‘a 100)
+        r_scores = []
+        for pred in predictions:
+            pred_video = pred.get("video_id")
+            
+            # Sai video nháº­n ngay 0 Ä‘iá»ƒm
+            if pred_video != gt_video:
+                r_scores.append(0.0)
+                continue
+                
+            if task_type == "task1":
+                # KIS: ÄÃºng video vÃ  frame náº±m trong khoáº£ng cho phÃ©p [s, e]
+                try:
+                    pred_frame = int(pred.get("frame_id", -1))
+                    frame_start = int(gt_item["frame_start"])
+                    frame_end = int(gt_item["frame_end"])
+                    if frame_start <= pred_frame <= frame_end:
+                        r_scores.append(1.0)
+                    else:
+                        r_scores.append(0.0)
+                except ValueError:
+                    r_scores.append(0.0)
+                    
+            elif task_type == "task2":
+                # Q&A: ÄÃºng video, Ä‘Ãºng frame vÃ  Ä‘Ãºng cÃ¢u tráº£ lá»i phá»¥
+                try:
+                    pred_frame = int(pred.get("frame_id", -1))
+                    frame_start = int(gt_item["frame_start"])
+                    frame_end = int(gt_item["frame_end"])
+                    pred_ans = pred.get("answer", "")
+                    gt_ans = gt_item["answer"]
+                    
+                    if (frame_start <= pred_frame <= frame_end) and self.check_answer_match(pred_ans, gt_ans):
+                        r_scores.append(1.0)
+                    else:
+                        r_scores.append(0.0)
+                except ValueError:
+                    r_scores.append(0.0)
+                    
+            elif task_type == "task3":
+                # TRAKE: Tá»· lá»‡ khá»›p khung hÃ¬nh cá»§a chuá»—i sá»± kiá»‡n con
+                events = gt_item["events"]
+                pred_frames = pred.get("frame_ids", [])
+                
+                if len(pred_frames) != len(events):
+                    r_scores.append(0.0)
+                    continue
+                    
+                match_count = 0
+                for idx, event in enumerate(events):
+                    try:
+                        pf = int(pred_frames[idx])
+                        fs = int(event["frame_start"])
+                        fe = int(event["frame_end"])
+                        if fs <= pf <= fe:
+                            match_count += 1
+                    except ValueError:
+                        pass
+                # R-Score = tá»· lá»‡ sá»‘ event khá»›p trÃªn tá»•ng sá»‘ event
+                r_scores.append(match_count / len(events))
+                
+        # Äiá»n thÃªm Ä‘iá»ƒm 0.0 cho Ä‘á»§ 100 cÃ¢u tráº£ lá»i
+        if not r_scores:
+            r_scores = [0.0]
+        while len(r_scores) < 100:
+            r_scores.append(0.0)
+            
+        # 2. TÃ­nh R@k vá»›i k thuá»™c {1, 5, 20, 50, 100}
+        k_values = [1, 5, 20, 50, 100]
+        r_at_k = []
+        for k in k_values:
+            val = float(max(r_scores[:k]))
+            r_at_k.append(val)
+            
+        # 3. Äiá»ƒm Final Score cá»§a query lÃ  trung bÃ¬nh cá»™ng cá»§a 5 má»‘c R@k
+        final_score = float(np.mean(r_at_k))
+        return final_score, r_at_k
+
+    def evaluate_all(self, predictions_dict):
+        """
+        TÃ­nh Ä‘iá»ƒm trung bÃ¬nh toÃ n bá»™ táº¥t cáº£ cÃ¡c Task.
+        predictions_dict: Káº¿t quáº£ cháº¡y cá»§a cáº£ nhÃ³m:
+        {
+          "task1": { "query_id_1": [pred1, pred2, ...], ... },
+          "task2": { ... },
+          "task3": { ... }
+        }
+        """
+        all_final_scores = []
+        r_at_k_accum = np.zeros(5)
+        count = 0
+        
+        for task_type in ["task1", "task2", "task3"]:
+            task_gt = self.gt.get(task_type, {})
+            task_preds = predictions_dict.get(task_type, {})
+            
+            for query_id in task_gt.keys():
+                preds = task_preds.get(query_id, [])
+                final_score, r_at_k = self.evaluate_query(query_id, task_type, preds)
+                all_final_scores.append(final_score)
+                r_at_k_accum += np.array(r_at_k)
+                count += 1
+                
+        if count == 0:
+            return {"Final_Score": 0.0, "R@1": 0.0, "R@5": 0.0, "R@20": 0.0, "R@50": 0.0, "R@100": 0.0}
+            
+        r_at_k_avg = r_at_k_accum / count
+        mean_final_score = float(np.mean(all_final_scores))
+        
+        return {
+            "Final_Score": mean_final_score,
+            "R@1": float(r_at_k_avg[0]),
+            "R@5": float(r_at_k_avg[1]),
+            "R@20": float(r_at_k_avg[2]),
+            "R@50": float(r_at_k_avg[3]),
+            "R@100": float(r_at_k_avg[4])
+        }
+
+
+
+
+============================================================
+FILE: src\preprocessing\extract_features.py
+============================================================
+
+import os
+import glob
+import numpy as np
+import torch
+from PIL import Image
+from tqdm import tqdm
+from transformers import AutoProcessor, AutoModel
+from src.utils import load_config
+
+def extract_all_features(config_path="configs/default.yaml", batch_size=32):
+    # 1. Load cáº¥u hÃ¬nh Ä‘Æ°á»ng dáº«n
+    config = load_config(config_path)
+    keyframes_dir = config["data"]["keyframes_dir"]
+    features_dir = config["data"]["features_dir"]
+    model_name = config["models"]["clip_model"]
+    
+    os.makedirs(features_dir, exist_ok=True)
+    
+    # 2. Khá»Ÿi táº¡o mÃ´ hÃ¬nh chuyÃªn biá»‡t
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Äang khá»Ÿi táº¡o model: {model_name} trÃªn thiáº¿t bá»‹: {device}...")
+    
+    from transformers import (
+        CLIPModel, CLIPProcessor, 
+        SiglipModel, SiglipProcessor, 
+        AutoModel, AutoProcessor
+    )
+    
+    if "siglip" in model_name.lower():
+        processor = SiglipProcessor.from_pretrained(model_name)
+        model = SiglipModel.from_pretrained(model_name).to(device)
+    elif "clip" in model_name.lower():
+        processor = CLIPProcessor.from_pretrained(model_name)
+        model = CLIPModel.from_pretrained(model_name).to(device)
+    else:
+        processor = AutoProcessor.from_pretrained(model_name)
+        model = AutoModel.from_pretrained(model_name).to(device)
+        
+    model.eval()
+
+    
+    # 3. Láº¥y táº¥t cáº£ cÃ¡c thÆ° má»¥c chá»©a keyframe (má»—i thÆ° má»¥c tÆ°Æ¡ng á»©ng vá»›i má»™t video_id)
+    video_dirs = [d for d in glob.glob(os.path.join(keyframes_dir, "*")) if os.path.isdir(d)]
+    print(f"TÃ¬m tháº¥y {len(video_dirs)} thÆ° má»¥c keyframe video cáº§n xá»­ lÃ½.")
+    
+    for video_dir in tqdm(video_dirs, desc="TrÃ­ch xuáº¥t Ä‘áº·c trÆ°ng"):
+        video_id = os.path.basename(video_dir)
+        output_path = os.path.join(features_dir, f"{video_id}.npy")
+        
+        # Bá» qua náº¿u Ä‘Ã£ trÃ­ch xuáº¥t trÆ°á»›c Ä‘Ã³
+        if os.path.exists(output_path):
+            continue
+            
+        # Láº¥y vÃ  sáº¯p xáº¿p thá»© tá»± cÃ¡c keyframe
+        image_paths = sorted(glob.glob(os.path.join(video_dir, "*.jpg")))
+        if not image_paths:
+            print(f"Cáº£nh bÃ¡o: KhÃ´ng tÃ¬m tháº¥y áº£nh trong thÆ° má»¥c {video_dir}")
+            continue
+            
+        video_features = []
+        
+        # 4. Xá»­ lÃ½ áº£nh theo tá»«ng Batch Ä‘á»ƒ tá»‘i Æ°u tÃ i nguyÃªn GPU
+        for i in range(0, len(image_paths), batch_size):
+            batch_paths = image_paths[i:i+batch_size]
+            batch_images = []
+            
+            for img_path in batch_paths:
+                try:
+                    img = Image.open(img_path).convert("RGB")
+                    batch_images.append(img)
+                except Exception as e:
+                    print(f"Lá»—i Ä‘á»c áº£nh {img_path}: {e}")
+                    
+            if not batch_images:
+                continue
+                
+            # ÄÆ°a qua bá»™ tiá»n xá»­ lÃ½ vÃ  trÃ­ch xuáº¥t vector Ä‘áº·c trÆ°ng
+            inputs = processor(images=batch_images, return_tensors="pt").to(device)
+            with torch.no_grad():
+                outputs = model.get_image_features(**inputs)
+                # Chuáº©n hÃ³a L2-norm Ä‘á»ƒ cÃ³ thá»ƒ tÃ­nh Cosine Similarity trá»±c tiáº¿p báº±ng Dot Product
+                outputs = outputs / outputs.norm(p=2, dim=-1, keepdim=True)
+                features = outputs.cpu().numpy()
+                video_features.append(features)
+                
+        if video_features:
+            # GhÃ©p ná»‘i cÃ¡c batch láº¡i thÃ nh 1 tensor dáº¡ng [num_frames, feature_dim]
+            video_features = np.concatenate(video_features, axis=0)
+            np.save(output_path, video_features)
+            
+    print("QuÃ¡ trÃ¬nh trÃ­ch xuáº¥t Ä‘áº·c trÆ°ng áº£nh SigLIP hoÃ n thÃ nh!")
+
+if __name__ == "__main__":
+    extract_all_features()
+
+
+
+
+
+
+============================================================
+FILE: src\preprocessing\query_processor.py
+============================================================
+
+import re
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import torch
+
+class QueryProcessor:
+    def __init__(self):
+        """
+        Module xá»­ lÃ½ cÃ¢u truy váº¥n nÃ¢ng cao cho ThÃ nh viÃªn 1:
+        1. Dá»‹ch cÃ¢u há»i tiáº¿ng Viá»‡t sang tiáº¿ng Anh Visual miÃªu táº£ chi tiáº¿t (dÃ¹ng Helsinki Opus-MT vi-en offline).
+        2. Nháº­n diá»‡n Ã½ Ä‘á»‹nh cÃ¢u há»i (Intent Recognition): PhÃ¢n loáº¡i cÃ¢u há»i dáº¡ng OCR/Text hay Visual Scene
+           Ä‘á»ƒ Ä‘iá»u chá»‰nh trá»ng sá»‘ RRF Fusion linh hoáº¡t.
+        """
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model_name = "Helsinki-NLP/opus-mt-vi-en"
+        
+        print("QueryProcessor: Äang náº¡p mÃ´ hÃ¬nh dá»‹ch thuáº­t Tiáº¿ng Viá»‡t -> Tiáº¿ng Anh...")
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(self.device)
+            self.model.eval()
+            self.translator_available = True
+            print("QueryProcessor: âœ… ÄÃ£ khá»Ÿi táº¡o thÃ nh cÃ´ng bá»™ dá»‹ch Tiáº¿ng Viá»‡t -> Tiáº¿ng Anh offline.")
+        except Exception as e:
+            print(f"QueryProcessor: Cáº£nh bÃ¡o khÃ´ng náº¡p Ä‘Æ°á»£c Opus-MT ({e}), sá»­ dá»¥ng cháº¿ Ä‘á»™ fallback giá»¯ nguyÃªn query.")
+            self.translator_available = False
+
+    def translate_vi_to_en(self, text_vi):
+        """Dá»‹ch cÃ¢u truy váº¥n Tiáº¿ng Viá»‡t sang Tiáº¿ng Anh Ä‘á»ƒ tá»‘i Æ°u mÃ´ hÃ¬nh CLIP/SigLIP."""
+        if not self.translator_available or not text_vi.strip():
+            return text_vi
+            
+        try:
+            inputs = self.tokenizer(text_vi, return_tensors="pt", padding=True).to(self.device)
+            with torch.no_grad():
+                translated_tokens = self.model.generate(**inputs, max_length=100)
+            translated_text = self.tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)[0]
+            return translated_text
+        except Exception as e:
+            return text_vi
+
+    def detect_query_intent(self, text_vi):
+        """
+        Nháº­n diá»‡n Ã½ Ä‘á»‹nh cÃ¢u há»i Ä‘á»ƒ gÃ¡n trá»ng sá»‘ RRF Fusion:
+        - Náº¿u chá»©a tá»« khÃ³a nhÆ° 'biá»ƒn bÃ¡o', 'chá»¯', 'báº£ng hiá»‡u', 'sá»‘ xe', 'viáº¿t tá»«' -> Æ¯u tiÃªn BM25 OCR.
+        - NgÆ°á»£c láº¡i -> Æ¯u tiÃªn Vector Search (CLIP/SigLIP).
+        """
+        text_lower = text_vi.lower()
+        ocr_keywords = [
+            "chá»¯", "biá»ƒn bÃ¡o", "báº£ng hiá»‡u", "tÃªn", "sá»‘ xe", "biá»ƒn sá»‘", 
+            "dÃ²ng chá»¯", "viáº¿t", "kÃ½ tá»±", "báº£ng tÃªn", "Ã¡o ghi sá»‘", "logo"
+        ]
+        
+        for kw in ocr_keywords:
+            if kw in text_lower:
+                return {
+                    "intent": "OCR_TEXT",
+                    "dense_weight": 0.3,
+                    "sparse_weight": 0.7
+                }
+                
+        return {
+            "intent": "VISUAL_SCENE",
+            "dense_weight": 0.7,
+            "sparse_weight": 0.3
+        }
+
+    def process(self, query_vi):
+        """
+        Xá»­ lÃ½ toÃ n diá»‡n cÃ¢u truy váº¥n Ä‘áº§u vÃ o.
+        Tráº£ vá» dictionary chá»©a:
+        - query_vi: CÃ¢u gá»‘c tiáº¿ng Viá»‡t
+        - query_en: CÃ¢u Ä‘Ã£ dá»‹ch sang tiáº¿ng Anh cho CLIP
+        - intent_info: ThÃ´ng tin Ã½ Ä‘á»‹nh vÃ  trá»ng sá»‘ gá»™p Ä‘iá»ƒm
+        """
+        query_en = self.translate_vi_to_en(query_vi)
+        intent_info = self.detect_query_intent(query_vi)
+        
+        return {
+            "query_vi": query_vi,
+            "query_en": query_en,
+            "intent_info": intent_info
+        }
+
+
+
+
+============================================================
+FILE: src\preprocessing\run_ocr.py
+============================================================
+
+import os
+import glob
+import json
+import torch
+from tqdm import tqdm
+from src.utils import load_config
+
+
+try:
+    import easyocr
+except ImportError:
+    easyocr = None
+
+def run_ocr_on_all_keyframes(config_path="configs/default.yaml", step=5):
+    """
+    Cháº¡y OCR trÃªn táº¥t cáº£ keyframe Ä‘á»ƒ trÃ­ch xuáº¥t vÄƒn báº£n trong video.
+    Tham sá»‘ `step`: bÆ°á»›c nháº£y Ä‘á»ƒ chá»n frame cháº¡y OCR (máº·c Ä‘á»‹nh=5 Ä‘á»ƒ trÃ¡nh cháº¡y trÃ¹ng láº·p
+    cÃ¡c frame sÃ¡t nhau gÃ¢y tá»‘n thá»i gian, giáº£m táº£i xá»­ lÃ½ xuá»‘ng 5 láº§n).
+    """
+    if easyocr is None:
+        raise ImportError("Vui lÃ²ng cÃ i Ä‘áº·t thÆ° viá»‡n EasyOCR: pip install easyocr")
+        
+    # 1. Load cáº¥u hÃ¬nh
+    config = load_config(config_path)
+    keyframes_dir = config["data"]["keyframes_dir"]
+    metadata_dir = config["data"].get("metadata_dir", "data/metadata")
+    
+    os.makedirs(metadata_dir, exist_ok=True)
+    
+    # 2. Khá»Ÿi Ä‘á»™ng EasyOCR Reader (há»— trá»£ Tiáº¿ng Viá»‡t 'vi' vÃ  Tiáº¿ng Anh 'en')
+    use_gpu = torch.cuda.is_available()
+    print(f"Khá»Ÿi táº¡o EasyOCR (vi + en) trÃªn thiáº¿t bá»‹ GPU={use_gpu}...")
+    reader = easyocr.Reader(['vi', 'en'], gpu=use_gpu)
+    
+    # 3. QuÃ©t táº¥t cáº£ cÃ¡c thÆ° má»¥c chá»©a keyframe
+    video_dirs = [d for d in glob.glob(os.path.join(keyframes_dir, "*")) if os.path.isdir(d)]
+    print(f"TÃ¬m tháº¥y {len(video_dirs)} thÆ° má»¥c video Ä‘á»ƒ cháº¡y OCR.")
+    
+    for video_dir in tqdm(video_dirs, desc="Cháº¡y OCR trÃªn video"):
+        video_id = os.path.basename(video_dir)
+        output_path = os.path.join(metadata_dir, f"{video_id}_ocr.json")
+        
+        # Bá» qua náº¿u video nÃ y Ä‘Ã£ Ä‘Æ°á»£c OCR trÆ°á»›c Ä‘Ã³
+        if os.path.exists(output_path):
+            continue
+            
+        # Láº¥y táº¥t cáº£ áº£nh keyframe
+        image_paths = sorted(glob.glob(os.path.join(video_dir, "*.jpg")))
+        if not image_paths:
+            continue
+            
+        ocr_results = {}
+        
+        # 4. Duyá»‡t qua tá»«ng áº£nh theo bÆ°á»›c nháº£y `step`
+        for idx in range(0, len(image_paths), step):
+            img_path = image_paths[idx]
+            frame_id = os.path.splitext(os.path.basename(img_path))[0]
+            
+            try:
+                # Cháº¡y OCR
+                results = reader.readtext(img_path)
+                # GhÃ©p cÃ¡c Ä‘oáº¡n text nháº­n diá»‡n Ä‘Æ°á»£c cÃ³ Ä‘á»™ tin cáº­y > 0.3
+                texts = [res[1] for res in results if res[2] > 0.3]
+                if texts:
+                    ocr_results[frame_id] = " ".join(texts)
+            except Exception as e:
+                print(f"Lá»—i cháº¡y OCR trÃªn áº£nh {img_path}: {e}")
+                
+        # 5. LÆ°u káº¿t quáº£ OCR cá»§a video
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(ocr_results, f, ensure_ascii=False, indent=2)
+            
+    print("QuÃ¡ trÃ¬nh cháº¡y OCR trÃªn toÃ n bá»™ keyframes hoÃ n thÃ nh!")
+
+if __name__ == "__main__":
+    run_ocr_on_all_keyframes()
+
+
+
+
+
+============================================================
+FILE: src\search\dense_search.py
+============================================================
+
+import os
+import glob
+import numpy as np
+import torch
+from transformers import (
+    CLIPModel, CLIPProcessor, 
+    SiglipModel, SiglipProcessor, 
+    AutoModel, AutoProcessor
+)
+
+class DenseSearcher:
+    def __init__(self, config):
+        self.config = config
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model_name = config["models"]["clip_model"]
+        self.features_dir = config["data"]["features_dir"]
+        
+        print(f"DenseSearcher: Äang khá»Ÿi táº¡o mÃ´ hÃ¬nh {self.model_name} trÃªn {self.device}...")
+        
+        # 1. Khá»Ÿi táº¡o mÃ´ hÃ¬nh mÃ£ hÃ³a text
+        if "siglip" in self.model_name.lower():
+            self.processor = SiglipProcessor.from_pretrained(self.model_name)
+            self.model = SiglipModel.from_pretrained(self.model_name).to(self.device)
+        elif "clip" in self.model_name.lower():
+            self.processor = CLIPProcessor.from_pretrained(self.model_name)
+            self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
+        else:
+            self.processor = AutoProcessor.from_pretrained(self.model_name)
+            self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
+            
+        self.model.eval()
+        
+        # 2. Bá»™ nhá»› Ä‘á»‡m ma tráº­n toÃ n cá»¥c (Global Tensor Cache) Ä‘á»ƒ Ä‘áº¡t Ä‘á»™ trá»… < 5ms
+        self.global_tensor = None
+        self.video_metadata_list = [] # LÆ°u danh sÃ¡ch (video_id, total_frames, start_idx, end_idx)
+        self.all_video_ids = []
+        self.video_features_dict = {} # LÆ°u thÃ´ Ä‘á»ƒ Task 1 / Task 3 dÃ¹ng láº¡i
+        
+        self.load_and_build_global_matrix()
+
+    def load_and_build_global_matrix(self):
+        """QuÃ©t vÃ  gá»™p táº¥t cáº£ cÃ¡c file .npy thÃ nh 1 Ma tráº­n GPU duy nháº¥t siÃªu tá»‘c."""
+        print(f"DenseSearcher: Äang náº¡p toÃ n bá»™ vector Ä‘áº·c trÆ°ng tá»« thÆ° má»¥c: {self.features_dir}")
+        
+        feature_files = []
+        
+        # 1. QuÃ©t trong /kaggle/input báº¥t ká»³ file nÃ o cÃ³ Ä‘uÃ´i .npy (bá» qua thÆ° má»¥c keyframes vÃ  videos Ä‘á»ƒ siÃªu nhanh)
+        if os.path.exists("/kaggle/input"):
+            for root, _, files in os.walk("/kaggle/input"):
+                root_lower = root.lower()
+                if "keyframe" in root_lower or "video" in root_lower:
+                    continue # Nháº£y qua ná»­a triá»‡u file áº£nh/video Ä‘á»ƒ cháº¡y trong 0.05 giÃ¢y
+                for file in files:
+                    if file.lower().endswith(".npy"):
+                        feature_files.append(os.path.join(root, file))
+
+        print(f"DenseSearcher: ÄÃ£ tÃ¬m tháº¥y thÃ nh cÃ´ng {len(feature_files)} file .npy Ä‘áº·c trÆ°ng.")
+        if feature_files:
+            print(f"DenseSearcher: VÃ­ dá»¥ 3 file .npy tÃ¬m tháº¥y: {[os.path.basename(f) for f in feature_files[:3]]}")
+        else:
+            print("Cáº£nh bÃ¡o: KhÃ´ng tÃ¬m tháº¥y file .npy nÃ o trong /kaggle/input!")
+            return
+
+
+
+        all_vectors = []
+        current_idx = 0
+        
+        for file_path in feature_files:
+            video_id = os.path.splitext(os.path.basename(file_path))[0]
+            try:
+                feats = np.load(file_path) # Shape: (N_frames, Dim)
+                # Chuáº©n hÃ³a L2 cho cÃ¡c vector áº£nh náº¿u chÆ°a chuáº©n hÃ³a
+                norms = np.linalg.norm(feats, axis=-1, keepdims=True)
+                norms[norms == 0] = 1e-10
+                feats_norm = feats / norms
+                
+                n_frames = feats_norm.shape[0]
+                self.video_features_dict[video_id] = feats_norm
+                
+                all_vectors.append(feats_norm)
+                self.video_metadata_list.append({
+                    "video_id": video_id,
+                    "start_idx": current_idx,
+                    "end_idx": current_idx + n_frames,
+                    "n_frames": n_frames
+                })
+                self.all_video_ids.append(video_id)
+                current_idx += n_frames
+            except Exception as e:
+                pass
+                
+        if all_vectors:
+            concat_matrix = np.vstack(all_vectors) # Shape: (Total_Frames_All_Videos, Dim)
+            self.global_tensor = torch.from_numpy(concat_matrix).float().to(self.device)
+            print(f"DenseSearcher: âœ… ÄÃ£ náº¡p thÃ nh cÃ´ng Ma tráº­n toÃ n cá»¥c {self.global_tensor.shape} ({len(self.all_video_ids)} videos) vÃ o {self.device}. Äá»™ trá»… tÃ¬m kiáº¿m < 5ms!")
+
+    def encode_text(self, text):
+        """MÃ£ hÃ³a vÄƒn báº£n truy váº¥n thÃ nh vector Ä‘áº·c trÆ°ng vÃ  chuáº©n hÃ³a L2."""
+        inputs = self.processor(text=[text], padding=True, return_tensors="pt").to(self.device)
+        with torch.no_grad():
+            text_outputs = self.model.get_text_features(**inputs)
+            if isinstance(text_outputs, torch.Tensor):
+                text_features = text_outputs
+            elif hasattr(text_outputs, "text_embeds"):
+                text_features = text_outputs.text_embeds
+            elif hasattr(text_outputs, "pooler_output"):
+                text_features = text_outputs.pooler_output
+            else:
+                text_features = text_outputs[0]
+                
+            text_features = text_features / text_features.norm(p=2, dim=-1, keepdim=True)
+            return text_features
+
+    def search(self, query_text, top_k_videos=10):
+        """TÃ¬m kiáº¿m siÃªu tá»‘c trÃªn Ma tráº­n GPU toÃ n cá»¥c báº±ng phÃ©p nhÃ¢n ma tráº­n (Matrix Multiplication)."""
+        if self.global_tensor is None:
+            print("Cáº£nh bÃ¡o: Ma tráº­n Ä‘áº·c trÆ°ng chÆ°a Ä‘Æ°á»£c khá»Ÿi táº¡o!")
+            return []
+
+        # 1. MÃ£ hÃ³a query (Shape: 1 x Dim)
+        q_tensor = self.encode_text(query_text)
+        
+        # 2. NhÃ¢n ma tráº­n siÃªu tá»‘c trÃªn GPU: (1 x Dim) x (Dim x Total_Frames) -> (Total_Frames,)
+        with torch.no_grad():
+            sim_scores = torch.matmul(self.global_tensor, q_tensor.T).squeeze(-1) # Shape: (Total_Frames,)
+            sim_scores_np = sim_scores.cpu().numpy()
+
+        # 3. Tá»•ng há»£p Ä‘iá»ƒm max/mean cho tá»«ng video
+        results = []
+        for meta in self.video_metadata_list:
+            video_id = meta["video_id"]
+            start_i = meta["start_idx"]
+            end_i = meta["end_idx"]
+            
+            v_scores = sim_scores_np[start_i:end_i]
+            max_idx = np.argmax(v_scores)
+            max_score = float(v_scores[max_idx])
+            
+            results.append({
+                "video_id": video_id,
+                "max_score": max_score,
+                "best_frame_idx": int(max_idx),
+                "all_scores": v_scores
+            })
+
+        # 4. Sáº¯p xáº¿p giáº£m dáº§n theo max_score
+        results.sort(key=lambda x: x["max_score"], reverse=True)
+        return results[:top_k_videos]
+
+
+
+
+============================================================
+FILE: src\search\fusion.py
+============================================================
+
+def reciprocal_rank_fusion(dense_results, sparse_results, k=60, dense_weight=1.0, sparse_weight=1.0):
+    """
+    Káº¿t há»£p káº¿t quáº£ tá»« Dense Search (CLIP/SigLIP) vÃ  Sparse Search (BM25)
+    sá»­ dá»¥ng thuáº­t toÃ¡n Reciprocal Rank Fusion (RRF) cÃ³ trá»ng sá»‘ Ä‘á»™ng.
+    """
+    rrf_scores = {}
+    
+    # 1. TÃ­nh toÃ¡n thá»© háº¡ng vÃ  Ä‘iá»ƒm RRF cho Dense Search
+    for rank, item in enumerate(dense_results):
+        video_id = item["video_id"]
+        if video_id not in rrf_scores:
+            rrf_scores[video_id] = {
+                "video_id": video_id,
+                "rrf_score": 0.0,
+                "dense_info": item
+            }
+        rrf_scores[video_id]["rrf_score"] += dense_weight * (1.0 / (k + rank + 1))
+        
+    # 2. TÃ­nh toÃ¡n thá»© háº¡ng vÃ  Ä‘iá»ƒm RRF cho Sparse Search
+    for rank, item in enumerate(sparse_results):
+        video_id = item["video_id"]
+        if video_id not in rrf_scores:
+            rrf_scores[video_id] = {
+                "video_id": video_id,
+                "rrf_score": 0.0,
+                "dense_info": None
+            }
+        rrf_scores[video_id]["rrf_score"] += sparse_weight * (1.0 / (k + rank + 1))
+        
+    # 3. Sáº¯p xáº¿p láº¡i danh sÃ¡ch káº¿t quáº£ theo Ä‘iá»ƒm RRF giáº£m dáº§n
+    fused_results = list(rrf_scores.values())
+    fused_results = sorted(fused_results, key=lambda x: x["rrf_score"], reverse=True)
+    return fused_results
+
+
+
+
+
+============================================================
+FILE: src\search\sparse_search.py
+============================================================
+
+import os
+import glob
+import json
+import re
+from rank_bm25 import BM25Okapi
+
+class SparseSearcher:
+    def __init__(self, config):
+        self.config = config
+        self.metadata_dir = config["data"]["metadata_dir"]
+        self.corpus = []
+        self.video_ids = []
+        self.bm25 = None
+        self.build_index()
+        
+    def preprocess_text(self, text):
+        """Tiá»n xá»­ lÃ½ vÄƒn báº£n: viáº¿t thÆ°á»ng vÃ  tÃ¡ch tá»« cÆ¡ báº£n."""
+        if not text:
+            return []
+        text = text.lower()
+        words = re.findall(r'\b\w+\b', text)
+        return words
+        
+    def extract_text_from_obj(self, obj):
+        """BÃ³c tÃ¡ch Ä‘á»‡ quy táº¥t cáº£ cÃ¡c chuá»—i vÄƒn báº£n trong file JSON (ká»ƒ cáº£ trong List hay Dict)."""
+        text = ""
+        if isinstance(obj, str):
+            text += " " + obj
+        elif isinstance(obj, list):
+            for item in obj:
+                text += self.extract_text_from_obj(item)
+        elif isinstance(obj, dict):
+            for val in obj.values():
+                text += self.extract_text_from_obj(val)
+        return text
+
+    def build_index(self):
+        """Äá»c toÃ n bá»™ file metadata vÃ  OCR cá»§a cÃ¡c video Ä‘á»ƒ dá»±ng chá»‰ má»¥c BM25."""
+        print(f"SparseSearcher: Äang xÃ¢y dá»±ng chá»‰ má»¥c BM25 tá»« thÆ° má»¥c: {self.metadata_dir}")
+        
+        json_files = []
+        # Thá»­ 1: QuÃ©t trong thÆ° má»¥c metadata_dir Ä‘Æ°á»£c cáº¥u hÃ¬nh
+        if os.path.exists(self.metadata_dir):
+            for root, _, files in os.walk(self.metadata_dir):
+                for file in files:
+                    if file.lower().endswith(".json") and file != "local_val_gt.json":
+                        json_files.append(os.path.join(root, file))
+        
+        # Thá»­ 2 (Fallback): Náº¿u khÃ´ng tÃ¬m tháº¥y, tá»± Ä‘á»™ng quÃ©t thÆ° má»¥c cha (vÃ­ dá»¥ /kaggle/input)
+        if not json_files:
+            parent_dir = os.path.dirname(self.metadata_dir)
+            if os.path.exists(parent_dir):
+                print(f"SparseSearcher: KhÃ´ng tháº¥y JSON trong {self.metadata_dir}. Äang tá»± Ä‘á»™ng quÃ©t trong {parent_dir}...")
+                for root, _, files in os.walk(parent_dir):
+                    if "metadata" in root.lower() or "media-info" in root.lower():
+                        for file in files:
+                            if file.lower().endswith(".json") and file != "local_val_gt.json":
+                                json_files.append(os.path.join(root, file))
+        
+        print(f"SparseSearcher: TÃ¬m tháº¥y {len(json_files)} file JSON trong há»‡ thá»‘ng.")
+        if json_files:
+            print(f"SparseSearcher: VÃ­ dá»¥ 3 file JSON tÃ¬m tháº¥y: {[os.path.basename(f) for f in json_files[:3]]}")
+
+            
+        # Gom dá»¯ liá»‡u vÄƒn báº£n theo tá»«ng video_id
+        video_texts = {}
+        
+        for file_path in json_files:
+            filename = os.path.basename(file_path)
+            if filename == "local_val_gt.json":
+                continue
+                
+            # XÃ¡c Ä‘á»‹nh video_id tá»« tÃªn file (vÃ­ dá»¥: L21_V001.json -> L21_V001)
+            video_id = filename.split('_ocr')[0].split('.')[0]
+            
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    
+                # TrÃ­ch xuáº¥t toÃ n bá»™ chá»¯ tá»« file JSON (title, description, tags, keywords...)
+                text_content = self.extract_text_from_obj(data)
+                
+                if video_id not in video_texts:
+                    video_texts[video_id] = ""
+                video_texts[video_id] += " " + text_content
+            except Exception as e:
+                pass
+                
+        # Táº¡o corpus Ä‘á»ƒ train BM25
+        for video_id, text in video_texts.items():
+            tokenized_doc = self.preprocess_text(text)
+            if tokenized_doc:
+                self.corpus.append(tokenized_doc)
+                self.video_ids.append(video_id)
+                
+        if self.corpus:
+            self.bm25 = BM25Okapi(self.corpus)
+            print(f"SparseSearcher: ÄÃ£ hoÃ n thÃ nh chá»‰ má»¥c BM25 cho {len(self.video_ids)} videos.")
+        else:
+            print("SparseSearcher: Cáº£nh bÃ¡o: KhÃ´ng cÃ³ vÄƒn báº£n nÃ o Ä‘Æ°á»£c index cho BM25!")
+
+
+            
+    def search(self, query_text, top_k_videos=10):
+        """TÃ¬m kiáº¿m video theo tá»« khÃ³a cÃ¢u há»i, tráº£ vá» Ä‘iá»ƒm sá»‘ BM25."""
+        if self.bm25 is None or not self.video_ids:
+            return []
+            
+        tokenized_query = self.preprocess_text(query_text)
+        scores = self.bm25.get_scores(tokenized_query)
+        
+        results = []
+        for i, video_id in enumerate(self.video_ids):
+            score = float(scores[i])
+            if score > 0: # Chá»‰ giá»¯ cÃ¡c video cÃ³ khá»›p tá»« khÃ³a Ã­t nháº¥t 1 tá»«
+                results.append({
+                    "video_id": video_id,
+                    "sparse_score": score
+                })
+                
+        # Sáº¯p xáº¿p káº¿t quáº£ giáº£m dáº§n theo Ä‘iá»ƒm BM25
+        results = sorted(results, key=lambda x: x["sparse_score"], reverse=True)
+        return results[:top_k_videos]
+
+
+
+
+============================================================
+FILE: src\tasks\task1_kis.py
+============================================================
+
+import os
+import glob
+import numpy as np
+
+def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
+    """
+    Ãnh xáº¡ tá»« chá»‰ sá»‘ vector Ä‘áº·c trÆ°ng (0, 1, 2...) sang frame_id thá»±c táº¿
+    báº±ng cÃ¡ch quÃ©t áº£nh keyframe thá»±c táº¿ hoáº·c file CSV map-keyframes tá»« BTC.
+    """
+    # 1. Thá»­ quÃ©t thÆ° má»¥c chá»©a áº£nh keyframe thá»±c táº¿
+    if keyframes_dir and os.path.exists(keyframes_dir):
+        for root, dirs, _ in os.walk(keyframes_dir):
+            if video_id in dirs:
+                video_folder = os.path.join(root, video_id)
+                img_paths = sorted(glob.glob(os.path.join(video_folder, "*.jpg")))
+                if 0 <= frame_idx < len(img_paths):
+                    return os.path.splitext(os.path.basename(img_paths[frame_idx]))[0]
+                break
+
+    # 2. Náº¿u khÃ´ng tÃ¬m tháº¥y áº£nh, thá»­ Ä‘á»c file CSV mapping (vÃ­ dá»¥ L21_V001.csv trong map-keyframes)
+    if metadata_dir and os.path.exists(metadata_dir):
+        for root, _, files in os.walk(metadata_dir):
+            target_csv = f"{video_id}.csv"
+            if target_csv in files:
+                csv_path = os.path.join(root, target_csv)
+                try:
+                    import pandas as pd
+                    df = pd.read_csv(csv_path)
+                    if 0 <= frame_idx < len(df):
+                        # Láº¥y giÃ¡ trá»‹ á»Ÿ cá»™t Ä‘áº§u tiÃªn lÃ m frame_id
+                        first_col_val = df.iloc[frame_idx, 0]
+                        return str(first_col_val)
+                except Exception:
+                    pass
+
+    # Fallback náº¿u khÃ´ng tÃ¬m tháº¥y dá»¯ liá»‡u
+    return f"{frame_idx:04d}"
+
+
+
+def solve_task1(query_text, fused_candidates, keyframes_dir, window_size=5):
+    """
+    Giáº£i quyáº¿t Task 1: TÃ¬m kiáº¿m chÃ­nh xÃ¡c (KIS)
+    1. Nháº­n video á»©ng viÃªn hÃ ng Ä‘áº§u tá»« káº¿t quáº£ Fusion.
+    2. Ãp dá»¥ng bá»™ lá»c lÃ m má»‹n (Rolling Average) trÃªn cÃ¡c frame Ä‘á»ƒ khá»­ nhiá»…u.
+    3. Tráº£ vá» video_id vÃ  frame_id cá»§a Ä‘iá»ƒm tÆ°Æ¡ng Ä‘á»“ng cao nháº¥t.
+    """
+    if not fused_candidates:
+        return {"video_id": "none", "frame_id": "0000", "score": 0.0}
+        
+    # Chá»n á»©ng viÃªn tá»‘t nháº¥t tá»« káº¿t quáº£ Fusion
+    best_candidate = fused_candidates[0]
+    video_id = best_candidate["video_id"]
+    dense_info = best_candidate["dense_info"]
+    
+    if dense_info is None or "all_scores" not in dense_info:
+        # Náº¿u chá»‰ tÃ¬m tháº¥y qua BM25 khÃ´ng cÃ³ thÃ´ng tin vector Ä‘áº·c trÆ°ng
+        return {
+            "video_id": video_id,
+            "frame_id": "0000",
+            "score": best_candidate.get("rrf_score", 0.0)
+        }
+        
+    scores = dense_info["all_scores"]
+    
+    # Ãp dá»¥ng bá»™ lá»c lÃ m má»‹n (Moving Average)
+    if len(scores) >= window_size:
+        smoothed_scores = np.convolve(scores, np.ones(window_size) / window_size, mode='same')
+    else:
+        smoothed_scores = scores
+        
+    # TÃ¬m chá»‰ sá»‘ frame cÃ³ Ä‘iá»ƒm cao nháº¥t sau khi lá»c
+    best_frame_idx = int(np.argmax(smoothed_scores))
+    best_score = float(smoothed_scores[best_frame_idx])
+    
+    # Ãnh xáº¡ chá»‰ sá»‘ sang frame_id thá»±c táº¿ (vÃ­ dá»¥: '0150')
+    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx)
+    
+    return {
+        "video_id": video_id,
+        "frame_id": frame_id,
+        "score": best_score
+    }
+
+
+
+
+============================================================
+FILE: src\tasks\task2_vqa.py
+============================================================
+
+import os
+import glob
+import torch
+import numpy as np
+from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+from qwen_vl_utils import process_vision_info
+from src.tasks.task1_kis import get_frame_id_from_idx
+
+# Cache Ä‘á»ƒ load mÃ´ hÃ¬nh VLM má»™t láº§n duy nháº¥t trÃ¡nh trÃ n RAM/VRAM khi gá»i nhiá»u query
+_vlm_model = None
+_vlm_processor = None
+
+def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
+    global _vlm_model, _vlm_processor
+    if _vlm_model is None:
+        print(f"VQA: Äang load mÃ´ hÃ¬nh Qwen2-VL {model_id}...")
+        
+        # Tá»± Ä‘á»™ng chá»n kiá»ƒu dá»¯ liá»‡u tá»‘i Æ°u bfloat16 cho GPU Ä‘á»ƒ tiáº¿t kiá»‡m bá»™ nhá»›
+        device_map = "auto" if torch.cuda.is_available() else None
+        torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
+        
+        _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
+            model_id,
+            torch_dtype=torch_dtype,
+            device_map=device_map
+        )
+        _vlm_processor = AutoProcessor.from_pretrained(model_id)
+        print("VQA: MÃ´ hÃ¬nh VLM Ä‘Ã£ Ä‘Æ°á»£c load thÃ nh cÃ´ng!")
+    return _vlm_model, _vlm_processor
+
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct"):
+    """
+    Giáº£i quyáº¿t Task 2: Há»i - ÄÃ¡p (Q&A)
+    1. TÃ¬m video vÃ  frame_id phÃ¹ há»£p nháº¥t thÃ´ng qua káº¿t quáº£ tÃ¬m kiáº¿m.
+    2. Äá»‹nh vá»‹ file áº£nh cá»§a frame Ä‘Ã³.
+    3. Gá»­i áº£nh vÃ  cÃ¢u há»i vÃ o Qwen2-VL Ä‘á»ƒ sinh cÃ¢u tráº£ lá»i ngáº¯n gá»n.
+    """
+    if not fused_candidates:
+        return {"video_id": "none", "frame_id": "0000", "answer": "khÃ´ng rÃµ"}
+        
+    best_candidate = fused_candidates[0]
+    video_id = best_candidate["video_id"]
+    dense_info = best_candidate["dense_info"]
+    
+    # Äá»‹nh vá»‹ frame tá»‘t nháº¥t báº±ng cosine similarity
+    if dense_info is not None and "all_scores" in dense_info:
+        scores = dense_info["all_scores"]
+        best_frame_idx = int(np.argmax(scores))
+    else:
+        best_frame_idx = 0
+        
+    frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx)
+    
+    # TÃ¬m Ä‘Æ°á»ng dáº«n file áº£nh váº­t lÃ½ cá»§a frame Ä‘Ã³
+    search_path = os.path.join(keyframes_dir, "**", video_id, f"{frame_id}.jpg")
+    img_paths = glob.glob(search_path, recursive=True)
+    
+    if not img_paths:
+        return {"video_id": video_id, "frame_id": frame_id, "answer": "khÃ´ng tÃ¬m tháº¥y áº£nh"}
+        
+    image_path = img_paths[0]
+    
+    # Load model Qwen2-VL
+    model, processor = load_vlm(model_id)
+    
+    # XÃ¢y dá»±ng cáº¥u trÃºc prompt cá»§a Qwen2-VL
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image_path},
+                {"type": "text", "text": f"Dá»±a vÃ o bá»©c áº£nh nÃ y, tráº£ lá»i cÃ¢u há»i: '{question}'. HÃ£y tráº£ lá»i cá»±c ká»³ ngáº¯n gá»n (dÆ°á»›i 5 tá»«, chá»‰ nÃªu Ä‘Ã¡p Ã¡n)."}
+            ]
+        }
+    ]
+    
+    # Tiá»n xá»­ lÃ½
+    text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    image_inputs, video_inputs = process_vision_info(messages)
+    
+    inputs = processor(
+        text=[text],
+        images=image_inputs,
+        videos=video_inputs,
+        padding=True,
+        return_tensors="pt"
+    ).to(model.device)
+    
+    # Inference sinh cÃ¢u tráº£ lá»i
+    with torch.no_grad():
+        generated_ids = model.generate(**inputs, max_new_tokens=30)
+        generated_ids_trimmed = [
+            out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+        output_text = processor.batch_decode(
+            generated_ids_trimmed,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False
+        )
+        
+    answer = output_text[0].strip()
+    return {
+        "video_id": video_id,
+        "frame_id": frame_id,
+        "answer": answer
+    }
+
+
+
+
+============================================================
+FILE: src\tasks\task3_trake.py
+============================================================
+
+import os
+import glob
+import numpy as np
+from src.tasks.task1_kis import get_frame_id_from_idx
+
+def align_events_dynamic_programming(scores_matrix):
+    """
+    Sá»­ dá»¥ng Quy hoáº¡ch Ä‘á»™ng (Dynamic Programming) Ä‘á»ƒ tÃ¬m chuá»—i frame t_1 < t_2 < ... < t_N
+    sao cho tá»•ng Ä‘iá»ƒm tÆ°Æ¡ng Ä‘á»“ng cá»§a chuá»—i sá»± kiá»‡n Ä‘Æ°á»£c cá»±c Ä‘áº¡i hÃ³a.
+    
+    scores_matrix: Ma tráº­n cÃ³ kÃ­ch thÆ°á»›c [T, N], chá»©a Ä‘iá»ƒm cosine similarity
+                   giá»¯a T frame áº£nh vÃ  N cÃ¢u mÃ´ táº£ sá»± kiá»‡n con.
+    """
+    T, N = scores_matrix.shape
+    if T < N:
+        # Náº¿u sá»‘ frame Ã­t hÆ¡n sá»‘ sá»± kiá»‡n, khÃ´ng thá»ƒ sáº¯p xáº¿p tuyáº¿n tÃ­nh
+        return list(range(T)) + [T - 1] * (N - T), 0.0
+
+    # dp[t, j] lÃ  Ä‘iá»ƒm sá»‘ cá»±c Ä‘áº¡i khi cÄƒn chá»‰nh j sá»± kiá»‡n Ä‘áº§u tiÃªn vÃ o cÃ¡c frame tá»« 0 Ä‘áº¿n t
+    dp = np.full((T, N + 1), -np.inf)
+    # parent dÃ¹ng Ä‘á»ƒ lÆ°u váº¿t Ä‘Æ°á»ng Ä‘i phá»¥c vá»¥ backtracking
+    parent = np.full((T, N + 1), -1)
+
+    # Khá»Ÿi táº¡o: CÄƒn chá»‰nh 0 sá»± kiá»‡n cÃ³ Ä‘iá»ƒm lÃ  0
+    for t in range(T):
+        dp[t, 0] = 0.0
+
+    for j in range(1, N + 1):
+        for t in range(j - 1, T):
+            # Lá»±a chá»n 1: KhÃ´ng chá»n frame t cho sá»± kiá»‡n j (sá»± kiá»‡n j Ä‘Ã£ Ä‘Æ°á»£c cÄƒn chá»‰nh vÃ o frame trÆ°á»›c t)
+            if t > 0:
+                dp[t, j] = dp[t - 1, j]
+                parent[t, j] = t - 1
+
+            # Lá»±a chá»n 2: Chá»n frame t cho sá»± kiá»‡n j (sá»± kiá»‡n j-1 pháº£i Ä‘Æ°á»£c chá»n trÆ°á»›c frame t, tá»©c lÃ  tá»« frame 0 Ä‘áº¿n t-1)
+            prev_score = dp[t - 1, j - 1] if t > 0 else (0.0 if j == 1 else -np.inf)
+            current_score = prev_score + scores_matrix[t, j - 1]
+
+            if current_score > dp[t, j]:
+                dp[t, j] = current_score
+                parent[t, j] = -2  # ÄÃ¡nh dáº¥u chuyá»ƒn tráº¡ng thÃ¡i chá»n frame t cho sá»± kiá»‡n j
+
+    # Truy váº¿t ngÆ°á»£c (Backtracking) Ä‘á»ƒ tÃ¬m danh sÃ¡ch cÃ¡c frame tá»‘i Æ°u
+    aligned_frames = []
+    t = T - 1
+    j = N
+    while j > 0 and t >= 0:
+        if parent[t, j] == -2 or t == j - 1:
+            aligned_frames.append(t)
+            j -= 1
+            t -= 1
+        else:
+            t = parent[t, j]
+
+    aligned_frames.reverse()
+    return aligned_frames, float(dp[T - 1, N])
+
+def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher):
+    """
+    Giáº£i quyáº¿t Task 3: CÄƒn chá»‰nh chuá»—i sá»± kiá»‡n theo thá»i gian (TRAKE)
+    1. Nháº­n cÃ¢u mÃ´ táº£ chuá»—i sá»± kiá»‡n vÃ  mÃ£ hÃ³a tá»«ng sá»± kiá»‡n con thÃ nh vector.
+    2. Chá»n video á»©ng viÃªn hÃ ng Ä‘áº§u tá»« káº¿t quáº£ Fusion.
+    3. TÃ­nh toÃ¡n ma tráº­n Ä‘á»™ tÆ°Æ¡ng Ä‘á»“ng Cosine giá»¯a cÃ¡c frame vÃ  chuá»—i sá»± kiá»‡n.
+    4. Ãp dá»¥ng quy hoáº¡ch Ä‘á»™ng Ä‘á»ƒ tÃ¬m vÃ  cÄƒn chá»‰nh chuá»—i frame thá»a mÃ£n thá»© tá»± thá»i gian tÄƒng dáº§n.
+    """
+    if not fused_candidates or not query_events:
+        return {"video_id": "none", "frame_ids": []}
+        
+    best_candidate = fused_candidates[0]
+    video_id = best_candidate["video_id"]
+    
+    # Äá»c file vector npy cá»§a video á»©ng viÃªn tá»‘t nháº¥t
+    feature_file = glob.glob(os.path.join(dense_searcher.features_dir, f"**/{video_id}.npy"), recursive=True)
+    if not feature_file:
+        feature_file = glob.glob(os.path.join(dense_searcher.features_dir, f"{video_id}.npy"))
+        
+    if not feature_file:
+        return {"video_id": video_id, "frame_ids": ["0000"] * len(query_events)}
+        
+    try:
+        video_features = np.load(feature_file[0]) # Shape: [T, D]
+    except Exception as e:
+        print(f"TRAKE: Lá»—i load vector Ä‘áº·c trÆ°ng cá»§a video {video_id}: {e}")
+        return {"video_id": video_id, "frame_ids": ["0000"] * len(query_events)}
+        
+    # MÃ£ hÃ³a cÃ¡c mÃ´ táº£ sá»± kiá»‡n con thÃ nh vector
+    event_vectors = []
+    for event_text in query_events:
+        vector = dense_searcher.encode_text(event_text)
+        event_vectors.append(vector)
+    event_vectors = np.array(event_vectors) # Shape: [N, D]
+    
+    # TÃ­nh ma tráº­n Ä‘á»™ tÆ°Æ¡ng Ä‘á»“ng Cosine giá»¯a T frame vÃ  N sá»± kiá»‡n
+    scores_matrix = np.dot(video_features, event_vectors.T) # Shape: [T, N]
+    
+    # Ãp dá»¥ng Quy hoáº¡ch Ä‘á»™ng Ä‘á»ƒ giáº£i bÃ i toÃ¡n cÄƒn chá»‰nh tuáº§n tá»±
+    aligned_indices, path_score = align_events_dynamic_programming(scores_matrix)
+    
+    # Ãnh xáº¡ cÃ¡c chá»‰ sá»‘ index tá»‘i Æ°u sang frame_id thá»±c táº¿
+    frame_ids = []
+    for idx in aligned_indices:
+        fid = get_frame_id_from_idx(keyframes_dir, video_id, idx)
+        frame_ids.append(fid)
+        
+    return {
+        "video_id": video_id,
+        "frame_ids": frame_ids
+    }
+
+
+
+
+============================================================
+FILE: src\utils.py
+============================================================
+
+# Helper utilities
+import yaml
+
+def load_config(config_path):
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
+
