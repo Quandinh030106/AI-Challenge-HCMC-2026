@@ -43,7 +43,7 @@ def align_events_dynamic_programming(scores_matrix):
     aligned_frames.reverse()
     return aligned_frames, float(dp[T - 1, N])
 
-def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher):
+def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, metadata_dir=None):
     """Giai quyet Task 3: Can chinh chuoi su kien theo thoi gian (TRAKE)."""
     if not fused_candidates or not query_events:
         return {"video_id": "none", "frame_ids": []}
@@ -74,5 +74,6 @@ def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher):
     scores_matrix = np.dot(video_features, event_vectors.T)
     aligned_indices, _ = align_events_dynamic_programming(scores_matrix)
     
-    frame_ids = [get_frame_id_from_idx(keyframes_dir, video_id, idx) for idx in aligned_indices]
+    frame_ids = [get_frame_id_from_idx(keyframes_dir, video_id, idx, metadata_dir=metadata_dir) for idx in aligned_indices]
     return {"video_id": video_id, "frame_ids": frame_ids}
+
