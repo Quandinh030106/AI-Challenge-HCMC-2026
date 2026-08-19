@@ -1,5 +1,11 @@
-import argparse
+import sys
 import os
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+import argparse
 import json
 import numpy as np
 from src.utils import load_config, normalize_query_item
@@ -11,6 +17,7 @@ from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx, generate_div
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3
 from src.evaluation.evaluator import Evaluator
+
 
 def main():
     parser = argparse.ArgumentParser()

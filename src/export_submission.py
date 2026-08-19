@@ -1,5 +1,11 @@
-import argparse
+import sys
 import os
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+import argparse
 import json
 import csv
 import time
@@ -12,6 +18,7 @@ from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx, generate_diversity_top100_kis
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3
+
 
 def export_submissions(input_file, config_path="configs/default.yaml", output_dir="submissions"):
     """

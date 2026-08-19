@@ -1,5 +1,12 @@
-import argparse
+import sys
 import os
+
+# Tu dong them thu muc goc vao sys.path de khong bao gio loi import src
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+import argparse
 import glob
 import re
 import csv
@@ -14,6 +21,7 @@ from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
+
 
 def parse_query_file(file_path):
     """
