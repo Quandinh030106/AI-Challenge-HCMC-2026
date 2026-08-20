@@ -28,6 +28,10 @@ SAMPLE_QUERIES = [
         "text": "Tìm phân cảnh một người dùng tăm bông để vệ sinh ống kính máy ảnh, xung quanh có đặt một chiếc khăn màu tím."
     },
     {
+        "id": "query-p1-04 (TRAKE: Món măng tây)",
+        "text": "Sự kiện 1: Sơ chế măng tây tươi.\nSự kiện 2: Đun nóng dầu ăn trên chảo.\nSự kiện 3: Cho măng tây vào xào chín với nước sốt.\nSự kiện 4: Trình bày món măng tây ra đĩa."
+    },
+    {
         "id": "query-p1-05 (Thu hoạch dứa)",
         "text": "Cảnh một người phụ nữ lớn tuổi đang chèo ghe chở đầy dứa vừa thu hoạch trên sông nước miền Tây."
     },
@@ -70,8 +74,21 @@ SAMPLE_QUERIES = [
     {
         "id": "query-p1-15 (QA: Đền thờ Nguyễn Trung Trực)",
         "text": "Lễ hội tưởng niệm vị anh hùng dân tộc Nguyễn Trung Trực tại một ngôi đền ở Kiên Giang.\nCâu hỏi: Hai câu thơ được khắc trên đền thờ là gì?"
+    },
+    {
+        "id": "query-p1-16 (TRAKE: Múa lân rồng)",
+        "text": "Sự kiện 1: Đội múa lân bắt đầu biểu diễn.\nSự kiện 2: Con lân nhảy múa leo lên cột cao.\nSự kiện 3: Xuất hiện đầu rồng uốn lượn.\nSự kiện 4: Lân và rồng cùng chào khán giả."
+    },
+    {
+        "id": "query-p1-17 (QA: Nấu ăn thịt xay)",
+        "text": "Video hướng dẫn nấu món ăn hấp dẫn với nguyên liệu chính gồm 200g thịt xay và các loại rau củ.\nCâu hỏi: Tiêu đề công thức nấu ăn đó là gì?"
+    },
+    {
+        "id": "query-p1-18 (TRAKE: Nấu món nấm)",
+        "text": "Sự kiện 1: Cắt thái các loại nấm tươi và củ năng.\nSự kiện 2: Chiên vàng các miếng đậu hũ.\nSự kiện 3: Xào chín nấm cùng gia vị trên chảo lớn.\nSự kiện 4: Bày món nấm xào thơm ngon ra đĩa sứ trắng."
     }
 ]
+
 
 def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     """Chay kiem tra bieu dien tu khoa, thuc the va cau dich tren cac cau hoi."""

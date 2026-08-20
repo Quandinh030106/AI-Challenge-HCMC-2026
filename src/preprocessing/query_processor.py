@@ -128,8 +128,16 @@ class QueryProcessor:
 
     def generate_prompt_ensemble(self, query_en, query_vi=""):
         """Sinh tap bien the Prompt Ensemble da tang (Visual Ensembling)."""
+        domain_prompts = []
+        text_vi_lower = query_vi.lower()
+        for kw, extra_desc in self.visual_knowledge_map.items():
+            if re.search(r'\b' + re.escape(kw) + r'\b', text_vi_lower):
+                domain_prompts.append(extra_desc)
+                domain_prompts.append(f"a photo of {extra_desc}")
+                domain_prompts.append(f"a video scene of {extra_desc}")
+                
         clean_text = query_en.strip().rstrip('.')
-        templates = [
+        general_templates = [
             clean_text,
             f"a photo of {clean_text}",
             f"a video scene showing {clean_text}",
@@ -137,22 +145,22 @@ class QueryProcessor:
             f"a close-up view of {clean_text}"
         ]
         
-        # 1. Neu cau truy van dai (co nhieu cau con tach boi dau cham), them tung cau con vao ensemble
+        # Neu cau truy van dai, them tung cau con vao ensemble
         sentences = [s.strip() for s in re.split(r'[\.\;\n]+', clean_text) if len(s.strip().split()) >= 3]
         if len(sentences) > 1:
             for s in sentences[:3]:
-                templates.append(s)
-                templates.append(f"a photo of {s}")
-                templates.append(f"a video scene of {s}")
+                general_templates.append(s)
+                general_templates.append(f"a photo of {s}")
+                general_templates.append(f"a video scene of {s}")
                 
-        # 2. Tiem them cac tu khoa thi giac bo tro (Visual Knowledge Injection)
-        text_vi_lower = query_vi.lower()
-        for kw, extra_desc in self.visual_knowledge_map.items():
-            if kw in text_vi_lower:
-                templates.append(extra_desc)
-                templates.append(f"a video scene of {extra_desc}")
+        # Ket hop domain_prompts len vi tri uu tien hang dau
+        all_unique = []
+        for p in domain_prompts + general_templates:
+            if p and len(p.strip()) > 3 and p not in all_unique:
+                all_unique.append(p)
                 
-        return list(set([t for t in templates if len(t.strip()) > 3]))
+        return all_unique
+
 
     def process(self, query_vi):
         """Xu ly toan dien cau truy van."""
