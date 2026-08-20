@@ -42,18 +42,26 @@ def parse_query_file(file_path):
         raw_lines = [line.strip() for line in f.readlines() if line.strip()]
         
     full_content = "\n".join(raw_lines)
+    full_content_lower = full_content.lower()
     
     # 1. Kiem tra Task 2: Visual Q&A
-    has_qa_flag = any(k in full_content.lower() for k in ["câu hỏi:", "cau hoi:", "q&a", "question:"])
+    # Nhan dien moi dau hieu cau hoi: dau '?', cac tu nghi van hoac tien to cau hoi
+    qa_indicators = [
+        "?", "câu hỏi", "cau hoi", "question", "q&a", "hỏi:", "là gì", "ở đâu", 
+        "thế nào", "màu gì", "bao nhiêu", "tên của", "ai là", "mấy câu thơ", "tiêu đề"
+    ]
+    has_qa_flag = any(k in full_content_lower for k in qa_indicators)
+    
     if has_qa_flag:
         visual_lines = []
         question_lines = []
         is_question = False
+        
         for line in raw_lines:
-            lower = line.lower()
-            if any(k in lower for k in ["câu hỏi:", "cau hoi:", "question:"]):
+            line_lower = line.lower()
+            if "?" in line or any(k in line_lower for k in ["câu hỏi:", "cau hoi:", "question:", "câu hỏi", "cau hoi"]) or any(line_lower.startswith(p) for p in ["tên của", "hai câu thơ", "tiêu đề", "ai là"]):
                 is_question = True
-                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*:\s*', '', line, flags=re.IGNORECASE).strip()
+                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
                 if cleaned:
                     question_lines.append(cleaned)
             elif is_question:
@@ -61,22 +69,31 @@ def parse_query_file(file_path):
             else:
                 visual_lines.append(line)
                 
+        query = " ".join(visual_lines).strip()
+        question = " ".join(question_lines).strip()
+        if not query:
+            query = question
+        if not question:
+            question = query
+            
+        print(f"[{query_id}] -> Nhan dien: TASK 2 (Visual Q&A) | Question: '{question}'")
         return {
             "query_id": query_id,
             "task_type": "qa",
-            "query": " ".join(visual_lines).strip() if visual_lines else " ".join(question_lines).strip(),
-            "question": " ".join(question_lines).strip()
+            "query": query,
+            "question": question
         }
         
     # 2. Kiem tra Task 3: TRAKE
-    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+)\s*\d*\s*[:\.]', line, re.IGNORECASE) for line in raw_lines)
+    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
     if has_trake_flag or len(raw_lines) >= 3:
         events = []
         for line in raw_lines:
-            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+)\s*\d*\s*[:\.]\s*', '', line, flags=re.IGNORECASE).strip()
+            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
             if cleaned:
                 events.append(cleaned)
         if len(events) >= 2:
+            print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
             return {
                 "query_id": query_id,
                 "task_type": "trake",
@@ -85,6 +102,7 @@ def parse_query_file(file_path):
             }
 
     # 3. Mac dinh la Task 1: Textual KIS
+    print(f"[{query_id}] -> Nhan dien: TASK 1 (Textual KIS)")
     return {
         "query_id": query_id,
         "task_type": "kis",
@@ -93,11 +111,14 @@ def parse_query_file(file_path):
 
 def format_answer_for_csv(ans_text):
     """Format cau tra loi VQA cho file CSV."""
-    if not ans_text:
-        return '""'
-    ans_cleaned = str(ans_text).strip().strip('"').strip("'")
+    if not ans_text or str(ans_text).strip() in ["", '""', "''", "None"]:
+        ans_text = "Không rõ"
+    ans_cleaned = str(ans_text).strip().strip('"').strip("'").replace("\n", " ").strip()
+    if not ans_cleaned:
+        ans_cleaned = "Không rõ"
     ans_escaped = ans_cleaned.replace('"', '""')
     return f'"{ans_escaped}"'
+
 
 def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip"):
     """Chay toan bo pipeline tren bo de thi va tao file submission.zip."""

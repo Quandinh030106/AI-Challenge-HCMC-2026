@@ -161,8 +161,20 @@ class DenseSearcher:
             end_i = meta["end_idx"]
             
             v_scores = sim_scores_np[start_i:end_i]
-            max_idx = np.argmax(v_scores)
-            max_score = float(v_scores[max_idx])
+            if len(v_scores) == 0:
+                continue
+                
+            if len(v_scores) >= 3:
+                # Lam min chuoi diem bang Gaussian Kernel (sigma=1.2) de loc nhieu
+                kernel = np.array([0.1, 0.2, 0.4, 0.2, 0.1], dtype=np.float32)
+                kernel /= kernel.sum()
+                smoothed = np.convolve(v_scores, kernel, mode='same')
+                max_idx = int(np.argmax(smoothed))
+                # Diem tong hop ket hop giua do duy tri cua phan canh va do net cua frame dinh
+                max_score = float(0.6 * smoothed[max_idx] + 0.4 * v_scores[max_idx])
+            else:
+                max_idx = int(np.argmax(v_scores))
+                max_score = float(v_scores[max_idx])
             
             results.append({
                 "video_id": video_id,
@@ -174,5 +186,6 @@ class DenseSearcher:
         results.sort(key=lambda x: x["max_score"], reverse=True)
         self.last_dense_dict = {r["video_id"]: r for r in results}
         return results if top_k_videos is None else results[:top_k_videos]
+
 
 
