@@ -8,7 +8,7 @@ from qwen_vl_utils import process_vision_info
 
 class VisualReRanker:
     """Module xac thuc thi giac su dung Qwen-VL de cham diem lai Top ung vien."""
-    def __init__(self, model_id="Qwen/Qwen2-VL-7B-Instruct"):
+    def __init__(self, model_id="Qwen/Qwen2-VL-2B-Instruct"):
         self.model_id = model_id
         self.model = None
         self.processor = None
@@ -34,8 +34,14 @@ class VisualReRanker:
                     device_map=device_map
                 )
                 
-            self.processor = AutoProcessor.from_pretrained(self.model_id)
+            min_pixels = 256 * 28 * 28
+            max_pixels = 512 * 28 * 28
+            try:
+                self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=min_pixels, max_pixels=max_pixels)
+            except Exception:
+                self.processor = AutoProcessor.from_pretrained(self.model_id)
             print("VisualReRanker: Khoi tao thanh cong.")
+
 
 
     def find_keyframe_image(self, keyframes_dir, video_id, frame_idx):

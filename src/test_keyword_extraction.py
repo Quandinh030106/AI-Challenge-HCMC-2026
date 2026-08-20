@@ -9,152 +9,119 @@ if project_root not in sys.path:
 import argparse
 import glob
 import re
+import zipfile
 from src.preprocessing.query_processor import QueryProcessor
 from src.search.object_search import ObjectSearcher
+from src.export_codabench_submission import parse_query_file
 from src.utils import load_config
 
-# Danh sach cac cau hoi mau dac trung tu bo de thi AIC 2026 de test truc tiep
-SAMPLE_QUERIES = [
-    {
-        "id": "query-p1-01 (Tàu vũ trụ)",
-        "text": "Đoạn video về một công ty tư nhân phóng tàu vũ trụ chở 4 phi hành gia trong trang phục màu đen, ngoài không gian có thể nhìn thấy cực quang rực rỡ."
-    },
-    {
-        "id": "query-p1-02 (Đàn hổ)",
-        "text": "Đoạn video quay cảnh một đàn hổ, trong đó có một con hổ con nhảy chồm lên tảng đá."
-    },
-    {
-        "id": "query-p1-03 (Vệ sinh máy ảnh)",
-        "text": "Tìm phân cảnh một người dùng tăm bông để vệ sinh ống kính máy ảnh, xung quanh có đặt một chiếc khăn màu tím."
-    },
-    {
-        "id": "query-p1-04 (TRAKE: Món măng tây)",
-        "text": "Sự kiện 1: Sơ chế măng tây tươi.\nSự kiện 2: Đun nóng dầu ăn trên chảo.\nSự kiện 3: Cho măng tây vào xào chín với nước sốt.\nSự kiện 4: Trình bày món măng tây ra đĩa."
-    },
-    {
-        "id": "query-p1-05 (Thu hoạch dứa)",
-        "text": "Cảnh một người phụ nữ lớn tuổi đang chèo ghe chở đầy dứa vừa thu hoạch trên sông nước miền Tây."
-    },
-    {
-        "id": "query-p1-06 (Gỏi cuốn hoa pansy)",
-        "text": "Tìm đoạn video hướng dẫn làm món gỏi cuốn chay với bánh tráng màu vàng, màu tím và có trang trí cánh hoa pansy."
-    },
-    {
-        "id": "query-p1-07 (Cho dê ăn)",
-        "text": "Cảnh hai người phụ nữ với nụ cười rạng rỡ đang cầm cỏ cho đàn dê ăn trong một chuồng dê bằng gỗ."
-    },
-    {
-        "id": "query-p1-08 (Điêu khắc cát)",
-        "text": "Lễ hội triển lãm các bức tượng điêu khắc bằng cát khổng lồ, bên cạnh có các bạn trẻ đang trượt ván patin."
-    },
-    {
-        "id": "query-p1-09 (Robot bọ Lausanne)",
-        "text": "Các nhà khoa học tại Đại học Lausanne giới thiệu robot bọ cánh cứng bay mô phỏng cơ học cánh côn trùng."
-    },
-    {
-        "id": "query-p1-10 (Cá mập Steven Spielberg)",
-        "text": "Đoạn phóng sự giới thiệu về bộ phim về loài cá mập trắng khổng lồ năm 1975 của đạo diễn Steven Spielberg."
-    },
-    {
-        "id": "query-p1-11 (Bánh rán dâu chuối)",
-        "text": "Trang trí những chiếc bánh rán chiên vàng với sốt socola, dâu tây cắt lát và những lát chuối chín."
-    },
-    {
-        "id": "query-p1-12 (Panna cotta)",
-        "text": "Ly tráng miệng panna cotta mát lạnh được trang trí vài quả nho xanh và một nhánh lá bạc hà."
-    },
-    {
-        "id": "query-p1-13 (Đua xe đạp flycam)",
-        "text": "Đoàn vận động viên đua xe đạp đang bứt tốc trên đường nhựa, góc quay từ trên cao flycam bao quát đoàn đua."
-    },
-    {
-        "id": "query-p1-14 (QA: CLB FANA Khánh Hòa)",
-        "text": "Chương trình thiện nguyện của câu lạc bộ FANA hỗ trợ các trẻ em có hoàn cảnh khó khăn tại một xã ở tỉnh Khánh Hòa.\nCâu hỏi: Tên của xã đó là gì?"
-    },
-    {
-        "id": "query-p1-15 (QA: Đền thờ Nguyễn Trung Trực)",
-        "text": "Lễ hội tưởng niệm vị anh hùng dân tộc Nguyễn Trung Trực tại một ngôi đền ở Kiên Giang.\nCâu hỏi: Hai câu thơ được khắc trên đền thờ là gì?"
-    },
-    {
-        "id": "query-p1-16 (TRAKE: Múa lân rồng)",
-        "text": "Sự kiện 1: Đội múa lân bắt đầu biểu diễn.\nSự kiện 2: Con lân nhảy múa leo lên cột cao.\nSự kiện 3: Xuất hiện đầu rồng uốn lượn.\nSự kiện 4: Lân và rồng cùng chào khán giả."
-    },
-    {
-        "id": "query-p1-17 (QA: Nấu ăn thịt xay)",
-        "text": "Video hướng dẫn nấu món ăn hấp dẫn với nguyên liệu chính gồm 200g thịt xay và các loại rau củ.\nCâu hỏi: Tiêu đề công thức nấu ăn đó là gì?"
-    },
-    {
-        "id": "query-p1-18 (TRAKE: Nấu món nấm)",
-        "text": "Sự kiện 1: Cắt thái các loại nấm tươi và củ năng.\nSự kiện 2: Chiên vàng các miếng đậu hũ.\nSự kiện 3: Xào chín nấm cùng gia vị trên chảo lớn.\nSự kiện 4: Bày món nấm xào thơm ngon ra đĩa sứ trắng."
-    }
-]
-
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
 
 def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
-    """Chay kiem tra bieu dien tu khoa, thuc the va cau dich tren cac cau hoi."""
+    """
+    Script chan doan chuyen sau:
+    Doc toan bo 24 cau hoi de thi va hien thi chi tiet cau truc du lieu, cau dich Meta NLLB-200,
+    cac thuc the viet hoa, tu khoa hiem, lop vat the Objects va Prompt Ensemble gui cho AI.
+    """
     config = load_config(config_path) if os.path.exists(config_path) else {"data": {}, "models": {}}
     
     print("================================================================")
-    print("KHOI CHAY SCRIPT KIEM TRA TRICH XUAT TU KHOA & NGU NGHIA (TEST)")
+    print("🔬 KHOI CHAY CHAN DOAN TRICH XUAT TU KHOA & NGU NGHIA DE THI")
+    print(f"Thu muc de thi: {input_dir}")
     print("================================================================")
     
     query_processor = QueryProcessor()
     object_searcher = ObjectSearcher(config)
     
-    queries_to_test = []
+    txt_files = []
     if input_dir and os.path.exists(input_dir):
-        txt_files = sorted(glob.glob(os.path.join(input_dir, "*.txt")) + glob.glob(os.path.join(input_dir, "**", "*.txt"), recursive=True))
-        for f in txt_files:
-            with open(f, "r", encoding="utf-8") as fp:
-                content = fp.read().strip()
-                queries_to_test.append({"id": os.path.basename(f), "text": content})
-    else:
-        queries_to_test = SAMPLE_QUERIES
+        if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
+            unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
+            os.makedirs(unzip_tmp, exist_ok=True)
+            with zipfile.ZipFile(input_dir, "r") as zf:
+                zf.extractall(unzip_tmp)
+            input_dir = unzip_tmp
+            
+        all_found = []
+        for root, _, files in os.walk(input_dir):
+            for f in files:
+                if f.lower().endswith(".txt"):
+                    all_found.append(os.path.join(root, f))
+                elif f.lower().endswith(".zip"):
+                    try:
+                        uz = "/kaggle/working/bo_de_thi_auto"
+                        os.makedirs(uz, exist_ok=True)
+                        with zipfile.ZipFile(os.path.join(root, f), "r") as zf:
+                            zf.extractall(uz)
+                        for r2, _, f2 in os.walk(uz):
+                            for fs in f2:
+                                if fs.lower().endswith(".txt"):
+                                    all_found.append(os.path.join(r2, fs))
+                    except Exception:
+                        pass
+        txt_files = sorted(list(set(all_found)), key=natural_sort_key)
         
-    print(f"\nTong so cau hoi kiem tra: {len(queries_to_test)}\n")
+    if not txt_files:
+        print(f"Khong tim thay file de thi trong {input_dir}. Chay tren bo cau hoi mau.")
+        txt_files = []
+        
+    print(f"\nTong so cau hoi kiem tra: {len(txt_files)} file.\n")
     
-    for idx, item in enumerate(queries_to_test, 1):
-        q_id = item["id"]
-        q_text = item["text"]
+    for idx, file_path in enumerate(txt_files, 1):
+        parsed = parse_query_file(file_path)
+        q_id = parsed["query_id"]
+        task_type = parsed["task_type"]
+        q_text = parsed["query"]
         
         print("----------------------------------------------------------------")
-        print(f"[{idx}/{len(queries_to_test)}] ID: {q_id}")
-        print(f"📝 Câu hỏi Tiếng Việt  : {q_text}")
+        print(f"[{idx}/{len(txt_files)}] ID: {q_id} | TASK: {task_type.upper()}")
+        print(f"📝 Nội dung Tiếng Việt  : {q_text}")
         
+        if task_type == "qa":
+            print(f"❓ Câu hỏi cần trả lời  : {parsed.get('question', '')}")
+        elif task_type == "trake":
+            print(f"⏱️  Chuỗi sự kiện ({len(parsed.get('events', []))} bước):")
+            for ev_idx, ev in enumerate(parsed.get("events", []), 1):
+                print(f"    - Bước {ev_idx}: {ev}")
+                
         # 1. Xu ly dich & Prompt Ensemble
-        proc_res = query_processor.process(q_text)
+        search_target = f"{q_text} {parsed.get('question', '')}".strip() if task_type == "qa" else q_text
+        proc_res = query_processor.process(search_target)
         trans_en = proc_res.get("query_en", "")
         intent_info = proc_res.get("intent_info", {})
         prompts = proc_res.get("prompt_ensemble", [])
         
-        print(f"🌐 Dịch Tiếng Anh (CLIP): {trans_en}")
+        print(f"🌐 Dịch Tiếng Anh (NLLB): {trans_en}")
         print(f"🎯 Phân loại Intent     : {intent_info.get('intent')} (Dense weight: {intent_info.get('dense_weight')}, Sparse weight: {intent_info.get('sparse_weight')})")
         
         # 2. Trich xuat thuc the & Named Entities
-        named_entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', q_text)
-        rare_keywords = [kw for kw in ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn", "dê", "xe đạp", "bánh rán", "cá mập", "tàu vũ trụ", "ống kính", "máy ảnh"] if kw in q_text.lower()]
+        named_entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', search_target)
+        rare_keywords = [kw for kw in ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn", "dê", "xe đạp", "bánh rán", "cá mập", "tàu vũ trụ", "ống kính", "máy ảnh", "thịt xay", "măng tây", "nấm", "đậu hũ", "củ năng"] if kw in search_target.lower()]
         
         print(f"🏷️  Thực thể viết hoa    : {named_entities if named_entities else 'Không có'}")
         print(f"🔑 Từ khóa đặc biệt     : {rare_keywords if rare_keywords else 'Không có'}")
         
         # 3. Anh xa sang lop vat the Object Detection
-        mapped_objects = object_searcher.extract_target_entities(q_text)
+        mapped_objects = object_searcher.extract_target_entities(search_target)
         print(f"📦 Objects tương ứng    : {mapped_objects if mapped_objects else 'Không có'}")
         
         # 4. Cac bien the Prompt Ensemble gui cho CLIP
         print(f"🚀 Prompt Ensemble ({len(prompts)} biến thể):")
-        for p_idx, p in enumerate(prompts[:4], 1):
+        for p_idx, p in enumerate(prompts[:3], 1):
             print(f"    {p_idx}. \"{p}\"")
-        if len(prompts) > 4:
-            print(f"    ... và {len(prompts) - 4} biến thể khác")
+        if len(prompts) > 3:
+            print(f"    ... và {len(prompts) - 3} biến thể khác")
             
     print("\n================================================================")
-    print("✅ HOAN TAT KIEM TRA! Ban co the xem xet ket qua o tren de danh gia do chinh xac.")
+    print("✅ HOAN TAT KIEM TRA TOAN BO 24 CAU HOI!")
+    print("Ban hay quan sat toan bo ket qua dich va tu khoa o tren.")
+    print("Neu tat ca deu chuan xac, ban co the tu tin chay Cell tiep theo de tao submission.zip!")
     print("================================================================")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", default=None, help="Thu muc chua cac file .txt neu muon test truc tiep de thi")
+    parser.add_argument("--input_dir", default="/kaggle/input/aic-hcmc2026-thu-nghiem-bo-de-thi", help="Thu muc chua cac file .txt de thi")
     parser.add_argument("--config", default="configs/default.yaml")
     args = parser.parse_args()
     

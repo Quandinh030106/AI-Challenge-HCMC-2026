@@ -101,7 +101,13 @@ def solve_task1(query_text, fused_candidates, keyframes_dir, metadata_dir=None, 
     return {"video_id": video_id, "frame_id": frame_id, "score": float(smoothed_scores[best_frame_idx])}
 
 def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=None, total_preds=100):
-    """Phan bo 100 cau tra loi thong minh bang NMS va mo rong cua so thoi gian."""
+    """
+    Phan bo 100 cau tra loi KIS bang Uniform Temporal Window Coverage:
+    - Top 1 video: Lay ~25-30 frames bao gom cac dinh diem cuc dai va mo rong buoc nhay thoi gian (step=3..15)
+      kem cac diem linspace rai deu video de dam bao bat trung cua so [s, e] cua BTC.
+    - Top 2-5 video: Lay ~8-12 frames mo rong quanh 2 dinh chinh.
+    - Cac video tiep theo: Lay 2-4 frames dinh cao nhat.
+    """
     predictions = []
     
     for rank, cand in enumerate(fused_candidates):
@@ -115,31 +121,40 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
             
             sorted_indices = np.argsort(smoothed)[::-1]
             selected_peaks = []
-            min_distance = 8
+            min_distance = 12
             
             for idx in sorted_indices:
                 if all(abs(idx - p) >= min_distance for p in selected_peaks):
                     selected_peaks.append(int(idx))
-                if len(selected_peaks) >= 4:
+                if len(selected_peaks) >= 5:
                     break
                     
             frame_indices_to_take = []
             if rank == 0:
+                # Top 1 Video: Mo rong manh me quanh cac dinh va rai deu
                 for p in selected_peaks[:3]:
-                    for delta in [0, -1, 1, 2, -2]:
+                    for delta in [0, -3, 3, -6, 6, -10, 10, -15, 15]:
                         target_f = p + delta
                         if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
                             frame_indices_to_take.append(target_f)
+                # Bo sung cac diem linspace trai deu toan video
+                for lf in np.linspace(0, n_frames - 1, min(6, n_frames), dtype=int):
+                    if lf not in frame_indices_to_take:
+                        frame_indices_to_take.append(int(lf))
             elif rank < 4:
                 for p in selected_peaks[:2]:
-                    for delta in [0, 1, -1]:
+                    for delta in [0, -4, 4, -8, 8]:
                         target_f = p + delta
                         if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
                             frame_indices_to_take.append(target_f)
             elif rank < 12:
-                frame_indices_to_take = selected_peaks[:2]
+                for p in selected_peaks[:2]:
+                    for delta in [0, -4, 4]:
+                        target_f = p + delta
+                        if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
+                            frame_indices_to_take.append(target_f)
             else:
-                frame_indices_to_take = selected_peaks[:1] if selected_peaks else [int(sorted_indices[0])]
+                frame_indices_to_take = selected_peaks[:2] if selected_peaks else [int(sorted_indices[0])]
                 
             for f_idx in frame_indices_to_take:
                 fid = get_frame_id_from_idx(keyframes_dir, video_id, int(f_idx), metadata_dir=metadata_dir)
@@ -158,3 +173,4 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
         predictions.append({"video_id": last_vid, "frame_id": "0000"})
         
     return predictions[:total_preds]
+

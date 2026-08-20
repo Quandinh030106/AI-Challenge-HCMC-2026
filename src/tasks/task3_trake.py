@@ -4,12 +4,18 @@ import numpy as np
 import torch
 from src.tasks.task1_kis import get_frame_id_from_idx
 
-def align_events_dynamic_programming(scores_matrix):
-    """Quy hoach dong tim chuoi frame t_1 < t_2 < ... < t_N toi uu nhat."""
+def align_events_dynamic_programming(scores_matrix, min_gap=8):
+    """
+    Quy hoach dong tim chuoi frame t_1 < t_2 < ... < t_N toi uu nhat
+    voi rang buoc khoang cach thoi gian toi thieu (min_gap >= 8 frames)
+    giup cac su kien khong bi dinh chum vao cung 1 giay.
+    """
     T, N = scores_matrix.shape
     if T < N:
         return list(range(T)) + [T - 1] * (N - T), 0.0
 
+    eff_gap = min(min_gap, max(1, (T - N) // max(1, N)))
+    
     dp = np.full((T, N + 1), -np.inf)
     parent = np.full((T, N + 1), -1)
 
@@ -17,12 +23,19 @@ def align_events_dynamic_programming(scores_matrix):
         dp[t, 0] = 0.0
 
     for j in range(1, N + 1):
-        for t in range(j - 1, T):
-            if t > 0:
+        for t in range(0, T):
+            if t > 0 and dp[t - 1, j] > dp[t, j]:
                 dp[t, j] = dp[t - 1, j]
                 parent[t, j] = t - 1
 
-            prev_score = dp[t - 1, j - 1] if t > 0 else (0.0 if j == 1 else -np.inf)
+            prev_t = t - eff_gap
+            if j == 1:
+                prev_score = 0.0
+            elif prev_t >= 0:
+                prev_score = dp[prev_t, j - 1]
+            else:
+                prev_score = -np.inf
+                
             current_score = prev_score + scores_matrix[t, j - 1]
 
             if current_score > dp[t, j]:
@@ -33,15 +46,21 @@ def align_events_dynamic_programming(scores_matrix):
     t = T - 1
     j = N
     while j > 0 and t >= 0:
-        if parent[t, j] == -2 or t == j - 1:
+        if parent[t, j] == -2 or t < eff_gap * (j - 1):
             aligned_frames.append(t)
             j -= 1
-            t -= 1
+            t = t - eff_gap
         else:
             t = parent[t, j]
 
-    aligned_frames.reverse()
+    if len(aligned_frames) < N:
+        # Fallback linspace
+        aligned_frames = [int(x) for x in np.linspace(0, T - 1, N)]
+    else:
+        aligned_frames.reverse()
+        
     return aligned_frames, float(dp[T - 1, N])
+
 
 def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, metadata_dir=None, query_processor=None):
     """Giai quyet Task 3: Can chinh chuoi su kien theo thoi gian (TRAKE)."""
