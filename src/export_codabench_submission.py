@@ -1,4 +1,12 @@
 import os
+import sys
+
+# Dam bao thu muc goc cua du an luon nam trong sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import glob
 import json
 import zipfile
@@ -10,6 +18,7 @@ import yaml
 from tqdm import tqdm
 
 from src.preprocessing.query_processor import QueryProcessor
+
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
