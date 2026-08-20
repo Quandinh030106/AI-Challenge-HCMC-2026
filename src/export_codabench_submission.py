@@ -195,7 +195,9 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
     object_searcher = ObjectSearcher(config)
-    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen2-VL-7B-Instruct"))
+    vlm_model_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2-VL-2B-Instruct")
+    visual_reranker = VisualReRanker(vlm_model_name)
+
     
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
@@ -331,10 +333,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             question = parsed["question"]
             ans_res = solve_task2(
                 query_text, question, fused, keyframes_dir, 
-                model_id=config["models"]["vlm_model"],
+                model_id=vlm_model_name,
                 metadata_dir=map_keyframes_dir,
                 object_searcher=object_searcher
             )
+
             vlm_answer = format_answer_for_csv(ans_res["answer"])
             
             top100_preds = generate_diversity_top100_kis(
