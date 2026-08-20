@@ -22,6 +22,8 @@ from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
 from src.search.object_search import ObjectSearcher
+from src.search.visual_reranker import VisualReRanker
+
 
 
 
@@ -150,8 +152,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
     object_searcher = ObjectSearcher(config)
+    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen2-VL-7B-Instruct"))
     
     keyframes_dir = config["data"].get("keyframes_dir")
+
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
     
     # Tu dong xac dinh thu muc map-keyframes tren Kaggle
@@ -255,10 +259,13 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         
         # Tang cuong diem thuong tu Objects neu co
         fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
-
-
         
-        # --- TASK 1: TEXTUAL KIS ---
+        # GIAI DOAN 2: Xac thuc sau bang Computer Vision (Visual Re-ranking cho Top 5 video)
+        try:
+            fused = visual_reranker.rerank_candidates(fused, query_text, keyframes_dir, top_n_verify=5)
+        except Exception as e:
+            print(f"⚠️ VisualReRanker Warning ({e}), giu nguyen thu hang RRF.")
+
         if task_type == "kis":
             # Sinh 100 dong theo format: <Tên file video>, <Frame Idx> (KHONG HEADER)
             top100_preds = generate_diversity_top100_kis(
