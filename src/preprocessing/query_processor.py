@@ -43,7 +43,7 @@ class QueryProcessor:
         return {"intent": "VISUAL_SCENE", "dense_weight": 0.7, "sparse_weight": 0.3}
 
     def generate_prompt_ensemble(self, query_en):
-        """Sinh tap bien the Prompt Ensemble."""
+        """Sinh tap bien the Prompt Ensemble, ho tro ca cac doan van dai."""
         clean_text = query_en.strip().rstrip('.')
         templates = [
             clean_text,
@@ -52,7 +52,16 @@ class QueryProcessor:
             f"a close-up shot of {clean_text}",
             f"a wide angle view of {clean_text}"
         ]
+        
+        # Neu cau truy van dai (co nhieu cau con tach boi dau cham), them tung cau con vao ensemble
+        sentences = [s.strip() for s in re.split(r'[\.\;\n]+', clean_text) if len(s.strip().split()) >= 3]
+        if len(sentences) > 1:
+            for s in sentences[:3]:
+                templates.append(s)
+                templates.append(f"a video scene of {s}")
+                
         return list(set(templates))
+
 
     def process(self, query_vi):
         """Xu ly toan dien cau truy van."""

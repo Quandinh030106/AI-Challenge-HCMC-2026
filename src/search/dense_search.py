@@ -102,9 +102,17 @@ class DenseSearcher:
     def encode_text(self, text_or_list):
         """Ma hoa van ban hoac prompt ensemble thanh vector dac trung va chuan hoa L2."""
         text_inputs = [text_or_list] if isinstance(text_or_list, str) else list(text_or_list)
-        inputs = self.processor(text=text_inputs, padding=True, return_tensors="pt").to(self.device)
+        # Bắt buộc bật truncation=True, max_length=77 để không bao giờ bị lỗi vượt độ dài CLIP
+        inputs = self.processor(
+            text=text_inputs, 
+            padding=True, 
+            truncation=True, 
+            max_length=77, 
+            return_tensors="pt"
+        ).to(self.device)
         
         with torch.no_grad():
+
             text_outputs = self.model.get_text_features(**inputs)
             if isinstance(text_outputs, torch.Tensor):
                 text_features = text_outputs
