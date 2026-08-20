@@ -149,9 +149,12 @@ class ObjectSearcher:
         return None
 
 
-    def get_frame_objects(self, video_id, frame_idx):
-        """Lay danh sach thuc the cua mot keyframe."""
-        cache_key = f"{video_id}_{frame_idx}"
+    def get_frame_objects(self, video_id, frame_idx, frame_id=""):
+        """
+        Lay danh sach thuc the cua mot keyframe tu file JSON cua BTC.
+        Tu dong ho tro dinh dang 3 chu so (001.json), 4 chu so (0001.json), 5 chu so va frame_id.
+        """
+        cache_key = f"{video_id}_{frame_idx}_{frame_id}"
         if cache_key in self._cache:
             return self._cache[cache_key]
             
@@ -159,11 +162,31 @@ class ObjectSearcher:
         if not v_folder:
             return None
             
-        json_file = os.path.join(v_folder, f"{frame_idx:04d}.json")
-        if not os.path.exists(json_file):
-            json_file = os.path.join(v_folder, f"{frame_idx}.json")
-            
-        if not os.path.exists(json_file):
+        idx_1 = frame_idx + 1
+        candidate_filenames = [
+            f"{frame_idx:03d}.json",
+            f"{idx_1:03d}.json",
+            f"{frame_idx:04d}.json",
+            f"{idx_1:04d}.json",
+            f"{frame_idx:05d}.json",
+            f"{frame_idx}.json",
+            f"{idx_1}.json"
+        ]
+        if frame_id:
+            fid_clean = str(frame_id).strip()
+            candidate_filenames.append(f"{fid_clean}.json")
+            if fid_clean.isdigit():
+                candidate_filenames.append(f"{int(fid_clean):03d}.json")
+                candidate_filenames.append(f"{int(fid_clean):04d}.json")
+                
+        json_file = None
+        for cf in candidate_filenames:
+            p = os.path.join(v_folder, cf)
+            if os.path.exists(p):
+                json_file = p
+                break
+                
+        if not json_file:
             return None
             
         try:
@@ -176,7 +199,7 @@ class ObjectSearcher:
             
             filtered_objects = []
             for ent, sc, bx in zip(entities, scores, boxes):
-                if sc >= 0.20:
+                if sc >= 0.15:
                     filtered_objects.append({
                         "entity": ent,
                         "score": sc,
@@ -187,6 +210,7 @@ class ObjectSearcher:
             return filtered_objects
         except Exception:
             return None
+
 
     def extract_target_entities(self, query_text):
         """
@@ -261,6 +285,7 @@ class ObjectSearcher:
             if rank < 30:
                 top_frame_idxs = np.argsort(scores)[::-1][:12]
                 video_object_bonus = 0.0
+                video_matched_entities = set()
                 
                 for f_idx in top_frame_idxs:
                     objs = self.get_frame_objects(video_id, int(f_idx))
@@ -273,17 +298,23 @@ class ObjectSearcher:
                         # Khop chinh xac (Exact Matching) hoac khop ten lop chuan
                         if ent_lower in target_entities or any(t_ent == ent_lower for t_ent in target_entities):
                             frame_match_score += float(obj["score"])
+                            video_matched_entities.add(ent_lower)
                             
                     if frame_match_score > 0:
-                        scores[f_idx] += frame_match_score * 0.20
-                        video_object_bonus += frame_match_score * 0.05
+                        scores[f_idx] += frame_match_score * 0.25
+                        video_object_bonus += frame_match_score * 0.08
                         
+                # Diem thuong cong huong khi video chua dong thoi tu 2 vat the muc tieu tro len
+                if len(video_matched_entities) >= 2:
+                    video_object_bonus += 0.15 * len(video_matched_entities)
+                    
                 cand_copy["dense_info"]["all_scores"] = scores
                 cand_copy["dense_info"]["best_frame_idx"] = int(np.argmax(scores))
                 cand_copy["dense_info"]["max_score"] = float(np.max(scores))
                 cand_copy["rrf_score"] = cand.get("rrf_score", 0.0) + video_object_bonus
                 
             boosted_candidates.append(cand_copy)
+
             
         boosted_candidates.sort(key=lambda x: x.get("rrf_score", 0.0), reverse=True)
         return boosted_candidates
