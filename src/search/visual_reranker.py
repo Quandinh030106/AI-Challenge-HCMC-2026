@@ -13,24 +13,34 @@ class VisualReRanker:
     Su dung mo hinh Vision-Language (Qwen2-VL-7B) de nhin truc tiep vao anh
     va cham diem muc do trung khop voi chi tiet mo ta trong cau hoi.
     """
-    def __init__(self, model_id="Qwen/Qwen2-VL-7B-Instruct"):
+    def __init__(self, model_id="Qwen/Qwen3-VL-8B-Instruct"):
         self.model_id = model_id
         self.model = None
         self.processor = None
         
     def _load_model(self):
         if self.model is None:
-            print(f"VisualReRanker: Dang khoi tao mo hinh CV Verifier {self.model_id}...")
+            print(f"VisualReRanker: Dang khoi tao mo hinh CV Verifier the he moi {self.model_id}...")
             device_map = "auto" if torch.cuda.is_available() else None
             torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
             
-            self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-                self.model_id,
-                torch_dtype=torch_dtype,
-                device_map=device_map
-            )
+            try:
+                from transformers import AutoModelForVision2Seq
+                self.model = AutoModelForVision2Seq.from_pretrained(
+                    self.model_id,
+                    torch_dtype=torch_dtype,
+                    device_map=device_map
+                )
+            except Exception:
+                self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                    self.model_id,
+                    torch_dtype=torch_dtype,
+                    device_map=device_map
+                )
+                
             self.processor = AutoProcessor.from_pretrained(self.model_id)
             print("VisualReRanker: Mo hinh CV Verifier da san sang.")
+
 
     def find_keyframe_image(self, keyframes_dir, video_id, frame_idx):
         """Dinh vi chinh xac file anh vat ly cua video tren dia."""

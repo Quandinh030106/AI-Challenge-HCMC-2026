@@ -9,21 +9,31 @@ from src.tasks.task1_kis import get_frame_id_from_idx
 _vlm_model = None
 _vlm_processor = None
 
-def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
+def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
-        print(f"VQA: Dang load mo hinh Qwen2-VL {model_id}...")
+        print(f"VQA: Dang load mo hinh VLM the he moi {model_id}...")
         device_map = "auto" if torch.cuda.is_available() else None
         torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         
-        _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
-            model_id,
-            torch_dtype=torch_dtype,
-            device_map=device_map
-        )
+        try:
+            from transformers import AutoModelForVision2Seq
+            _vlm_model = AutoModelForVision2Seq.from_pretrained(
+                model_id,
+                torch_dtype=torch_dtype,
+                device_map=device_map
+            )
+        except Exception:
+            _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
+                model_id,
+                torch_dtype=torch_dtype,
+                device_map=device_map
+            )
+            
         _vlm_processor = AutoProcessor.from_pretrained(model_id)
         print("VQA: Mo hinh VLM da duoc load thanh cong.")
     return _vlm_model, _vlm_processor
+
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct", metadata_dir=None, object_searcher=None):
     """Giai quyet Task 2 (Visual Q&A)."""
