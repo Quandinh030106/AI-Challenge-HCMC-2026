@@ -11,8 +11,8 @@ from src.tasks.task1_kis import get_frame_id_from_idx
 _vlm_model = None
 _vlm_processor = None
 
-def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
-    """Nap mo hinh VLM dung chung cho VQA va Visual Re-ranking."""
+def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
+    """Nap mo hinh VLM dung chung cho VQA va Visual Re-ranking sieu nhe chong OOM."""
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
         print(f"VQA: Nap mo hinh {model_id}...")
@@ -34,11 +34,18 @@ def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
                 device_map=device_map
             )
             
-        _vlm_processor = AutoProcessor.from_pretrained(model_id)
-        print("VQA: Khoi tao mo hinh VLM thanh cong.")
+        # Gioi han pixel de tranh bùng no tokens gay OOM tren GPU T4
+        min_pixels = 256 * 28 * 28
+        max_pixels = 512 * 28 * 28
+        try:
+            _vlm_processor = AutoProcessor.from_pretrained(model_id, min_pixels=min_pixels, max_pixels=max_pixels)
+        except Exception:
+            _vlm_processor = AutoProcessor.from_pretrained(model_id)
+        print("VQA: Khoi tao mo hinh VLM thanh cong (toi uu VRAM).")
     return _vlm_model, _vlm_processor
 
-def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct", metadata_dir=None, object_searcher=None):
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
+
 
     """Giai quyet Task 2 (Visual Q&A)."""
     if not fused_candidates:
@@ -147,39 +154,50 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     )
 
     
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "image", "image": image_path},
-                {"type": "text", "text": prompt_text}
-            ]
-        }
-    ]
-    
-    text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    image_inputs, video_inputs = process_vision_info(messages)
-    
-    inputs = processor(
-        text=[text],
-        images=image_inputs,
-        videos=video_inputs,
-        padding=True,
-        return_tensors="pt"
-    ).to(model.device)
-    
-    with torch.no_grad():
-        generated_ids = model.generate(**inputs, max_new_tokens=100)
-        generated_ids_trimmed = [
-            out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+    raw_answer = ""
+    try:
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "image": image_path},
+                    {"type": "text", "text": prompt_text}
+                ]
+            }
         ]
-        output_text = processor.batch_decode(
-            generated_ids_trimmed,
-            skip_special_tokens=True,
-            clean_up_tokenization_spaces=False
-        )
         
-    raw_answer = output_text[0].strip()
+        text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
+        
+        inputs = processor(
+            text=[text],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt"
+        ).to(model.device)
+        
+        with torch.no_grad():
+            generated_ids = model.generate(**inputs, max_new_tokens=80)
+            generated_ids_trimmed = [
+                out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+            ]
+            output_text = processor.batch_decode(
+                generated_ids_trimmed,
+                skip_special_tokens=True,
+                clean_up_tokenization_spaces=False
+            )
+            raw_answer = output_text[0].strip()
+    except Exception as e:
+        print(f"VQA Canh bao suy luan ({e}), chuyen sang che do fallback OCR/Metadata.")
+        raw_answer = ocr_context if ocr_context else "Không rõ"
+    finally:
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        
     print(f"VQA Dap an: '{raw_answer}'")
 
     clean_ans = raw_answer
@@ -189,11 +207,12 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             
     clean_ans = clean_ans.rstrip('.!?,;:')
     if not clean_ans or any(k in clean_ans.lower() for k in ["xin lỗi", "không thể xác định", "không thể cung cấp"]):
-        clean_ans = "Không rõ"
+        clean_ans = ocr_context[:100] if ocr_context else "Không rõ"
         
     return {
         "video_id": video_id,
         "frame_id": frame_id,
         "answer": clean_ans
     }
+
 
