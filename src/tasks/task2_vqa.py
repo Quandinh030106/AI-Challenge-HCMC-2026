@@ -112,7 +112,9 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             hint_text = f" (Vật thể trong ảnh: {', '.join(top_entities)})."
     
     prompt_text = (
-        f"Dựa vào bức ảnh này{hint_text}, hãy quan sát thật kỹ và trả lời câu hỏi sau bằng Tiếng Việt một cách chính xác nhất: '{question}'"
+        f"Quan sát thật kỹ bức ảnh này{hint_text}. Hãy đọc các chữ trên biển hiệu, phông nền, tiêu đề hoặc hình ảnh để trả lời câu hỏi sau bằng Tiếng Việt:\n"
+        f"'{question}'\n"
+        f"Trả lời ngắn gọn, trực tiếp vào trọng tâm."
     )
     
     messages = [
@@ -137,7 +139,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     ).to(model.device)
     
     with torch.no_grad():
-        generated_ids = model.generate(**inputs, max_new_tokens=120)
+        generated_ids = model.generate(**inputs, max_new_tokens=100)
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
@@ -156,9 +158,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             clean_ans = clean_ans[len(prefix):].strip()
             
     clean_ans = clean_ans.rstrip('.!?,;:')
-    if clean_ans:
-        clean_ans = clean_ans[0].upper() + clean_ans[1:]
-    else:
+    if not clean_ans or any(k in clean_ans.lower() for k in ["xin lỗi", "không thể xác định", "không thể cung cấp"]):
         clean_ans = "Không rõ"
         
     return {
@@ -166,3 +166,4 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         "frame_id": frame_id,
         "answer": clean_ans
     }
+

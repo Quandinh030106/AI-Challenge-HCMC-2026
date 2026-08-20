@@ -209,14 +209,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         )
         
         fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
-        
-        try:
-            fused = visual_reranker.rerank_candidates(fused, query_text, keyframes_dir, top_n_verify=5)
-        except Exception as e:
-            pass
 
         # TASK 1: TEXTUAL KIS
         if task_type == "kis":
+
             top100_preds = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
             )
