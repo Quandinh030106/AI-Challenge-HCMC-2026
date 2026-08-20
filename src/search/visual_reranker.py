@@ -3,16 +3,11 @@ import glob
 import re
 import numpy as np
 import torch
-from PIL import Image
-from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+from transformers import AutoProcessor
 from qwen_vl_utils import process_vision_info
 
 class VisualReRanker:
-    """
-    Module Computer Vision xac thuc thi giac sau (Visual Re-ranking Engine).
-    Su dung mo hinh Vision-Language (Qwen2-VL-7B) de nhin truc tiep vao anh
-    va cham diem muc do trung khop voi chi tiet mo ta trong cau hoi.
-    """
+    """Module xac thuc thi giac su dung Qwen-VL de cham diem lai Top ung vien."""
     def __init__(self, model_id="Qwen/Qwen3-VL-8B-Instruct"):
         self.model_id = model_id
         self.model = None
@@ -20,7 +15,7 @@ class VisualReRanker:
         
     def _load_model(self):
         if self.model is None:
-            print(f"VisualReRanker: Dang khoi tao mo hinh CV Verifier the he moi {self.model_id}...")
+            print(f"VisualReRanker: Nap mo hinh {self.model_id}...")
             device_map = "auto" if torch.cuda.is_available() else None
             torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
             
@@ -32,6 +27,7 @@ class VisualReRanker:
                     device_map=device_map
                 )
             except Exception:
+                from transformers import Qwen2VLForConditionalGeneration
                 self.model = Qwen2VLForConditionalGeneration.from_pretrained(
                     self.model_id,
                     torch_dtype=torch_dtype,
@@ -39,11 +35,10 @@ class VisualReRanker:
                 )
                 
             self.processor = AutoProcessor.from_pretrained(self.model_id)
-            print("VisualReRanker: Mo hinh CV Verifier da san sang.")
-
+            print("VisualReRanker: Khoi tao thanh cong.")
 
     def find_keyframe_image(self, keyframes_dir, video_id, frame_idx):
-        """Dinh vi chinh xac file anh vat ly cua video tren dia."""
+        """Tim file anh vat ly cua video tren dia."""
         level = video_id.split('_')[0] if '_' in video_id else ""
         idx_4d = f"{frame_idx:04d}"
         idx_5d = f"{frame_idx:05d}"
@@ -65,7 +60,6 @@ class VisualReRanker:
             if os.path.exists(p):
                 return p
                 
-        # Neu chua thay truc tiep theo ten, quet thu muc video
         folder_candidates = [
             os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
             os.path.join(keyframes_dir, f"Keyframes_{level}", video_id),
@@ -83,7 +77,7 @@ class VisualReRanker:
         return None
 
     def verify_single_image(self, image_path, query_text):
-        """Cho Qwen2-VL nhin anh va cham diem tu 0 den 10 ve muc do trung khop."""
+        """Danh gia do trung khop cua anh tren thang diem 0-10."""
         self._load_model()
         
         prompt = (
@@ -126,7 +120,6 @@ class VisualReRanker:
             )
             
         ans = output_text[0].strip()
-        # Trich xuat so diem bang Regex
         digits = re.findall(r'\b(10|[0-9])\b', ans)
         if digits:
             score = float(digits[0])
@@ -136,9 +129,7 @@ class VisualReRanker:
         return score
 
     def rerank_candidates(self, fused_candidates, query_text, keyframes_dir, top_n_verify=5):
-        """
-        Xac thuc thi giac cho Top N video ung vien va sap xep lai thu hang.
-        """
+        """Xac thuc thi giac cho Top N video ung vien va sap xep lai thu hang."""
         if not fused_candidates:
             return []
             
@@ -161,7 +152,6 @@ class VisualReRanker:
                 vlm_score = 0.0
                 
             original_rrf = cand.get("rrf_score", 0.0)
-            # Ket hop diem RRF va diem xac thuc CV (vlm_score tu 0 den 10)
             boosted_score = original_rrf + (vlm_score / 10.0) * 0.15
             
             cand_copy = dict(cand)
@@ -169,7 +159,5 @@ class VisualReRanker:
             cand_copy["boosted_score"] = boosted_score
             verified_results.append(cand_copy)
             
-        # Sap xep lai Top N theo diem xac thuc CV
         verified_results.sort(key=lambda x: x["boosted_score"], reverse=True)
-        
         return verified_results + remaining_candidates

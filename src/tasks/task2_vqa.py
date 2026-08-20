@@ -2,7 +2,7 @@ import os
 import glob
 import torch
 import numpy as np
-from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+from transformers import AutoProcessor
 from qwen_vl_utils import process_vision_info
 from src.tasks.task1_kis import get_frame_id_from_idx
 
@@ -10,9 +10,10 @@ _vlm_model = None
 _vlm_processor = None
 
 def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
+    """Nap mo hinh VLM dung chung cho VQA va Visual Re-ranking."""
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
-        print(f"VQA: Dang load mo hinh VLM the he moi {model_id}...")
+        print(f"VQA: Nap mo hinh {model_id}...")
         device_map = "auto" if torch.cuda.is_available() else None
         torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         
@@ -24,6 +25,7 @@ def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
                 device_map=device_map
             )
         except Exception:
+            from transformers import Qwen2VLForConditionalGeneration
             _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
                 model_id,
                 torch_dtype=torch_dtype,
@@ -31,11 +33,10 @@ def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
             )
             
         _vlm_processor = AutoProcessor.from_pretrained(model_id)
-        print("VQA: Mo hinh VLM da duoc load thanh cong.")
+        print("VQA: Khoi tao mo hinh VLM thanh cong.")
     return _vlm_model, _vlm_processor
 
-
-def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct", metadata_dir=None, object_searcher=None):
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen3-VL-8B-Instruct", metadata_dir=None, object_searcher=None):
     """Giai quyet Task 2 (Visual Q&A)."""
     if not fused_candidates:
         return {"video_id": "none", "frame_id": "0000", "answer": "không rõ"}
@@ -52,7 +53,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         
     frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
-    # Tim truc tiep file anh vat ly tren dia (ten file tren dia la 0000.jpg, 0116.jpg dua tren best_frame_idx)
+    # Tim file anh vat ly tren dia
     level = video_id.split('_')[0] if '_' in video_id else ""
     idx_4d = f"{best_frame_idx:04d}"
     idx_5d = f"{best_frame_idx:05d}"
@@ -79,7 +80,6 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             image_path = p
             break
             
-    # Neu chua tim thay truc tiep theo ten, quet truc tiep trong thu muc video (Dam bao 100% khong bao gio bi miss anh)
     if not image_path:
         folder_candidates = [
             os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
@@ -97,21 +97,19 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
                     break
                     
     if not image_path:
-        print(f"⚠️ VQA Warning: Khong the dinh vi file anh vat ly cho video {video_id} tai {keyframes_dir}")
+        print(f"VQA Canh bao: Khong the dinh vi anh cho video {video_id}")
         return {"video_id": video_id, "frame_id": frame_id, "answer": "không rõ"}
         
-    print(f"🎬 VQA: Dang suy luan cau hoi cho video {video_id} tren anh {os.path.basename(image_path)}...")
+    print(f"VQA: Suy luan cau hoi cho video {video_id} tren anh {os.path.basename(image_path)}...")
     model, processor = load_vlm(model_id)
 
-    # Kiem tra xem co the ho tro dem thuc the tu Object Detection khong
     hint_text = ""
     if object_searcher:
         objs = object_searcher.get_frame_objects(video_id, best_frame_idx)
         if objs:
             top_entities = [o["entity"] for o in objs[:8]]
-            hint_text = f" (Các vật thể nhận diện được trong ảnh: {', '.join(top_entities)})."
+            hint_text = f" (Vật thể trong ảnh: {', '.join(top_entities)})."
     
-    # Prompt tu nhien, chinh xac, khong go bo de model thoai mai tra loi dung noi dung anh
     prompt_text = (
         f"Dựa vào bức ảnh này{hint_text}, hãy quan sát thật kỹ và trả lời câu hỏi sau bằng Tiếng Việt một cách chính xác nhất: '{question}'"
     )
@@ -149,10 +147,8 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         )
         
     raw_answer = output_text[0].strip()
-    print(f"💡 VQA Raw Answer: '{raw_answer}'")
+    print(f"VQA Dap an: '{raw_answer}'")
 
-    
-    # Loc bo cac tien to va tu dem thua
     clean_ans = raw_answer
     for prefix in ["đáp án:", "đáp án là:", "trả lời:", "câu trả lời:", "là", "đó là", "nó là"]:
         if clean_ans.lower().startswith(prefix):
@@ -163,11 +159,9 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         clean_ans = clean_ans[0].upper() + clean_ans[1:]
     else:
         clean_ans = "Không rõ"
-
         
     return {
         "video_id": video_id,
         "frame_id": frame_id,
         "answer": clean_ans
     }
-

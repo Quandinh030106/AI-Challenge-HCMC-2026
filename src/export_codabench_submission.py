@@ -1,161 +1,116 @@
-import sys
 import os
-
-# Tu dong them thu muc goc vao sys.path de khong bao gio loi import src
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
-
-import argparse
 import glob
-import re
-import csv
+import json
 import zipfile
+import argparse
 import time
+import re
+import numpy as np
+import yaml
 from tqdm import tqdm
-from src.utils import load_config
+
+from src.preprocessing.query_processor import QueryProcessor
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
-from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
 from src.tasks.task2_vqa import solve_task2
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
 from src.search.object_search import ObjectSearcher
 from src.search.visual_reranker import VisualReRanker
 
-
-
+def load_config(config_path="configs/default.yaml"):
+    """Doc file cau hinh he thong."""
+    with open(config_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 def parse_query_file(file_path):
-    """
-    Doc va phan tich noi dung file .txt truy van cua BTC dua vao hau to ten file (kis, qa, trake).
-    """
-    filename = os.path.basename(file_path).lower()
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-        lines = [l.strip() for l in f.readlines() if l.strip()]
-        
-    full_text = " ".join(lines)
+    """Phan tich noi dung file cau hoi (.txt) thanh cau truc du lieu chuan."""
+    filename = os.path.basename(file_path)
+    query_id = os.path.splitext(filename)[0]
     
-    # 1. KIS Query
-    if "kis" in filename:
-        return {
-            "task_type": "kis",
-            "query_id": os.path.splitext(os.path.basename(file_path))[0],
-            "query": full_text
-        }
+    with open(file_path, "r", encoding="utf-8") as f:
+        raw_lines = [line.strip() for line in f.readlines() if line.strip()]
         
-    # 2. Q&A Query
-    elif "qa" in filename or "q&a" in filename:
-        query_text = ""
-        question = ""
-        
-        # Neu co nhieu dong
-        if len(lines) >= 2:
-            query_text = lines[0]
-            question = " ".join(lines[1:])
-        else:
-            # Neu chi co 1 dong, tach theo "Hỏi...", "Câu hỏi...", hoặc dấu chấm hỏi
-            parts = re.split(r'(?<=\?)\s*|(?=câu hỏi:)|(?=question:)|(?=hỏi\s+)', full_text, flags=re.IGNORECASE)
-            if len(parts) >= 2:
-                query_text = parts[0].strip()
-                question = " ".join([p.strip() for p in parts[1:] if p.strip()])
+    full_content = "\n".join(raw_lines)
+    
+    # 1. Kiem tra Task 2: Visual Q&A
+    has_qa_flag = any(k in full_content.lower() for k in ["câu hỏi:", "cau hoi:", "q&a", "question:"])
+    if has_qa_flag:
+        visual_lines = []
+        question_lines = []
+        is_question = False
+        for line in raw_lines:
+            lower = line.lower()
+            if any(k in lower for k in ["câu hỏi:", "cau hoi:", "question:"]):
+                is_question = True
+                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*:\s*', '', line, flags=re.IGNORECASE).strip()
+                if cleaned:
+                    question_lines.append(cleaned)
+            elif is_question:
+                question_lines.append(line)
             else:
-                query_text = full_text
-                question = full_text
+                visual_lines.append(line)
                 
-        # Loai bo tien to neu co
-        question = re.sub(r'^(câu hỏi|question|hỏi)\s*[:\-]?\s*', '', question, flags=re.IGNORECASE).strip()
-        query_text = re.sub(r'^(bối cảnh|mô tả|context|query)\s*[:\-]?\s*', '', query_text, flags=re.IGNORECASE).strip()
-        
         return {
+            "query_id": query_id,
             "task_type": "qa",
-            "query_id": os.path.splitext(os.path.basename(file_path))[0],
-            "query": query_text if query_text else question,
-            "question": question if question else query_text
+            "query": " ".join(visual_lines).strip() if visual_lines else " ".join(question_lines).strip(),
+            "question": " ".join(question_lines).strip()
         }
         
-    # 3. TRAKE Query
-    elif "trake" in filename:
+    # 2. Kiem tra Task 3: TRAKE
+    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+)\s*\d*\s*[:\.]', line, re.IGNORECASE) for line in raw_lines)
+    if has_trake_flag or len(raw_lines) >= 3:
         events = []
-        main_query = lines[0] if lines else ""
-        
-        # Kiem tra xem co chua E1, E2, E3... khong
-        e_matches = re.split(r'(?=E\d+[\.\:\-])', full_text, flags=re.IGNORECASE)
-        if len(e_matches) > 1:
-            main_query = e_matches[0].strip()
-            for e in e_matches[1:]:
-                clean_e = re.sub(r'^(e\d+[\.\:\-]|\d+[\.\)\-:]|\-|\*)\s*', '', e, flags=re.IGNORECASE).strip()
-                if clean_e:
-                    events.append(clean_e)
-        elif len(lines) > 1:
-            for l in lines[1:]:
-                clean_l = re.sub(r'^(e\d+[\.\:\-]|\d+[\.\)\-:]|\-|\*)\s*', '', l, flags=re.IGNORECASE).strip()
-                if clean_l:
-                    events.append(clean_l)
-        else:
-            split_events = re.split(r'[,;]|\s+sau đó\s+|\s+tiếp theo\s+|\s+then\s+', full_text, flags=re.IGNORECASE)
-            events = [e.strip() for e in split_events if e.strip()]
-            
-        if not events:
-            events = [main_query]
-            
-        return {
-            "task_type": "trake",
-            "query_id": os.path.splitext(os.path.basename(file_path))[0],
-            "query": main_query if main_query else " ".join(events),
-            "events": events
-        }
+        for line in raw_lines:
+            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+)\s*\d*\s*[:\.]\s*', '', line, flags=re.IGNORECASE).strip()
+            if cleaned:
+                events.append(cleaned)
+        if len(events) >= 2:
+            return {
+                "query_id": query_id,
+                "task_type": "trake",
+                "events": events,
+                "query": " ".join(events)
+            }
 
-        
-    # Mac dinh neu khong ro hau to -> KIS
+    # 3. Mac dinh la Task 1: Textual KIS
     return {
+        "query_id": query_id,
         "task_type": "kis",
-        "query_id": os.path.splitext(os.path.basename(file_path))[0],
-        "query": full_text
+        "query": " ".join(raw_lines).strip()
     }
 
 def format_answer_for_csv(ans_text):
-    """
-    Format answer cho Q&A theo dung quy chuan vang cua BTC:
-    - Luon bao quanh bang dau ngoac kep de an toan tuyet doi tren Codabench
-    - Escape dau ngoac kep ben trong thanh double quotes ("")
-    - Do dai duoi 100 ky tu, chuan UTF-8 Tieng Viet
-    """
+    """Format cau tra loi VQA cho file CSV."""
     if not ans_text:
-        return '"Không rõ"'
-    ans_clean = str(ans_text).replace("\r", "").replace("\n", " ").strip()
-    ans_clean = ans_clean[:95]
-    ans_escaped = ans_clean.replace('"', '""')
+        return '""'
+    ans_cleaned = str(ans_text).strip().strip('"').strip("'")
+    ans_escaped = ans_cleaned.replace('"', '""')
     return f'"{ans_escaped}"'
 
-
 def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip"):
-    """
-    Chay toan bo pipeline tren goi cau hoi cua BTC va tao file submission.zip nop Codabench.
-    """
+    """Chay toan bo pipeline tren bo de thi va tao file submission.zip."""
     start_time = time.time()
     config = load_config(config_path)
     
-    # 1. Thu muc tam luu cac file csv
     submission_dir = "submission"
     os.makedirs(submission_dir, exist_ok=True)
     
     print("=====================================================")
-    print("🚀 KHOI CHAY HE THONG TAO FILE NOP BAI CODABENCH AIC 2026")
-    print(f"Thu muc chua goi cau hoi : {input_dir}")
-    print(f"File zip dau ra          : {output_zip}")
+    print("KHOI CHAY HE THONG TAO SUBMISSION AIC 2026")
+    print(f"Thu muc de thi : {input_dir}")
+    print(f"File zip xuat  : {output_zip}")
     print("=====================================================")
     
-    # 2. Khoi tao cac module tim kiem
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
     object_searcher = ObjectSearcher(config)
-    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen2-VL-7B-Instruct"))
+    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen3-VL-8B-Instruct"))
     
     keyframes_dir = config["data"].get("keyframes_dir")
-
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
     
     # Tu dong xac dinh thu muc map-keyframes tren Kaggle
@@ -168,18 +123,14 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             map_keyframes_dir = os.path.dirname(csvs[0])
             map_csv_count = len(csvs)
             
-    print(f"Map-Keyframes Directory  : {map_keyframes_dir} ({map_csv_count} CSV files found)")
+    print(f"Map-Keyframes Directory: {map_keyframes_dir} ({map_csv_count} CSV files found)")
     if map_csv_count == 0:
-        print("⚠️ CANH BAO: Chua tim thay thu muc map-keyframes CSV! Kiem tra lai dataset metadata tren Kaggle.")
+        print("Canh bao: Chua tim thay thu muc map-keyframes CSV!")
     else:
-        print("✅ Da ket noi thanh cong thu muc map-keyframes cua BTC.")
+        print("Ket noi thanh cong thu muc map-keyframes cua BTC.")
     print("-----------------------------------------------------")
     
-    # 3. Tim va tu dong giai nen tat ca cac file cau hoi (.txt)
-
     txt_files = []
-    
-    # Truong hop 1: input_dir chinh la 1 file .zip
     if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
         unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
         os.makedirs(unzip_tmp, exist_ok=True)
@@ -187,7 +138,6 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             zf.extractall(unzip_tmp)
         input_dir = unzip_tmp
         
-    # Truong hop 2: Co file .zip nam ben trong input_dir
     if os.path.isdir(input_dir):
         zips = glob.glob(os.path.join(input_dir, "*.zip")) + glob.glob(os.path.join(input_dir, "**", "*.zip"), recursive=True)
         for z in zips:
@@ -197,13 +147,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             except Exception:
                 pass
                 
-    # Tim tat ca cac file .txt
     if os.path.exists(input_dir):
         txt_files = sorted(glob.glob(os.path.join(input_dir, "*.txt")))
         if not txt_files:
             txt_files = sorted(glob.glob(os.path.join(input_dir, "**", "*.txt"), recursive=True))
             
-    # Truong hop 3: Neu van chua thay, tu dong quet trong /kaggle/input tim bo de thi
     if not txt_files and os.path.exists("/kaggle/input"):
         for root, _, files in os.walk("/kaggle/input"):
             if any(k in root.lower() for k in ["thu-nghiem", "bo-de-thi", "query", "queries"]):
@@ -224,17 +172,12 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     
     txt_files = sorted(list(set(txt_files)))
     if not txt_files:
-        print(f"❌ Khong tim thay file .txt nao trong {input_dir}!")
-        print("💡 Goi y: Kiem tra lai duong dan thu muc de thi cua ban tren Kaggle.")
+        print(f"Khong tim thay file .txt nao trong {input_dir}!")
         return
 
-        
-    print(f"Tim thay {len(txt_files)} file cau hoi can xu ly:")
-    for f in txt_files:
-        print(f" - {os.path.basename(f)}")
+    print(f"Tim thay {len(txt_files)} file cau hoi can xu ly.")
     print("-----------------------------------------------------")
     
-    # 4. Xu ly tung file cau hoi va xuat ra tung file .csv tuong ung
     for file_path in tqdm(txt_files, desc="Xu ly cau hoi"):
         parsed = parse_query_file(file_path)
         task_type = parsed["task_type"]
@@ -244,7 +187,6 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         csv_filename = f"{query_id}.csv"
         csv_filepath = os.path.join(submission_dir, csv_filename)
         
-        # Buoc chung: Tien xu ly query + Dense + Sparse + Fusion
         q_info = query_processor.process(query_text)
         intent = q_info["intent_info"]
         
@@ -257,17 +199,15 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
-        # Tang cuong diem thuong tu Objects neu co
         fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
         
-        # GIAI DOAN 2: Xac thuc sau bang Computer Vision (Visual Re-ranking cho Top 5 video)
         try:
             fused = visual_reranker.rerank_candidates(fused, query_text, keyframes_dir, top_n_verify=5)
         except Exception as e:
-            print(f"⚠️ VisualReRanker Warning ({e}), giu nguyen thu hang RRF.")
+            pass
 
+        # TASK 1: TEXTUAL KIS
         if task_type == "kis":
-            # Sinh 100 dong theo format: <Tên file video>, <Frame Idx> (KHONG HEADER)
             top100_preds = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
             )
@@ -278,7 +218,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
                     f_out.write(f"{vid}, {fid}\n")
                     
-        # --- TASK 2: VISUAL Q&A ---
+        # TASK 2: VISUAL Q&A
         elif task_type == "qa":
             question = parsed["question"]
             ans_res = solve_task2(
@@ -288,7 +228,6 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                 object_searcher=object_searcher
             )
             vlm_answer = format_answer_for_csv(ans_res["answer"])
-
             
             top100_preds = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
@@ -300,7 +239,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
                     f_out.write(f"{vid}, {fid}, {vlm_answer}\n")
                     
-        # --- TASK 3: TRAKE ---
+        # TASK 3: TRAKE
         elif task_type == "trake":
             events = parsed["events"]
             align_res = solve_task3(
@@ -311,17 +250,14 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             best_frame_ids = align_res["frame_ids"]
             
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
-                # Dong 1: Ket qua tot nhat tu Dynamic Programming
                 clean_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in best_frame_ids]
                 f_out.write(f"{best_vid}, " + ", ".join(clean_fids) + "\n")
                 
-                # Cac dong tiep theo tu cac video ung vien khac
                 count = 1
                 for cand in fused:
                     vid = cand["video_id"]
                     if vid == best_vid:
                         continue
-                    # Lay chuoi frame dai dien cho tung video ung vien
                     sub_align = solve_task3(
                         events, [cand], keyframes_dir, dense_searcher, 
                         metadata_dir=map_keyframes_dir, query_processor=query_processor
@@ -339,21 +275,18 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     f_out.write(f"{best_vid}, " + ", ".join(dummy_fids) + "\n")
                     count += 1
 
-
-    # 5. Dong goi thu muc submission thanh file submission.zip chuan Codabench
-    print("\n-----------------------------------------------------")
-    print("📦 Dang dong goi thu muc submission vao file zip...")
+    print("-----------------------------------------------------")
+    print("Dong goi thu muc submission vao file zip...")
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
                 file_path = os.path.join(root, file)
-                # Dat duong dan ben trong zip la submission/filename.csv
                 arcname = os.path.join("submission", file)
                 zipf.write(file_path, arcname=arcname)
                 
     elapsed = time.time() - start_time
-    print(f"✅ HOAN TAT! File nop bai da san sang tai: {os.path.abspath(output_zip)}")
-    print(f"⏱️ Tong thoi gian thuc hien: {elapsed:.2f} giay")
+    print(f"Hoan tat: File nop bai tai {os.path.abspath(output_zip)}")
+    print(f"Thoi gian thuc hien: {elapsed:.2f} giay")
     print("=====================================================")
 
 if __name__ == "__main__":

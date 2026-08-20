@@ -6,19 +6,14 @@ _video_folder_cache = {}
 _csv_map_cache = {}
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
-    """
-    Anh xa tu chi so vector (0, 1, 2...) sang Frame ID thoi gian thuc cua video goc (vi du: 1200, 25300).
-    UU TIEN SO 1: Doc tu file CSV map-keyframes cua BTC (chua Frame ID thoi gian thuc cua video).
-    """
+    """Anh xa chi so vector sang Frame ID thoi gian thuc cua video goc."""
     global _video_folder_cache, _csv_map_cache
     
-    # 1. UU TIEN SO 1: Tra cuu tu file CSV Mapping (map-keyframes/*.csv)
     if video_id in _csv_map_cache:
         df_col = _csv_map_cache[video_id]
         if 0 <= frame_idx < len(df_col):
             return str(int(df_col[frame_idx]))
             
-    # Tim kiem duong dan CSV thuc te qua tat ca cac bien the thu muc
     level = video_id.split('_')[0] if '_' in video_id else ""
     candidate_csvs = []
     
@@ -47,7 +42,6 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             target_csv_path = c_path
             break
             
-    # Neu chua thay, quet toan bo /kaggle/input tim file CSV cua video nay
     if not target_csv_path and os.path.exists("/kaggle/input"):
         matches = glob.glob(f"/kaggle/input/**/{video_id}.csv", recursive=True)
         if matches:
@@ -74,20 +68,14 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                 
             _csv_map_cache[video_id] = values
             if 0 <= frame_idx < len(values):
-                real_fid = int(values[frame_idx])
-                return str(real_fid)
+                return str(int(values[frame_idx]))
         except Exception:
             pass
 
-    # 2. FALLBACK: Neu chua tim thay CSV, tra ve frame_idx dang 25fps (frame_idx * 25)
     real_time_estimate = int(frame_idx * 25) if frame_idx > 0 else 1
     return str(real_time_estimate)
 
-
-
-
 def gaussian_smooth_scores(scores, sigma=1.5):
-
     """Lam min chuoi diem thoi gian bang Gaussian Kernel."""
     if len(scores) < 3:
         return scores
@@ -117,10 +105,7 @@ def solve_task1(query_text, fused_candidates, keyframes_dir, metadata_dir=None, 
     return {"video_id": video_id, "frame_id": frame_id, "score": float(smoothed_scores[best_frame_idx])}
 
 def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=None, total_preds=100):
-    """
-    Phan bo 100 cau tra loi thong minh bang Non-Maximum Suppression (NMS) 
-    va Temporal Window Expansion de bao trum 100% khoang thoi gian cua su kien.
-    """
+    """Phan bo 100 cau tra loi thong minh bang NMS va mo rong cua so thoi gian."""
     predictions = []
     
     for rank, cand in enumerate(fused_candidates):
@@ -132,10 +117,9 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
             n_frames = len(scores)
             smoothed = gaussian_smooth_scores(scores, sigma=1.5)
             
-            # Tim cac dinh cuc bo (Local Peaks) bang NMS
             sorted_indices = np.argsort(smoothed)[::-1]
             selected_peaks = []
-            min_distance = 8  # Khoang cach toi thieu giua 2 dinh doc lap (~4-8 giay)
+            min_distance = 8
             
             for idx in sorted_indices:
                 if all(abs(idx - p) >= min_distance for p in selected_peaks):
@@ -143,27 +127,22 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
                 if len(selected_peaks) >= 4:
                     break
                     
-            # Phan bo khung hinh theo thu hang video:
             frame_indices_to_take = []
             if rank == 0:
-                # Video Top 1: Lay dinh chinh kem theo cac frame lien ke de chac chan trung cua so Ground Truth
                 for p in selected_peaks[:3]:
                     for delta in [0, -1, 1, 2, -2]:
                         target_f = p + delta
                         if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
                             frame_indices_to_take.append(target_f)
             elif rank < 4:
-                # Video Top 2-4: Lay 2 dinh va cac frame lien ke
                 for p in selected_peaks[:2]:
                     for delta in [0, 1, -1]:
                         target_f = p + delta
                         if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
                             frame_indices_to_take.append(target_f)
             elif rank < 12:
-                # Video Top 5-12: Lay 2 dinh doc lap
                 frame_indices_to_take = selected_peaks[:2]
             else:
-                # Video con lai: Lay 1 dinh cao nhat
                 frame_indices_to_take = selected_peaks[:1] if selected_peaks else [int(sorted_indices[0])]
                 
             for f_idx in frame_indices_to_take:
@@ -178,10 +157,8 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
         if len(predictions) >= total_preds:
             break
             
-    # Neu con thieu, bo sung tu cac video tiep theo
     while len(predictions) < total_preds:
         last_vid = fused_candidates[0]["video_id"] if fused_candidates else "none"
         predictions.append({"video_id": last_vid, "frame_id": "0000"})
         
     return predictions[:total_preds]
-
