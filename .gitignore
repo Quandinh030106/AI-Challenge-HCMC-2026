@@ -5,6 +5,15 @@ data/
 *.pth
 *.csv
 
+# De thi, Submission va file zip
+*.zip
+THUNGHIEM*
+*bo-de-thi*
+submission/
+submissions/
+bo_de_thi/
+round1_queries/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -17,7 +26,4 @@ env/
 # IDEs
 .vscode/
 .idea/
-.DS_Store
-.DS_Store
-.DS_Store
 .DS_Store

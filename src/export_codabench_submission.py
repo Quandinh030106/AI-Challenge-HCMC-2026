@@ -48,23 +48,23 @@ def parse_query_file(file_path):
         query_text = ""
         question = ""
         
-        # Neu co nhieu dong (Dong 1: Boi canh, Dong 2: Cau hoi)
+        # Neu co nhieu dong
         if len(lines) >= 2:
             query_text = lines[0]
-            question = lines[1]
+            question = " ".join(lines[1:])
         else:
-            # Neu chi co 1 dong, tach theo dau ? hoac tu khoa
-            parts = re.split(r'(?<=\?)\s*|(?=câu hỏi:)|(?=question:)', full_text, flags=re.IGNORECASE)
+            # Neu chi co 1 dong, tach theo "Hỏi...", "Câu hỏi...", hoặc dấu chấm hỏi
+            parts = re.split(r'(?<=\?)\s*|(?=câu hỏi:)|(?=question:)|(?=hỏi\s+)', full_text, flags=re.IGNORECASE)
             if len(parts) >= 2:
                 query_text = parts[0].strip()
-                question = parts[1].strip()
+                question = " ".join([p.strip() for p in parts[1:] if p.strip()])
             else:
                 query_text = full_text
                 question = full_text
                 
         # Loai bo tien to neu co
-        question = re.sub(r'^(câu hỏi|question)\s*[:\-]\s*', '', question, flags=re.IGNORECASE)
-        query_text = re.sub(r'^(bối cảnh|mô tả|context|query)\s*[:\-]\s*', '', query_text, flags=re.IGNORECASE)
+        question = re.sub(r'^(câu hỏi|question|hỏi)\s*[:\-]?\s*', '', question, flags=re.IGNORECASE).strip()
+        query_text = re.sub(r'^(bối cảnh|mô tả|context|query)\s*[:\-]?\s*', '', query_text, flags=re.IGNORECASE).strip()
         
         return {
             "task_type": "qa",
@@ -78,14 +78,20 @@ def parse_query_file(file_path):
         events = []
         main_query = lines[0] if lines else ""
         
-        # Neu co danh sach dong su kien con
-        if len(lines) > 1:
+        # Kiem tra xem co chua E1, E2, E3... khong
+        e_matches = re.split(r'(?=E\d+[\.\:\-])', full_text, flags=re.IGNORECASE)
+        if len(e_matches) > 1:
+            main_query = e_matches[0].strip()
+            for e in e_matches[1:]:
+                clean_e = re.sub(r'^(e\d+[\.\:\-]|\d+[\.\)\-:]|\-|\*)\s*', '', e, flags=re.IGNORECASE).strip()
+                if clean_e:
+                    events.append(clean_e)
+        elif len(lines) > 1:
             for l in lines[1:]:
-                clean_l = re.sub(r'^(\d+[\.\)\-:]|\-|\*)\s*', '', l).strip()
+                clean_l = re.sub(r'^(e\d+[\.\:\-]|\d+[\.\)\-:]|\-|\*)\s*', '', l, flags=re.IGNORECASE).strip()
                 if clean_l:
                     events.append(clean_l)
         else:
-            # Neu chi co 1 dong chua dau phay / cham phay
             split_events = re.split(r'[,;]|\s+sau đó\s+|\s+tiếp theo\s+|\s+then\s+', full_text, flags=re.IGNORECASE)
             events = [e.strip() for e in split_events if e.strip()]
             
@@ -95,9 +101,10 @@ def parse_query_file(file_path):
         return {
             "task_type": "trake",
             "query_id": os.path.splitext(os.path.basename(file_path))[0],
-            "query": main_query,
+            "query": main_query if main_query else " ".join(events),
             "events": events
         }
+
         
     # Mac dinh neu khong ro hau to -> KIS
     return {
