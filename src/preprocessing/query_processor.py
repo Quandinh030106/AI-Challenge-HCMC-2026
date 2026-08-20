@@ -63,6 +63,8 @@ class QueryProcessor:
         return {
             "query_vi": query_vi,
             "query_en": query_en,
+            "english_query": query_en,
             "prompt_ensemble": prompt_ensemble,
             "intent_info": intent_info
         }
+

@@ -235,7 +235,8 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         )
         
         # Tang cuong diem thuong tu Objects neu co
-        fused = object_searcher.boost_candidates(fused, q_info["english_query"])
+        fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
+
         
         # --- TASK 1: TEXTUAL KIS ---
         if task_type == "kis":
