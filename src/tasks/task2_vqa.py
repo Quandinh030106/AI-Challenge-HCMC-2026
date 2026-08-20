@@ -69,11 +69,28 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             image_path = p
             break
             
+    # Neu chua tim thay truc tiep theo ten, quet truc tiep trong thu muc video (Dam bao 100% khong bao gio bi miss anh)
     if not image_path:
-        # Neu chua co anh vat ly (vi du tren tap test chi co .npy), tra ve dap an an toan
+        folder_candidates = [
+            os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
+            os.path.join(keyframes_dir, f"Keyframes_{level}", video_id),
+            os.path.join(keyframes_dir, level, "keyframes", video_id),
+            os.path.join(keyframes_dir, "keyframes", video_id),
+            os.path.join(keyframes_dir, video_id)
+        ]
+        for fc in folder_candidates:
+            if os.path.exists(fc):
+                all_imgs = sorted(glob.glob(os.path.join(fc, "*.jpg")) + glob.glob(os.path.join(fc, "*.jpeg")) + glob.glob(os.path.join(fc, "*.png")))
+                if all_imgs:
+                    target_idx = min(best_frame_idx, len(all_imgs) - 1)
+                    image_path = all_imgs[target_idx]
+                    break
+                    
+    if not image_path:
+        print(f"⚠️ VQA Warning: Khong the dinh vi file anh vat ly cho video {video_id} tai {keyframes_dir}")
         return {"video_id": video_id, "frame_id": frame_id, "answer": "không rõ"}
-
         
+    print(f"🎬 VQA: Dang suy luan cau hoi cho video {video_id} tren anh {os.path.basename(image_path)}...")
     model, processor = load_vlm(model_id)
 
     # Kiem tra xem co the ho tro dem thuc the tu Object Detection khong
@@ -84,13 +101,10 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             top_entities = [o["entity"] for o in objs[:8]]
             hint_text = f" (Các vật thể nhận diện được trong ảnh: {', '.join(top_entities)})."
     
-    # Prompt toi uu cho Task 2 VQA: ep model tra ve truc dien tu khoa (Mau sac, So luong, Ten vat the)
+    # Prompt tu nhien, chinh xac, khong go bo de model thoai mai tra loi dung noi dung anh
     prompt_text = (
-        f"Dựa vào bức ảnh này{hint_text}, hãy trả lời câu hỏi sau bằng Tiếng Việt một cách ngắn gọn, trực diện nhất "
-        f"(chỉ trả lời 1 đến 3 từ, chỉ nêu đúng từ khóa đáp án như màu sắc, con số, hoặc tên vật thể; "
-        f"không giải thích, không dùng câu dẫn dài dòng): '{question}'"
+        f"Dựa vào bức ảnh này{hint_text}, hãy quan sát thật kỹ và trả lời câu hỏi sau bằng Tiếng Việt một cách chính xác nhất: '{question}'"
     )
-
     
     messages = [
         {
@@ -114,7 +128,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     ).to(model.device)
     
     with torch.no_grad():
-        generated_ids = model.generate(**inputs, max_new_tokens=25)
+        generated_ids = model.generate(**inputs, max_new_tokens=120)
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
@@ -125,10 +139,12 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         )
         
     raw_answer = output_text[0].strip()
+    print(f"💡 VQA Raw Answer: '{raw_answer}'")
+
     
-    # Loc bo cac tien to va tu dem thua (vi du: "Dap an: ", "La ", "Do la ")
+    # Loc bo cac tien to va tu dem thua
     clean_ans = raw_answer
-    for prefix in ["đáp án:", "đáp án là:", "trả lời:", "câu trả lời:", "là", "đó là", "nó là", "có"]:
+    for prefix in ["đáp án:", "đáp án là:", "trả lời:", "câu trả lời:", "là", "đó là", "nó là"]:
         if clean_ans.lower().startswith(prefix):
             clean_ans = clean_ans[len(prefix):].strip()
             
@@ -137,6 +153,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         clean_ans = clean_ans[0].upper() + clean_ans[1:]
     else:
         clean_ans = "Không rõ"
+
         
     return {
         "video_id": video_id,
