@@ -87,15 +87,26 @@ def find_image_for_frame(keyframes_dir, video_id, frame_idx, frame_id=""):
                 return all_imgs[target_idx]
     return None
 
-def clean_vlm_answer(raw_answer):
-    """Lam sach tien to dan chuyen nhung GIU NGUYEN VEN toan bo do dai noi dung cau tra loi."""
+def clean_vlm_answer(raw_answer, question=None):
+    """Lam sach tien to dan chuyen nhung GIU NGUYEN VEN toan bo do dai noi dung cau tra loi duoi 100 ky tu."""
     if not raw_answer:
         return "Không rõ"
         
     ans = raw_answer.strip()
-    ans = re.sub(r'^["\']+|["\']+$', '', ans).strip()
     
+    # 1. Neu cau tra loi co chua dau ngoac kep bieu thi noi dung cot loi
+    quoted_match = re.search(r'["“]([^"”]+)["”]', ans)
+    if quoted_match and len(quoted_match.group(1).strip()) > 2 and len(ans) > 60:
+        ans = quoted_match.group(1).strip()
+        
+    # 2. Cat bo cau hoi neu VLM lap lai nguyen van cau hoi
+    if question and len(question) > 10:
+        q_clean = question.strip().rstrip('?')
+        if ans.lower().startswith(q_clean.lower()):
+            ans = ans[len(q_clean):].lstrip(' : là,.-')
+            
     prefix_patterns = [
+        r'^(hình ảnh|đoạn video|video|clip)(\s+về\s+[^:]+)?\s*(là|đó là|chính là)?\s*[:\-\.]?\s*',
         r'^(câu thơ|hai câu thơ|bài thơ|tiêu đề|tên món ăn|tên của xã|tên xã|đáp án|câu trả lời|kết quả)(\s+của\s+[^:]+)?\s*(là|đó là|chính là)?\s*[:\-\.]?\s*',
         r'^(dựa vào|nhìn vào|theo|quan sát)\s+hình ảnh\s*[,:]?\s*(thì|ta thấy|có thể thấy)?\s*',
         r'^(trong hình|trên hình|trong ảnh|trên ảnh)\s*[,:]?\s*',
@@ -114,7 +125,10 @@ def clean_vlm_answer(raw_answer):
                 changed = True
                 
     ans = ans.strip().strip('"').strip("'").rstrip('.!?;:')
+    if len(ans) > 100:
+        ans = ans[:100].strip()
     return ans if ans else "Không rõ"
+
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
     """
@@ -232,7 +246,8 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             torch.cuda.empty_cache()
             
     print(f"VQA Dap an: '{raw_answer}'")
-    final_answer = clean_vlm_answer(raw_answer)
+    final_answer = clean_vlm_answer(raw_answer, question=clean_question)
+
     
     return {
         "video_id": video_id,

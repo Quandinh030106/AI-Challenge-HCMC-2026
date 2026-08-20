@@ -74,15 +74,33 @@ def parse_query_file(file_path):
             else:
                 visual_lines.append(line)
                 
-        query = " ".join(visual_lines).strip() or full_content
-        question = " ".join(question_lines).strip() or full_content
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 2 (Visual Q&A) | Question: '{question}'")
+        # Phan tach ro rang phan mo ta boi canh va cau hoi cu the
+        visual_parts = []
+        question_parts = []
+        for line in raw_lines:
+            # Tach cac cau trong dong
+            sents = re.split(r'(?<=[.!?])\s+', line)
+            for s in sents:
+                s_strip = s.strip()
+                if not s_strip:
+                    continue
+                if "?" in s_strip or re.search(r'^(câu hỏi|hỏi|cho biết|tìm xem)\b', s_strip, re.IGNORECASE):
+                    cleaned_q = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', s_strip, flags=re.IGNORECASE).strip()
+                    if cleaned_q:
+                        question_parts.append(cleaned_q)
+                else:
+                    visual_parts.append(s_strip)
+                    
+        query = " ".join(visual_parts).strip() or full_content
+        question = " ".join(question_parts).strip() or full_content
+        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 2 (Visual Q&A) | Visual: '{query[:60]}...' | Question: '{question}'")
         return {
             "query_id": query_id,
             "task_type": "qa",
             "query": query,
             "question": question
         }
+
         
     if is_explicit_trake:
         events = []
@@ -140,14 +158,18 @@ def parse_query_file(file_path):
 
 
 def format_answer_for_csv(ans_text):
-    """Format cau tra loi VQA cho file CSV."""
+    """Format cau tra loi VQA cho file CSV tuan thu dung quy dinh toi da 100 ky tu cua BTC."""
     if not ans_text or str(ans_text).strip() in ["", '""', "''", "None"]:
         ans_text = "Không rõ"
     ans_cleaned = str(ans_text).strip().strip('"').strip("'").replace("\n", " ").strip()
+    # Quy dinh cua BTC: Answer (Q&A) co do dai toi da 100 ky tu
+    if len(ans_cleaned) > 100:
+        ans_cleaned = ans_cleaned[:100].strip()
     if not ans_cleaned:
         ans_cleaned = "Không rõ"
     ans_escaped = ans_cleaned.replace('"', '""')
     return f'"{ans_escaped}"'
+
 
 
 def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip"):
@@ -156,7 +178,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     config = load_config(config_path)
     
     submission_dir = "submission"
+    if os.path.exists(submission_dir):
+        shutil.rmtree(submission_dir)
     os.makedirs(submission_dir, exist_ok=True)
+
     
     print("=====================================================")
     print("KHOI CHAY HE THONG TAO SUBMISSION AIC 2026")
@@ -267,10 +292,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         csv_filename = f"{query_id}.csv"
         csv_filepath = os.path.join(submission_dir, csv_filename)
         
-        search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
-        q_info = query_processor.process(search_text if task_type == "qa" else query_text)
+        # q_info duoc tao tu query_text (mo ta thi giac sach, khong bi nhiem tu khoa cau hoi)
+        q_info = query_processor.process(query_text)
         intent = q_info["intent_info"]
         
+        search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
         dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
         sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
         fused = reciprocal_rank_fusion(
@@ -280,7 +306,8 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
-        fused = object_searcher.boost_candidates(fused, f"{search_text} {q_info.get('query_en', '')}")
+        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
+
 
         # TASK 1: TEXTUAL KIS
 

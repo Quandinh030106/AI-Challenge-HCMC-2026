@@ -128,18 +128,22 @@ class QueryProcessor:
 
 
     def detect_query_intent(self, text_vi):
-        """Phan loai y dinh cau hoi de gan trong so RRF."""
+        """Phan loai y dinh cau hoi de gan trong so RRF hop ly."""
         text_lower = text_vi.lower()
-        ocr_keywords = ["chữ", "biển báo", "bảng hiệu", "tên", "số xe", "biển số", "dòng chữ", "viết", "ký tự", "logo", "fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "covid"]
+        # Chi gan OCR_TEXT khi co thuc the rieng cu the hoac tu khoa doc bien hieu thuc su
+        ocr_keywords = [
+            "dòng chữ", "biển hiệu", "bảng hiệu", "khẩu hiệu", "logo", "biển số", "biển báo",
+            "fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "covid"
+        ]
         
         for kw in ocr_keywords:
             if kw in text_lower:
                 return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
                 
-        return {"intent": "VISUAL_SCENE", "dense_weight": 0.7, "sparse_weight": 0.3}
+        return {"intent": "VISUAL_SCENE", "dense_weight": 0.75, "sparse_weight": 0.25}
 
     def generate_prompt_ensemble(self, query_en, query_vi=""):
-        """Sinh tap bien the Prompt Ensemble da tang (Visual Ensembling)."""
+        """Sinh tap bien the Prompt Ensemble da tang toi uu hoa cho CLIP."""
         domain_prompts = []
         text_vi_lower = query_vi.lower()
         for kw, extra_desc in self.visual_knowledge_map.items():
@@ -149,6 +153,13 @@ class QueryProcessor:
                 domain_prompts.append(f"a video scene of {extra_desc}")
                 
         clean_text = query_en.strip().rstrip('.')
+        # Loai bo cac tien to hoi thoai thua khoi prompt cua CLIP
+        conversational_prefixes = [
+            r'^(watch a video of|watch the video of|look for a video of|find a video of|find the scene of|a scene of|the clip is set in|in the clip there is|in the clip|the clip depicts|find exactly the short clip where|this is an introduction to|a piece of information about|the scene begins with)\s+'
+        ]
+        for cp in conversational_prefixes:
+            clean_text = re.sub(cp, '', clean_text, flags=re.IGNORECASE).strip()
+            
         general_templates = [
             clean_text,
             f"a photo of {clean_text}",
@@ -156,6 +167,7 @@ class QueryProcessor:
             f"a high quality shot of {clean_text}",
             f"a close-up view of {clean_text}"
         ]
+
         
         # Neu cau truy van dai, them tung cau con vao ensemble
         sentences = [s.strip() for s in re.split(r'[\.\;\n]+', clean_text) if len(s.strip().split()) >= 3]
