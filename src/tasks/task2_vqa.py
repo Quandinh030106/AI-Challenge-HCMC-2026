@@ -203,18 +203,38 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     print(f"VQA Dap an: '{raw_answer}'")
 
     clean_ans = raw_answer
-    for prefix in ["đáp án:", "đáp án là:", "trả lời:", "câu trả lời:", "là", "đó là", "nó là"]:
-        if clean_ans.lower().startswith(prefix):
-            clean_ans = clean_ans[len(prefix):].strip()
-            
-    clean_ans = clean_ans.rstrip('.!?,;:')
-    if not clean_ans or any(k in clean_ans.lower() for k in ["xin lỗi", "không thể xác định", "không thể cung cấp"]):
+    if not clean_ans or any(k in clean_ans.lower() for k in ["xin lỗi", "không thể xác định", "không thể cung cấp", "không tìm thấy"]):
         clean_ans = ocr_context[:100] if ocr_context else "Không rõ"
+        
+    # Cat bo moi tien to dan chuyen cua LLM/VLM nhung GIU NGUYEN VEN toan bo do dai cau tho/tieu de
+    clean_ans = re.sub(r'^["\']+|["\']+$', '', clean_ans).strip()
+    prefix_patterns = [
+        r'^(câu thơ|hai câu thơ|bài thơ|tiêu đề|tên món ăn|tên của xã|tên xã|đáp án|câu trả lời|kết quả)(\s+của\s+[^:]+)?\s*(là|đó là|chính là)?\s*[:\-\.]?\s*',
+        r'^(dựa vào|nhìn vào|theo|quan sát)\s+hình ảnh\s*[,:]?\s*(thì|ta thấy|có thể thấy)?\s*',
+        r'^(trong hình|trên hình|trong ảnh|trên ảnh)\s*[,:]?\s*',
+        r'^(đó là|nó là|chính là|là)\s*[:\-\.]?\s*',
+        r'^đáp án\s*(là)?\s*[:\-\.]?\s*',
+        r'^trả lời\s*(là)?\s*[:\-\.]?\s*'
+    ]
+    
+    changed = True
+    while changed:
+        changed = False
+        for pat in prefix_patterns:
+            new_ans = re.sub(pat, '', clean_ans, flags=re.IGNORECASE).strip()
+            if new_ans != clean_ans and new_ans:
+                clean_ans = new_ans
+                changed = True
+                
+    clean_ans = clean_ans.strip().strip('"').strip("'").rstrip('.!?;:')
+    if not clean_ans:
+        clean_ans = "Không rõ"
         
     return {
         "video_id": video_id,
         "frame_id": frame_id,
         "answer": clean_ans
     }
+
 
 

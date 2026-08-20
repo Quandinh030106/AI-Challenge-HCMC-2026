@@ -267,11 +267,12 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         csv_filename = f"{query_id}.csv"
         csv_filepath = os.path.join(submission_dir, csv_filename)
         
-        q_info = query_processor.process(query_text)
+        search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
+        q_info = query_processor.process(search_text if task_type == "qa" else query_text)
         intent = q_info["intent_info"]
         
         dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
-        sparse_res = sparse_searcher.search(query_text, top_k_videos=50)
+        sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
         fused = reciprocal_rank_fusion(
             dense_res, sparse_res,
             dense_weight=intent["dense_weight"],
@@ -279,9 +280,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
-        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
+        fused = object_searcher.boost_candidates(fused, f"{search_text} {q_info.get('query_en', '')}")
 
         # TASK 1: TEXTUAL KIS
+
 
         if task_type == "kis":
 
@@ -352,21 +354,9 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     f_out.write(f"{best_vid}, " + ", ".join(dummy_fids) + "\n")
                     count += 1
 
-        # Luu them ban sao alias khong co hau to de tuong thich moi bo cham Codabench
-        import shutil
-        base_id = re.sub(r'[-_](kis|qa|vqa|trake|event)$', '', query_id, flags=re.IGNORECASE)
-        if base_id != query_id:
-            alias_path = os.path.join(submission_dir, f"{base_id}.csv")
-            shutil.copyfile(csv_filepath, alias_path)
-            
-        alias_with_dash = re.sub(r'[-_](kis|qa|vqa|trake|event)$', r'-\1', query_id, flags=re.IGNORECASE)
-        if alias_with_dash != query_id:
-            dash_path = os.path.join(submission_dir, f"{alias_with_dash}.csv")
-            shutil.copyfile(csv_filepath, dash_path)
-
-
     print("-----------------------------------------------------")
     print("Dong goi thu muc submission vao file zip...")
+
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
