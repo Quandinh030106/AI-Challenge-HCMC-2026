@@ -48,10 +48,11 @@ class QueryProcessor:
         print("QueryProcessor: Dang nap mo hinh dich Tieng Viet -> Tieng Anh...")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(self.device)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name, tie_word_embeddings=False).to(self.device)
             self.model.eval()
             self.translator_available = True
             print("QueryProcessor: Khoi tao bo dich offline thanh cong.")
+
         except Exception as e:
             print(f"QueryProcessor: Canh bao ({e}), dung che do fallback ket hop Visual Knowledge Map.")
             self.translator_available = False
