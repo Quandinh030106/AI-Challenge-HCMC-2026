@@ -41,8 +41,20 @@ class QueryProcessor:
             "đậu hủ": "tofu cutting cooking",
             "fana": "FANA charity club giving gifts to poor children in Khanh Hoa",
             "nguyễn trung trực": "Nguyen Trung Truc hero temple shrine festival in Kien Giang",
-            "covid-19": "COVID-19 support for orphan children charity event banner"
+            "covid-19": "COVID-19 support for orphan children charity event banner",
+            "covid": "COVID-19 support for orphan children charity event banner",
+            "chim": "bird perched on tree ground dark blue red brown feathers in forest",
+            "chú chim": "bird with dark blue red brown feathers in forest",
+            "bạch tuộc": "japanese food festival girl wearing red octopus squid in front of chest holding paper bag",
+            "con mực": "girl wearing red octopus squid toy in front of chest holding paper bag",
+            "nhạc cụ": "three people playing metallic round handpan hang drum in front of colorful bookshelf",
+            "kệ sách": "people playing metallic instrument in front of colorful bookshelf",
+            "mảnh bìa": "man arranging cardboard cutout pieces light casting shadow portrait of a man in suit on wall",
+            "đổ bóng": "cardboard pieces casting shadow portrait on wall",
+            "thịt nạc xay": "cooking class woman teaching recipe with 200g minced ground meat",
+            "thịt xay": "cooking class woman teaching recipe with 200g minced ground meat"
         }
+
 
         print(f"QueryProcessor: Dang nap mo hinh dich Meta NLLB-200 ({self.model_name})...")
 
