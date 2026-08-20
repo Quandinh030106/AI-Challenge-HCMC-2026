@@ -25,9 +25,11 @@ class ObjectSearcher:
             os.path.join(self.objects_dir, f"objects_{level}", "objects", video_id),
             os.path.join(self.objects_dir, f"objects_{level}", video_id),
             os.path.join(self.objects_dir, level, video_id),
+            os.path.join(self.objects_dir, "objects-aic25-b1", "objects", video_id),
             os.path.join(os.path.dirname(self.objects_dir), "objects-aic25-b1", "objects", video_id),
             os.path.join(os.path.dirname(self.objects_dir), "objects", video_id)
         ]
+
         
         for c in candidate_dirs:
             if os.path.exists(c):

@@ -154,14 +154,58 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
     
-    # 3. Tim tat ca cac file cau hoi (.txt)
-    txt_files = sorted(glob.glob(os.path.join(input_dir, "*.txt")))
-    if not txt_files:
-        txt_files = sorted(glob.glob(os.path.join(input_dir, "**", "*.txt"), recursive=True))
+    # 3. Tim va tu dong giai nen tat ca cac file cau hoi (.txt)
+    txt_files = []
+    
+    # Truong hop 1: input_dir chinh la 1 file .zip
+    if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
+        unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
+        os.makedirs(unzip_tmp, exist_ok=True)
+        with zipfile.ZipFile(input_dir, "r") as zf:
+            zf.extractall(unzip_tmp)
+        input_dir = unzip_tmp
         
+    # Truong hop 2: Co file .zip nam ben trong input_dir
+    if os.path.isdir(input_dir):
+        zips = glob.glob(os.path.join(input_dir, "*.zip")) + glob.glob(os.path.join(input_dir, "**", "*.zip"), recursive=True)
+        for z in zips:
+            try:
+                with zipfile.ZipFile(z, "r") as zf:
+                    zf.extractall(input_dir)
+            except Exception:
+                pass
+                
+    # Tim tat ca cac file .txt
+    if os.path.exists(input_dir):
+        txt_files = sorted(glob.glob(os.path.join(input_dir, "*.txt")))
+        if not txt_files:
+            txt_files = sorted(glob.glob(os.path.join(input_dir, "**", "*.txt"), recursive=True))
+            
+    # Truong hop 3: Neu van chua thay, tu dong quet trong /kaggle/input tim bo de thi
+    if not txt_files and os.path.exists("/kaggle/input"):
+        for root, _, files in os.walk("/kaggle/input"):
+            if any(k in root.lower() for k in ["thu-nghiem", "bo-de-thi", "query", "queries"]):
+                for file in files:
+                    if file.lower().endswith(".txt"):
+                        txt_files.append(os.path.join(root, file))
+                    elif file.lower().endswith(".zip"):
+                        try:
+                            unzip_dir = "/kaggle/working/bo_de_thi_auto"
+                            os.makedirs(unzip_dir, exist_ok=True)
+                            with zipfile.ZipFile(os.path.join(root, file), "r") as zf:
+                                zf.extractall(unzip_dir)
+                            txt_files = sorted(glob.glob(os.path.join(unzip_dir, "**", "*.txt"), recursive=True))
+                        except Exception:
+                            pass
+                if txt_files:
+                    break
+                    
+    txt_files = sorted(list(set(txt_files)))
     if not txt_files:
         print(f"❌ Khong tim thay file .txt nao trong {input_dir}!")
+        print("💡 Goi y: Kiem tra lai duong dan thu muc de thi cua ban tren Kaggle.")
         return
+
         
     print(f"Tim thay {len(txt_files)} file cau hoi can xu ly:")
     for f in txt_files:
