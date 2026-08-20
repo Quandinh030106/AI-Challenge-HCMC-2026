@@ -208,9 +208,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
-        fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
+        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
 
         # TASK 1: TEXTUAL KIS
+
         if task_type == "kis":
 
             top100_preds = generate_diversity_top100_kis(

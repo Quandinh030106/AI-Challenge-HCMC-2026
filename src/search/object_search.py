@@ -1,45 +1,110 @@
 import os
+import glob
 import json
 import re
+import numpy as np
 
 class ObjectSearcher:
     """
-    Module khai thac du lieu Object Detection JSON cua BTC sieu toc (< 0.01s).
-    - Chi doc truc tiep cac frame dinh cua Top video ung vien (khong quet de quy hang trieu file).
-    - Ho tro dem so luong vat the chinh xac cho Task 2 VQA.
+    Module khai thac du lieu Object Detection JSON cua BTC de:
+    1. Tim dung video chua dung cac vat the trong cau hoi (Video Boosting).
+    2. Dinh vi chinh xac khung hinh vat ly chua vat the do (Frame-Level Object Grounding).
     """
     def __init__(self, config):
         self.config = config
         self.objects_dir = config.get("data", {}).get("objects_dir", "")
-        self._cache = {} # Cache doc file json cua cac video
+        self._objects_root = self._find_objects_root()
+        self._cache = {}
         
+        # Bang anh xa tu khoa Tieng Viet / Tieng Anh sang cac Class Entities cua BTC
+        self.entity_map = {
+            "xe đạp": ["Bicycle", "Land vehicle", "Vehicle", "Wheel", "Person"],
+            "đua xe": ["Bicycle", "Person", "Sports equipment", "Helmet"],
+            "dê": ["Goat", "Animal", "Livestock", "Cattle", "Mammal"],
+            "cho dê ăn": ["Goat", "Animal", "Person", "Livestock"],
+            "bánh rán": ["Cake", "Food", "Baked goods", "Dessert", "Pastry", "Doughnut"],
+            "bánh": ["Cake", "Food", "Baked goods", "Dessert"],
+            "hoa": ["Flower", "Plant", "Rose", "Houseplant"],
+            "pansy": ["Flower", "Plant"],
+            "máy ảnh": ["Camera", "Electronics", "Camera lens"],
+            "ống kính": ["Camera", "Camera lens", "Electronics"],
+            "vệ sinh máy ảnh": ["Camera", "Camera lens", "Person"],
+            "thuyền": ["Boat", "Watercraft", "Vehicle"],
+            "ghe": ["Boat", "Watercraft", "Vehicle"],
+            "tàu vũ trụ": ["Airplane", "Rocket", "Aircraft", "Space vehicle", "Vehicle"],
+            "phi hành gia": ["Person", "Clothing", "Suit"],
+            "hổ": ["Tiger", "Cat", "Carnivore", "Animal", "Mammal"],
+            "đàn hổ": ["Tiger", "Cat", "Animal", "Mammal"],
+            "nấm": ["Mushroom", "Food", "Plant", "Vegetable"],
+            "cắt nấm": ["Mushroom", "Food", "Kitchen utensil", "Person"],
+            "panna cotta": ["Dessert", "Food", "Drink", "Tableware", "Glass"],
+            "măng tây": ["Vegetable", "Food", "Plant"],
+            "điêu khắc cát": ["Sculpture", "Sand", "Art", "Statue", "Person"],
+            "múa lân": ["Person", "Clothing", "Costume", "Dragon", "Lion"],
+            "rồng": ["Dragon", "Sculpture", "Statue", "Toy"],
+            "thịt": ["Meat", "Food", "Beef", "Pork"],
+            "gỏi cuốn": ["Food", "Vegetable", "Spring roll", "Dish"],
+            "dứa": ["Pineapple", "Fruit", "Food", "Plant"],
+            "thu hoạch dứa": ["Fruit", "Food", "Plant", "Person", "Boat"],
+            "cá mập": ["Shark", "Fish", "Animal", "Sea life"],
+            "bọ": ["Insect", "Arthropod", "Beetle", "Animal"],
+            "robot": ["Robot", "Toy", "Electronics"]
+        }
+        
+    def _find_objects_root(self):
+        """Tu dong quet va xac dinh thu muc objects trong he thong."""
+        candidate_roots = [
+            self.objects_dir,
+            os.path.join(os.path.dirname(self.objects_dir), "objects") if self.objects_dir else None,
+            "/kaggle/input/ai-challenge-hcmc-2026-objects/objects",
+            "/kaggle/input/ai-challenge-hcmc-2026-objects",
+            "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-objects/objects",
+            "/kaggle/input/ai-challenge-hcmc-2026-metadata/objects-aic25-b1/objects",
+            "/kaggle/input/ai-challenge-hcmc-2026-metadata/objects"
+        ]
+        
+        for r in candidate_roots:
+            if r and os.path.exists(r):
+                print(f"ObjectSearcher: Tim thay thu muc Objects tai: {r}")
+                return r
+                
+        if os.path.exists("/kaggle/input"):
+            for root, dirs, _ in os.walk("/kaggle/input"):
+                if "objects" in root.lower() and len(dirs) > 5:
+                    print(f"ObjectSearcher: Tu dong phat hien thu muc Objects tai: {root}")
+                    return root
+                    
+        print("ObjectSearcher: Canh bao: Chua tim thay thu muc Objects tren he thong.")
+        return None
+
     def _find_video_object_folder(self, video_id):
-        """Tim truc tiep thu muc chua cac file JSON object cua video trong 0.0001s."""
-        if not self.objects_dir or not os.path.exists(self.objects_dir):
+        """Tim thu muc chua cac file JSON object cua video."""
+        if not self._objects_root:
             return None
             
         level = video_id.split('_')[0] if '_' in video_id else ""
         candidate_dirs = [
-            os.path.join(self.objects_dir, video_id),
-            os.path.join(self.objects_dir, "objects", video_id),
-            os.path.join(self.objects_dir, f"objects_{level}", "objects", video_id),
-            os.path.join(self.objects_dir, f"objects_{level}", video_id),
-            os.path.join(self.objects_dir, level, video_id),
-            os.path.join(self.objects_dir, "objects-aic25-b1", "objects", video_id),
-            os.path.join(os.path.dirname(self.objects_dir), "objects-aic25-b1", "objects", video_id),
-            os.path.join(os.path.dirname(self.objects_dir), "objects", video_id)
+            os.path.join(self._objects_root, video_id),
+            os.path.join(self._objects_root, "objects", video_id),
+            os.path.join(self._objects_root, f"objects_{level}", "objects", video_id),
+            os.path.join(self._objects_root, f"objects_{level}", video_id),
+            os.path.join(self._objects_root, level, video_id),
+            os.path.join(self._objects_root, "objects-aic25-b1", "objects", video_id)
         ]
-
         
         for c in candidate_dirs:
             if os.path.exists(c):
                 return c
+                
+        # Quet fallback
+        matches = glob.glob(os.path.join(self._objects_root, f"**/{video_id}"), recursive=True)
+        if matches and os.path.isdir(matches[0]):
+            return matches[0]
+            
         return None
 
     def get_frame_objects(self, video_id, frame_idx):
-        """
-        Lay danh sach thuc the va bounding boxes cua mot keyframe cu the.
-        """
+        """Lay danh sach thuc the cua mot keyframe."""
         cache_key = f"{video_id}_{frame_idx}"
         if cache_key in self._cache:
             return self._cache[cache_key]
@@ -48,7 +113,6 @@ class ObjectSearcher:
         if not v_folder:
             return None
             
-        # Tên file json thuong la 0000.json, 0001.json...
         json_file = os.path.join(v_folder, f"{frame_idx:04d}.json")
         if not os.path.exists(json_file):
             json_file = os.path.join(v_folder, f"{frame_idx}.json")
@@ -66,7 +130,7 @@ class ObjectSearcher:
             
             filtered_objects = []
             for ent, sc, bx in zip(entities, scores, boxes):
-                if sc >= 0.25:
+                if sc >= 0.20:
                     filtered_objects.append({
                         "entity": ent,
                         "score": sc,
@@ -78,63 +142,87 @@ class ObjectSearcher:
         except Exception:
             return None
 
-    def boost_candidates(self, candidates, query_en):
+    def extract_target_entities(self, query_text):
+        """Trich xuat danh sach entity can tim tu cau hoi."""
+        text_lower = query_text.lower()
+        target_entities = set()
+        
+        for kw, ents in self.entity_map.items():
+            if kw in text_lower:
+                for e in ents:
+                    target_entities.add(e.lower())
+                    
+        # Trich xuat them cac tu don
+        words = re.findall(r'\b[a-zA-Z]{3,}\b', text_lower)
+        for w in words:
+            target_entities.add(w.lower())
+            
+        return list(target_entities)
+
+    def boost_candidates(self, candidates, query_text):
         """
-        Tang diem thuong (Bonus Score) sieu toc (< 0.01s):
-        Chi kiem tra 3 frame dinh cua Top 10 video dau bang.
+        Khai thac toan dien du lieu Objects:
+        1. Nang diem khung hinh nao chua dung vat the muc tieu (Frame Grounding).
+        2. Cong diem thuong cho video chua dung vat the do (Video Re-ranking).
         """
-        if not self.objects_dir or not os.path.exists(self.objects_dir):
+        if not self._objects_root or not candidates:
             return candidates
             
-        query_words = set(re.findall(r'\b[a-zA-Z]{3,}\b', query_en.lower()))
-        if not query_words:
+        target_entities = self.extract_target_entities(query_text)
+        if not target_entities:
             return candidates
             
-        # Chi boost tren Top 10 video ung vien tiem nang nhat de giu toc do < 10ms
-        for cand in candidates[:10]:
+        boosted_candidates = []
+        
+        for rank, cand in enumerate(candidates):
+            cand_copy = dict(cand)
             video_id = cand["video_id"]
             dense_info = cand.get("dense_info")
+            
             if not dense_info or "all_scores" not in dense_info:
+                boosted_candidates.append(cand_copy)
                 continue
                 
-            scores = dense_info["all_scores"]
-            if len(scores) == 0:
+            v_folder = self._find_video_object_folder(video_id)
+            if not v_folder:
+                boosted_candidates.append(cand_copy)
                 continue
                 
-            # Lay 3 chi so frame cao diem nhat
-            import numpy as np
-            top_frame_idxs = np.argsort(scores)[::-1][:3]
+            # Copy all_scores de cap nhat Frame-Level Boost
+            scores = np.array(dense_info["all_scores"], dtype=np.float32)
+            n_frames = len(scores)
             
-            bonus_total = 0.0
-            for f_idx in top_frame_idxs:
-                objs = self.get_frame_objects(video_id, int(f_idx))
-                if not objs:
-                    continue
-                    
-                for obj in objs:
-                    ent_lower = obj["entity"].lower()
-                    if any(w in ent_lower for w in query_words):
-                        bonus_total += 0.05
-                        break
+            # Chi kiem tra cac frame co diem cao trong Top 25 video dau bang
+            if rank < 30:
+                top_frame_idxs = np.argsort(scores)[::-1][:12]
+                video_object_bonus = 0.0
+                
+                for f_idx in top_frame_idxs:
+                    objs = self.get_frame_objects(video_id, int(f_idx))
+                    if not objs:
+                        continue
                         
-            if bonus_total > 0:
-                cand["rrf_score"] = cand.get("rrf_score", 0.0) + min(0.15, bonus_total)
+                    frame_match_score = 0.0
+                    for obj in objs:
+                        ent_lower = obj["entity"].lower()
+                        if any(t_ent in ent_lower or ent_lower in t_ent for t_ent in target_entities):
+                            frame_match_score += float(obj["score"])
+                            
+                    if frame_match_score > 0:
+                        # Cong truc tiep vao frame score tai dung vi tri vat the xuat hien
+                        scores[f_idx] += frame_match_score * 0.20
+                        video_object_bonus += frame_match_score * 0.05
+                        
+                # Cap nhat lai dense_info
+                cand_copy["dense_info"]["all_scores"] = scores
+                cand_copy["dense_info"]["best_frame_idx"] = int(np.argmax(scores))
+                cand_copy["dense_info"]["max_score"] = float(np.max(scores))
                 
-        # Sap xep lai sau khi boost
-        candidates.sort(key=lambda x: x.get("rrf_score", 0.0), reverse=True)
-        return candidates
-
-    def count_entities_for_vqa(self, video_id, frame_idx, target_class_keyword):
-        """
-        Dem so luong vat the thuoc mot lop cu the trong frame de ho tro cau hoi Task 2.
-        """
-        objs = self.get_frame_objects(video_id, frame_idx)
-        if not objs:
-            return None
+                # Cong diem thuong RRF
+                cand_copy["rrf_score"] = cand.get("rrf_score", 0.0) + video_object_bonus
+                
+            boosted_candidates.append(cand_copy)
             
-        target_kw = target_class_keyword.lower()
-        count = 0
-        for obj in objs:
-            if target_kw in obj["entity"].lower() and obj["score"] >= 0.3:
-                count += 1
-        return count
+        # Sap xep lai danh sach theo rrf_score da duoc boost
+        boosted_candidates.sort(key=lambda x: x.get("rrf_score", 0.0), reverse=True)
+        return boosted_candidates
