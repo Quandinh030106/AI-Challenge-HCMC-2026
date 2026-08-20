@@ -9,7 +9,6 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
     """
     Anh xa tu chi so vector (0, 1, 2...) sang Frame ID thoi gian thuc cua video goc (vi du: 1200, 25300).
     UU TIEN SO 1: Doc tu file CSV map-keyframes cua BTC (chua Frame ID thoi gian thuc cua video).
-    FALLBACK SO 2: Neu khong co CSV map-keyframes, moi lay ten file anh keyframe.
     """
     global _video_folder_cache, _csv_map_cache
     
@@ -17,10 +16,14 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
     if video_id in _csv_map_cache:
         df_col = _csv_map_cache[video_id]
         if 0 <= frame_idx < len(df_col):
-            return str(df_col[frame_idx])
-    elif metadata_dir and os.path.exists(metadata_dir):
-        level = video_id.split('_')[0] if '_' in video_id else ""
-        candidate_csvs = [
+            return str(int(df_col[frame_idx]))
+            
+    # Tim kiem duong dan CSV thuc te qua tat ca cac bien the thu muc
+    level = video_id.split('_')[0] if '_' in video_id else ""
+    candidate_csvs = []
+    
+    if metadata_dir:
+        candidate_csvs.extend([
             os.path.join(metadata_dir, f"{video_id}.csv"),
             os.path.join(metadata_dir, "map-keyframes", f"{video_id}.csv"),
             os.path.join(metadata_dir, f"map-keyframes-{level}", f"{video_id}.csv"),
@@ -28,41 +31,58 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             os.path.join(os.path.dirname(metadata_dir), "map-keyframes-aic25-b1", "map-keyframes", f"{video_id}.csv"),
             os.path.join(os.path.dirname(metadata_dir), "map-keyframes", f"{video_id}.csv"),
             os.path.join(os.path.dirname(metadata_dir), f"{video_id}.csv")
-        ]
+        ])
         
-        target_csv_path = None
-        for c_path in candidate_csvs:
-            if os.path.exists(c_path):
-                target_csv_path = c_path
-                break
-                    
-        if target_csv_path:
-            try:
-                import pandas as pd
-                df = pd.read_csv(target_csv_path)
-                col_name = None
-                for c in df.columns:
-                    if any(k in str(c).lower() for k in ["frame_idx", "frame_id", "frame", "frameidx", "pts_frame"]):
-                        col_name = c
-                        break
-                if col_name:
-                    values = df[col_name].tolist()
+    if os.path.exists("/kaggle/input"):
+        candidate_csvs.extend([
+            f"/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes/{video_id}.csv",
+            f"/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes/{video_id}.csv",
+            f"/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes/{video_id}.csv",
+            f"/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes/{video_id}.csv"
+        ])
+    
+    target_csv_path = None
+    for c_path in candidate_csvs:
+        if os.path.exists(c_path):
+            target_csv_path = c_path
+            break
+            
+    # Neu chua thay, quet toan bo /kaggle/input tim file CSV cua video nay
+    if not target_csv_path and os.path.exists("/kaggle/input"):
+        matches = glob.glob(f"/kaggle/input/**/{video_id}.csv", recursive=True)
+        if matches:
+            target_csv_path = matches[0]
+                
+    if target_csv_path:
+        try:
+            import pandas as pd
+            df = pd.read_csv(target_csv_path)
+            col_name = None
+            for c in df.columns:
+                if any(k in str(c).lower() for k in ["frame_idx", "frame_id", "frame", "frameidx", "pts_frame"]):
+                    col_name = c
+                    break
+            if col_name:
+                values = df[col_name].tolist()
+            else:
+                numeric_cols = df.select_dtypes(include=[np.number]).columns
+                if len(numeric_cols) > 0:
+                    best_col = max(numeric_cols, key=lambda c: df[c].max())
+                    values = df[best_col].tolist()
                 else:
-                    numeric_cols = df.select_dtypes(include=[np.number]).columns
-                    if len(numeric_cols) > 0:
-                        best_col = max(numeric_cols, key=lambda c: df[c].max())
-                        values = df[best_col].tolist()
-                    else:
-                        values = df.iloc[:, 0].tolist()
-                    
-                _csv_map_cache[video_id] = values
-                if 0 <= frame_idx < len(values):
-                    return str(int(values[frame_idx]))
-            except Exception:
-                pass
+                    values = df.iloc[:, 0].tolist()
+                
+            _csv_map_cache[video_id] = values
+            if 0 <= frame_idx < len(values):
+                real_fid = int(values[frame_idx])
+                return str(real_fid)
+        except Exception:
+            pass
 
-    # 2. FALLBACK SO 2: Neu khong co file CSV map-keyframes, tra ve frame_idx dang so
-    return f"{frame_idx:04d}"
+    # 2. FALLBACK: Neu chua tim thay CSV, tra ve frame_idx dang 25fps (frame_idx * 25)
+    real_time_estimate = int(frame_idx * 25) if frame_idx > 0 else 1
+    return str(real_time_estimate)
+
 
 
 

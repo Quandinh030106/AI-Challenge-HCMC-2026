@@ -99,10 +99,9 @@ class DenseSearcher:
                 self.global_tensor = torch.from_numpy(concat_matrix).float()
             print(f"DenseSearcher: Da nap ma tran toan cuc {self.global_tensor.shape} ({len(self.all_video_ids)} videos) vao {self.device}.")
 
-    def encode_text(self, text_or_list):
-        """Ma hoa van ban hoac prompt ensemble thanh vector dac trung va chuan hoa L2."""
+    def encode_text_matrix(self, text_or_list):
+        """Ma hoa tap prompt ensemble thanh ma tran cac vector (M, 512) da chuan hoa L2."""
         text_inputs = [text_or_list] if isinstance(text_or_list, str) else list(text_or_list)
-        # Bắt buộc bật truncation=True, max_length=77 để không bao giờ bị lỗi vượt độ dài CLIP
         inputs = self.processor(
             text=text_inputs, 
             padding=True, 
@@ -112,7 +111,6 @@ class DenseSearcher:
         ).to(self.device)
         
         with torch.no_grad():
-
             text_outputs = self.model.get_text_features(**inputs)
             if isinstance(text_outputs, torch.Tensor):
                 text_features = text_outputs
@@ -123,21 +121,37 @@ class DenseSearcher:
             else:
                 text_features = text_outputs[0]
                 
-            if text_features.shape[0] > 1:
-                text_features = text_features.mean(dim=0, keepdim=True)
-                
             text_features = text_features / text_features.norm(p=2, dim=-1, keepdim=True)
             return text_features.half() if self.device == "cuda" else text_features.float()
 
-    def search(self, query_text_or_ensemble, top_k_videos=10):
-        """Tim kiem video bang phep nhan ma tran tren GPU."""
+    def encode_text(self, text_or_list):
+        """Ma hoa don le hoac trung binh vector dac trung."""
+        mat = self.encode_text_matrix(text_or_list)
+        if mat.shape[0] > 1:
+            mean_vec = mat.mean(dim=0, keepdim=True)
+            return mean_vec / mean_vec.norm(p=2, dim=-1, keepdim=True)
+        return mat
+
+    def search(self, query_text_or_ensemble, top_k_videos=100):
+        """Tim kiem video bang phep nhan ma tran GPU da Prompt (Multi-Prompt Fusion)."""
         if self.global_tensor is None:
             return []
 
-        q_tensor = self.encode_text(query_text_or_ensemble)
+        q_matrix = self.encode_text_matrix(query_text_or_ensemble)
         
         with torch.no_grad():
-            sim_scores = torch.matmul(self.global_tensor, q_tensor.T).squeeze(-1)
+            # global_tensor: (N_frames, 512), q_matrix: (M_prompts, 512)
+            # sim_matrix: (N_frames, M_prompts)
+            sim_matrix = torch.matmul(self.global_tensor, q_matrix.T)
+            
+            if q_matrix.shape[0] > 1:
+                # Ket hop 50% Max Peak (bat chi tiet dac biet) va 50% Mean (bao toan ngu canh lon)
+                max_scores, _ = torch.max(sim_matrix, dim=-1)
+                mean_scores = torch.mean(sim_matrix, dim=-1)
+                sim_scores = 0.5 * max_scores + 0.5 * mean_scores
+            else:
+                sim_scores = sim_matrix.squeeze(-1)
+                
             sim_scores_np = sim_scores.float().cpu().numpy()
 
         results = []
@@ -160,4 +174,5 @@ class DenseSearcher:
         results.sort(key=lambda x: x["max_score"], reverse=True)
         self.last_dense_dict = {r["video_id"]: r for r in results}
         return results if top_k_videos is None else results[:top_k_videos]
+
 

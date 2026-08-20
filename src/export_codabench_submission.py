@@ -154,7 +154,25 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
     
+    # Tu dong xac dinh thu muc map-keyframes tren Kaggle
+    map_csv_count = 0
+    if map_keyframes_dir and os.path.exists(map_keyframes_dir):
+        map_csv_count = len(glob.glob(os.path.join(map_keyframes_dir, "*.csv")) + glob.glob(os.path.join(map_keyframes_dir, "**", "*.csv"), recursive=True))
+    if map_csv_count == 0 and os.path.exists("/kaggle/input"):
+        csvs = glob.glob("/kaggle/input/**/L*.csv", recursive=True)
+        if csvs:
+            map_keyframes_dir = os.path.dirname(csvs[0])
+            map_csv_count = len(csvs)
+            
+    print(f"Map-Keyframes Directory  : {map_keyframes_dir} ({map_csv_count} CSV files found)")
+    if map_csv_count == 0:
+        print("⚠️ CANH BAO: Chua tim thay thu muc map-keyframes CSV! Kiem tra lai dataset metadata tren Kaggle.")
+    else:
+        print("✅ Da ket noi thanh cong thu muc map-keyframes cua BTC.")
+    print("-----------------------------------------------------")
+    
     # 3. Tim va tu dong giai nen tat ca cac file cau hoi (.txt)
+
     txt_files = []
     
     # Truong hop 1: input_dir chinh la 1 file .zip
