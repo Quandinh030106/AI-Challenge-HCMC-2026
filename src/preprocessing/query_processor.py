@@ -7,7 +7,7 @@ class QueryProcessor:
     def __init__(self):
         """Module xu ly truy van: dich Tieng Viet sang Tieng Anh va phan loai intent."""
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model_name = "Helsinki-NLP/opus-mt-vi-en"
+        self.model_name = "facebook/nllb-200-distilled-600M"
         
         # Tu dien tri thuc thi giac bo tro cho cac thuc the dac trung trong cuoc thi
         self.visual_knowledge_map = {
@@ -44,21 +44,49 @@ class QueryProcessor:
             "covid-19": "COVID-19 support for orphan children charity event banner"
         }
 
-        
-        print("QueryProcessor: Dang nap mo hinh dich Tieng Viet -> Tieng Anh...")
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name, tie_word_embeddings=False).to(self.device)
-            self.model.eval()
-            self.translator_available = True
-            print("QueryProcessor: Khoi tao bo dich offline thanh cong.")
+        print(f"QueryProcessor: Dang nap mo hinh dich Meta NLLB-200 ({self.model_name})...")
 
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, src_lang="vie_Latn")
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(self.device)
+            self.model.eval()
+            self.eng_token_id = self.tokenizer.convert_tokens_to_ids("eng_Latn")
+            self.translator_available = True
+            print("QueryProcessor: Khoi tao bo dich Meta NLLB-200 thanh cong.")
         except Exception as e:
-            print(f"QueryProcessor: Canh bao ({e}), dung che do fallback ket hop Visual Knowledge Map.")
-            self.translator_available = False
+            print(f"QueryProcessor: Thu nap Helsinki-NLP MarianMT ({e})...")
+            try:
+                self.model_name = "Helsinki-NLP/opus-mt-vi-en"
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name, tie_word_embeddings=False).to(self.device)
+                self.model.eval()
+                self.eng_token_id = None
+                self.translator_available = True
+            except Exception as e2:
+                print(f"QueryProcessor: Canh bao ({e2}), dung che do fallback Visual Knowledge Map.")
+                self.translator_available = False
+
+    def clean_translated_text(self, text):
+        """Ve sinh ban dich, loai bo cac tu lap lai bi thoai hoa."""
+        if not text:
+            return ""
+        words = text.split()
+        cleaned_words = []
+        repeat_count = 0
+        last_word = None
+        for w in words:
+            if w.lower() == last_word:
+                repeat_count += 1
+                if repeat_count < 2:
+                    cleaned_words.append(w)
+            else:
+                repeat_count = 0
+                last_word = w.lower()
+                cleaned_words.append(w)
+        return " ".join(cleaned_words)
 
     def translate_vi_to_en(self, text_vi):
-        """Dich cau truy van sang Tieng Anh chat luong cao."""
+        """Dich cau truy van sang Tieng Anh chat luong cao bang Meta NLLB-200."""
         if not text_vi.strip():
             return ""
             
@@ -66,16 +94,26 @@ class QueryProcessor:
         if self.translator_available:
             try:
                 inputs = self.tokenizer(text_vi, return_tensors="pt", padding=True, truncation=True, max_length=150).to(self.device)
+                gen_kwargs = {
+                    "max_length": 150,
+                    "no_repeat_ngram_size": 3,
+                    "num_beams": 2
+                }
+                if getattr(self, "eng_token_id", None) is not None:
+                    gen_kwargs["forced_bos_token_id"] = self.eng_token_id
+                    
                 with torch.no_grad():
-                    tokens = self.model.generate(**inputs, max_length=150)
+                    tokens = self.model.generate(**inputs, **gen_kwargs)
                 translated = self.tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
+                translated = self.clean_translated_text(translated)
             except Exception:
                 translated = ""
                 
-        if not translated:
+        if not translated or len(translated.split()) < 2:
             translated = text_vi
             
         return translated
+
 
     def detect_query_intent(self, text_vi):
         """Phan loai y dinh cau hoi de gan trong so RRF."""
