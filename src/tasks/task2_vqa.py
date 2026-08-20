@@ -9,7 +9,7 @@ from src.tasks.task1_kis import get_frame_id_from_idx
 _vlm_model = None
 _vlm_processor = None
 
-def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
+def load_vlm(model_id="Qwen/Qwen2-VL-7B-Instruct"):
     """Nap mo hinh VLM dung chung cho VQA va Visual Re-ranking."""
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
@@ -18,15 +18,15 @@ def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
         torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         
         try:
-            from transformers import AutoModelForVision2Seq
-            _vlm_model = AutoModelForVision2Seq.from_pretrained(
+            from transformers import Qwen2VLForConditionalGeneration
+            _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
                 model_id,
                 torch_dtype=torch_dtype,
                 device_map=device_map
             )
         except Exception:
-            from transformers import Qwen2VLForConditionalGeneration
-            _vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
+            from transformers import AutoModelForVision2Seq
+            _vlm_model = AutoModelForVision2Seq.from_pretrained(
                 model_id,
                 torch_dtype=torch_dtype,
                 device_map=device_map
@@ -36,7 +36,8 @@ def load_vlm(model_id="Qwen/Qwen3-VL-8B-Instruct"):
         print("VQA: Khoi tao mo hinh VLM thanh cong.")
     return _vlm_model, _vlm_processor
 
-def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen3-VL-8B-Instruct", metadata_dir=None, object_searcher=None):
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-7B-Instruct", metadata_dir=None, object_searcher=None):
+
     """Giai quyet Task 2 (Visual Q&A)."""
     if not fused_candidates:
         return {"video_id": "none", "frame_id": "0000", "answer": "không rõ"}

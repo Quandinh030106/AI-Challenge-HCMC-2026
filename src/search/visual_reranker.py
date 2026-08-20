@@ -8,7 +8,7 @@ from qwen_vl_utils import process_vision_info
 
 class VisualReRanker:
     """Module xac thuc thi giac su dung Qwen-VL de cham diem lai Top ung vien."""
-    def __init__(self, model_id="Qwen/Qwen3-VL-8B-Instruct"):
+    def __init__(self, model_id="Qwen/Qwen2-VL-7B-Instruct"):
         self.model_id = model_id
         self.model = None
         self.processor = None
@@ -20,15 +20,15 @@ class VisualReRanker:
             torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
             
             try:
-                from transformers import AutoModelForVision2Seq
-                self.model = AutoModelForVision2Seq.from_pretrained(
+                from transformers import Qwen2VLForConditionalGeneration
+                self.model = Qwen2VLForConditionalGeneration.from_pretrained(
                     self.model_id,
                     torch_dtype=torch_dtype,
                     device_map=device_map
                 )
             except Exception:
-                from transformers import Qwen2VLForConditionalGeneration
-                self.model = Qwen2VLForConditionalGeneration.from_pretrained(
+                from transformers import AutoModelForVision2Seq
+                self.model = AutoModelForVision2Seq.from_pretrained(
                     self.model_id,
                     torch_dtype=torch_dtype,
                     device_map=device_map
@@ -36,6 +36,7 @@ class VisualReRanker:
                 
             self.processor = AutoProcessor.from_pretrained(self.model_id)
             print("VisualReRanker: Khoi tao thanh cong.")
+
 
     def find_keyframe_image(self, keyframes_dir, video_id, frame_idx):
         """Tim file anh vat ly cua video tren dia."""

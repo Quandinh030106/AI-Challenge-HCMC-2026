@@ -117,7 +117,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
     object_searcher = ObjectSearcher(config)
-    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen3-VL-8B-Instruct"))
+    visual_reranker = VisualReRanker(config["models"].get("vlm_model", "Qwen/Qwen2-VL-7B-Instruct"))
     
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
