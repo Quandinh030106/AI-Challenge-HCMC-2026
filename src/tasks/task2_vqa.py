@@ -42,19 +42,26 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         
     frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
-    # Tim truc tiep file anh vat ly bang Direct Candidate Path (sieu toc < 0.001s, khong dung recursive scan)
+    # Tim truc tiep file anh vat ly tren dia (ten file tren dia la 0000.jpg, 0116.jpg dua tren best_frame_idx)
     level = video_id.split('_')[0] if '_' in video_id else ""
+    idx_4d = f"{best_frame_idx:04d}"
+    idx_5d = f"{best_frame_idx:05d}"
+    idx_raw = str(best_frame_idx)
+    idx_1based = f"{best_frame_idx + 1:04d}"
     fid_str = f"{int(frame_id):04d}" if str(frame_id).isdigit() else str(frame_id)
     
-    candidate_img_paths = [
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, level, "keyframes", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, "keyframes", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{frame_id}.jpg"),
-        os.path.join(keyframes_dir, video_id, f"{frame_id}.jpg")
-    ]
+    candidate_img_names = [idx_4d, idx_5d, idx_raw, idx_1based, fid_str]
+    candidate_img_paths = []
+    for name in candidate_img_names:
+        candidate_img_paths.extend([
+            os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{name}.jpg"),
+            os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{name}.jpg"),
+            os.path.join(keyframes_dir, level, "keyframes", video_id, f"{name}.jpg"),
+            os.path.join(keyframes_dir, "keyframes", video_id, f"{name}.jpg"),
+            os.path.join(keyframes_dir, video_id, f"{name}.jpg"),
+            os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{name}.jpeg"),
+            os.path.join(keyframes_dir, video_id, f"{name}.png")
+        ])
     
     image_path = None
     for p in candidate_img_paths:
@@ -65,6 +72,7 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     if not image_path:
         # Neu chua co anh vat ly (vi du tren tap test chi co .npy), tra ve dap an an toan
         return {"video_id": video_id, "frame_id": frame_id, "answer": "không rõ"}
+
         
     model, processor = load_vlm(model_id)
 
