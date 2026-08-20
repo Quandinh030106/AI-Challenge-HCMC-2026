@@ -34,9 +34,10 @@ def load_config(config_path="configs/default.yaml"):
         return yaml.safe_load(f)
 
 def parse_query_file(file_path):
-    """Phan tich noi dung file cau hoi (.txt) thanh cau truc du lieu chuan."""
+    """Phan tich noi dung file cau hoi (.txt) uu tien tuyet doi theo ten duoi file."""
     filename = os.path.basename(file_path)
     query_id = os.path.splitext(filename)[0]
+    q_id_lower = query_id.lower()
     
     with open(file_path, "r", encoding="utf-8") as f:
         raw_lines = [line.strip() for line in f.readlines() if line.strip()]
@@ -44,39 +45,38 @@ def parse_query_file(file_path):
     full_content = "\n".join(raw_lines)
     full_content_lower = full_content.lower()
     
-    # 1. Kiem tra Task 2: Visual Q&A
-    # Nhan dien moi dau hieu cau hoi: dau '?', cac tu nghi van hoac tien to cau hoi
-    qa_indicators = [
-        "?", "câu hỏi", "cau hoi", "question", "q&a", "hỏi:", "là gì", "ở đâu", 
-        "thế nào", "màu gì", "bao nhiêu", "tên của", "ai là", "mấy câu thơ", "tiêu đề"
-    ]
-    has_qa_flag = any(k in full_content_lower for k in qa_indicators)
+    # 1. UU TIEN SO 1: NHAN DIEN THEO TEN DUOI FILE (-kis, -qa, -trake)
+    is_explicit_kis = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["kis", "-kis", "_kis"])
+    is_explicit_qa = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["qa", "-qa", "_qa", "vqa", "-vqa", "_vqa"])
+    is_explicit_trake = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["trake", "-trake", "_trake", "event", "-event", "_event"])
     
-    if has_qa_flag:
+    if is_explicit_kis:
+        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 1 (Textual KIS)")
+        return {
+            "query_id": query_id,
+            "task_type": "kis",
+            "query": " ".join(raw_lines).strip()
+        }
+        
+    if is_explicit_qa:
         visual_lines = []
         question_lines = []
-        is_question = False
-        
+        is_q = False
         for line in raw_lines:
-            line_lower = line.lower()
-            if "?" in line or any(k in line_lower for k in ["câu hỏi:", "cau hoi:", "question:", "câu hỏi", "cau hoi"]) or any(line_lower.startswith(p) for p in ["tên của", "hai câu thơ", "tiêu đề", "ai là"]):
-                is_question = True
+            line_l = line.lower()
+            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
+                is_q = True
                 cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
                 if cleaned:
                     question_lines.append(cleaned)
-            elif is_question:
+            elif is_q:
                 question_lines.append(line)
             else:
                 visual_lines.append(line)
                 
-        query = " ".join(visual_lines).strip()
-        question = " ".join(question_lines).strip()
-        if not query:
-            query = question
-        if not question:
-            question = query
-            
-        print(f"[{query_id}] -> Nhan dien: TASK 2 (Visual Q&A) | Question: '{question}'")
+        query = " ".join(visual_lines).strip() or full_content
+        question = " ".join(question_lines).strip() or full_content
+        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 2 (Visual Q&A) | Question: '{question}'")
         return {
             "query_id": query_id,
             "task_type": "qa",
@@ -84,30 +84,60 @@ def parse_query_file(file_path):
             "question": question
         }
         
-    # 2. Kiem tra Task 3: TRAKE
-    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
-    if has_trake_flag or len(raw_lines) >= 3:
+    if is_explicit_trake:
         events = []
         for line in raw_lines:
             cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
             if cleaned:
                 events.append(cleaned)
-        if len(events) >= 2:
-            print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
-            return {
-                "query_id": query_id,
-                "task_type": "trake",
-                "events": events,
-                "query": " ".join(events)
-            }
+        if not events:
+            events = raw_lines
+        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 3 (TRAKE) | {len(events)} su kien")
+        return {
+            "query_id": query_id,
+            "task_type": "trake",
+            "events": events,
+            "query": " ".join(events)
+        }
 
-    # 3. Mac dinh la Task 1: Textual KIS
+    # 2. FALLBACK KHI TEN FILE KHONG CO HAU TO: PHAN TICH THEO NOI DUNG
+    qa_indicators = [
+        "?", "câu hỏi", "cau hoi", "question", "q&a", "hỏi:", "là gì", "ở đâu", 
+        "thế nào", "màu gì", "bao nhiêu", "tên của", "ai là", "mấy câu thơ", "tiêu đề"
+    ]
+    if any(k in full_content_lower for k in qa_indicators):
+        visual_lines = []
+        question_lines = []
+        is_q = False
+        for line in raw_lines:
+            line_l = line.lower()
+            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
+                is_q = True
+                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
+                if cleaned:
+                    question_lines.append(cleaned)
+            elif is_q:
+                question_lines.append(line)
+            else:
+                visual_lines.append(line)
+        query = " ".join(visual_lines).strip() or full_content
+        question = " ".join(question_lines).strip() or full_content
+        print(f"[{query_id}] -> Nhan dien: TASK 2 (Visual Q&A) | Question: '{question}'")
+        return {"query_id": query_id, "task_type": "qa", "query": query, "question": question}
+        
+    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
+    if has_trake_flag and len(raw_lines) >= 3:
+        events = []
+        for line in raw_lines:
+            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
+            if cleaned:
+                events.append(cleaned)
+        print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
+        return {"query_id": query_id, "task_type": "trake", "events": events, "query": " ".join(events)}
+
     print(f"[{query_id}] -> Nhan dien: TASK 1 (Textual KIS)")
-    return {
-        "query_id": query_id,
-        "task_type": "kis",
-        "query": " ".join(raw_lines).strip()
-    }
+    return {"query_id": query_id, "task_type": "kis", "query": full_content}
+
 
 def format_answer_for_csv(ans_text):
     """Format cau tra loi VQA cho file CSV."""
@@ -177,35 +207,43 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             except Exception:
                 pass
                 
+    def natural_sort_key(s):
+        return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
+        
+    all_found_txts = []
     if os.path.exists(input_dir):
-        txt_files = sorted(glob.glob(os.path.join(input_dir, "*.txt")))
-        if not txt_files:
-            txt_files = sorted(glob.glob(os.path.join(input_dir, "**", "*.txt"), recursive=True))
-            
-    if not txt_files and os.path.exists("/kaggle/input"):
+        for root, _, files in os.walk(input_dir):
+            for file in files:
+                if file.lower().endswith(".txt"):
+                    all_found_txts.append(os.path.join(root, file))
+                    
+    if not all_found_txts and os.path.exists("/kaggle/input"):
         for root, _, files in os.walk("/kaggle/input"):
             if any(k in root.lower() for k in ["thu-nghiem", "bo-de-thi", "query", "queries"]):
                 for file in files:
                     if file.lower().endswith(".txt"):
-                        txt_files.append(os.path.join(root, file))
+                        all_found_txts.append(os.path.join(root, file))
                     elif file.lower().endswith(".zip"):
                         try:
                             unzip_dir = "/kaggle/working/bo_de_thi_auto"
                             os.makedirs(unzip_dir, exist_ok=True)
                             with zipfile.ZipFile(os.path.join(root, file), "r") as zf:
                                 zf.extractall(unzip_dir)
-                            txt_files = sorted(glob.glob(os.path.join(unzip_dir, "**", "*.txt"), recursive=True))
+                            for r_sub, _, f_sub in os.walk(unzip_dir):
+                                for fs in f_sub:
+                                    if fs.lower().endswith(".txt"):
+                                        all_found_txts.append(os.path.join(r_sub, fs))
                         except Exception:
                             pass
-                if txt_files:
-                    break
-                    
-    txt_files = sorted(list(set(txt_files)))
+
+    txt_files = sorted(list(set(all_found_txts)), key=natural_sort_key)
     if not txt_files:
         print(f"Khong tim thay file .txt nao trong {input_dir}!")
         return
 
-    print(f"Tim thay {len(txt_files)} file cau hoi can xu ly.")
+    print(f"Tim thay DAY DU {len(txt_files)} file cau hoi theo dung thu tu:")
+    for f in txt_files:
+        print(f"  -> {os.path.basename(f)}")
     print("-----------------------------------------------------")
     
     for file_path in tqdm(txt_files, desc="Xu ly cau hoi"):
@@ -213,6 +251,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         task_type = parsed["task_type"]
         query_id = parsed["query_id"]
         query_text = parsed["query"]
+
         
         csv_filename = f"{query_id}.csv"
         csv_filepath = os.path.join(submission_dir, csv_filename)
@@ -301,6 +340,19 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     dummy_fids = clean_fids if clean_fids else ["0"] * len(events)
                     f_out.write(f"{best_vid}, " + ", ".join(dummy_fids) + "\n")
                     count += 1
+
+        # Luu them ban sao alias khong co hau to de tuong thich moi bo cham Codabench
+        import shutil
+        base_id = re.sub(r'[-_](kis|qa|vqa|trake|event)$', '', query_id, flags=re.IGNORECASE)
+        if base_id != query_id:
+            alias_path = os.path.join(submission_dir, f"{base_id}.csv")
+            shutil.copyfile(csv_filepath, alias_path)
+            
+        alias_with_dash = re.sub(r'[-_](kis|qa|vqa|trake|event)$', r'-\1', query_id, flags=re.IGNORECASE)
+        if alias_with_dash != query_id:
+            dash_path = os.path.join(submission_dir, f"{alias_with_dash}.csv")
+            shutil.copyfile(csv_filepath, dash_path)
+
 
     print("-----------------------------------------------------")
     print("Dong goi thu muc submission vao file zip...")
