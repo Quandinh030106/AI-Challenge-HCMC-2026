@@ -226,16 +226,18 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         q_info = query_processor.process(query_text)
         intent = q_info["intent_info"]
         
-        dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=35)
-        sparse_res = sparse_searcher.search(query_text, top_k_videos=35)
+        dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
+        sparse_res = sparse_searcher.search(query_text, top_k_videos=50)
         fused = reciprocal_rank_fusion(
             dense_res, sparse_res,
             dense_weight=intent["dense_weight"],
-            sparse_weight=intent["sparse_weight"]
+            sparse_weight=intent["sparse_weight"],
+            dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
         # Tang cuong diem thuong tu Objects neu co
         fused = object_searcher.boost_candidates(fused, q_info.get("query_en", query_text))
+
 
         
         # --- TASK 1: TEXTUAL KIS ---

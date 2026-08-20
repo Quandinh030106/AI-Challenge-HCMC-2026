@@ -158,4 +158,6 @@ class DenseSearcher:
             })
 
         results.sort(key=lambda x: x["max_score"], reverse=True)
-        return results[:top_k_videos]
+        self.last_dense_dict = {r["video_id"]: r for r in results}
+        return results if top_k_videos is None else results[:top_k_videos]
+

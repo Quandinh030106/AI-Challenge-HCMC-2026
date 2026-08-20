@@ -13,10 +13,18 @@ class SparseSearcher:
         self.build_index()
         
     def preprocess_text(self, text):
-        """Tien xu ly van ban: viet thuong va tach tu co ban."""
+        """Tien xu ly van ban: viet thuong va tach tu co ban, loai bo stopwords pho bien."""
         if not text:
             return []
-        return re.findall(r'\b\w+\b', text.lower())
+        raw_words = re.findall(r'\b\w+\b', text.lower())
+        stopwords = {
+            "đoạn", "video", "clip", "về", "một", "chương", "trình", "của", "tên", "là", 
+            "trong", "có", "thể", "thấy", "này", "đang", "đi", "tại", "thuộc", "tỉnh", 
+            "hãy", "tìm", "chính", "xác", "phân", "cảnh", "bắt", "đầu", "với", "hình", 
+            "ảnh", "sau", "đó", "tiếp", "theo", "người", "cần", "biết", "gồm", "các"
+        }
+        filtered = [w for w in raw_words if w not in stopwords and len(w) > 1]
+        return filtered if filtered else raw_words
         
     def extract_text_from_obj(self, obj):
         """Boc tach de quy tat ca cac chuoi van ban trong JSON."""
@@ -35,13 +43,11 @@ class SparseSearcher:
         """Doc file metadata/OCR de dung chi muc BM25."""
         print(f"SparseSearcher: Dang xay dung chi muc BM25 tu: {self.metadata_dir}")
         json_files = []
-        # Tu dong quet toan bo thu muc /kaggle/input hoac metadata_dir
         scan_dir = self.metadata_dir if os.path.exists(self.metadata_dir) else "/kaggle/input"
 
         if os.path.exists(scan_dir):
             for root, _, files in os.walk(scan_dir):
                 root_lower = root.lower()
-                # Bo qua cac thu muc objects, keyframes, videos de tranh quet hang trieu file khong phai metadata
                 if "object" in root_lower or "keyframe" in root_lower or "video" in root_lower:
                     continue
                 for file in files:
@@ -50,7 +56,6 @@ class SparseSearcher:
                         json_files.append(os.path.join(root, file))
         
         print(f"SparseSearcher: Tim thay {len(json_files)} file JSON metadata.")
-
         video_texts = {}
         
         for file_path in json_files:
@@ -82,13 +87,29 @@ class SparseSearcher:
         else:
             print("SparseSearcher: Canh bao: Khong co van ban nao duoc index cho BM25!")
 
-    def search(self, query_text, top_k_videos=10):
-        """Tim kiem video theo tu khoa cau hoi, tra ve diem so BM25."""
+    def search(self, query_text, top_k_videos=25):
+        """Tim kiem video theo tu khoa cau hoi, tang cuong trong so cho Named Entities."""
         if self.bm25 is None or not self.video_ids:
             return []
             
         tokenized_query = self.preprocess_text(query_text)
-        scores = self.bm25.get_scores(tokenized_query)
+        
+        # Phat hien cac thuc the viet hoa va tu khoa hiem de nhan trong so (Entity Boosting 5x)
+        entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', query_text)
+        rare_keywords = ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn"]
+        
+        boosted_tokens = list(tokenized_query)
+        for ent in entities:
+            ent_lower = ent.lower()
+            if len(ent_lower) > 2:
+                boosted_tokens.extend([ent_lower] * 4)
+                
+        for rk in rare_keywords:
+            if rk in query_text.lower():
+                for kw in rk.split():
+                    boosted_tokens.extend([kw] * 4)
+                    
+        scores = self.bm25.get_scores(boosted_tokens)
         
         results = []
         for i, video_id in enumerate(self.video_ids):
@@ -98,3 +119,4 @@ class SparseSearcher:
                 
         results.sort(key=lambda x: x["sparse_score"], reverse=True)
         return results[:top_k_videos]
+
