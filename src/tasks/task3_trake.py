@@ -43,7 +43,7 @@ def align_events_dynamic_programming(scores_matrix):
     aligned_frames.reverse()
     return aligned_frames, float(dp[T - 1, N])
 
-def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, metadata_dir=None):
+def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, metadata_dir=None, query_processor=None):
     """Giai quyet Task 3: Can chinh chuoi su kien theo thoi gian (TRAKE)."""
     if not fused_candidates or not query_events:
         return {"video_id": "none", "frame_ids": []}
@@ -65,7 +65,9 @@ def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, m
         
     event_vectors = []
     for event_text in query_events:
-        vec = dense_searcher.encode_text(event_text)
+        # Bắt buộc dịch sự kiện tiếng Việt sang tiếng Anh để CLIP hiểu chính xác 100%
+        en_event = query_processor.translate_vi_to_en(event_text) if query_processor else event_text
+        vec = dense_searcher.encode_text(en_event)
         if isinstance(vec, torch.Tensor):
             vec = vec.float().cpu().numpy().squeeze(0)
         event_vectors.append(vec)
@@ -76,4 +78,5 @@ def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, m
     
     frame_ids = [get_frame_id_from_idx(keyframes_dir, video_id, idx, metadata_dir=metadata_dir) for idx in aligned_indices]
     return {"video_id": video_id, "frame_ids": frame_ids}
+
 

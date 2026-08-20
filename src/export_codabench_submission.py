@@ -276,7 +276,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         # --- TASK 3: TRAKE ---
         elif task_type == "trake":
             events = parsed["events"]
-            align_res = solve_task3(events, fused, keyframes_dir, dense_searcher, metadata_dir=map_keyframes_dir)
+            align_res = solve_task3(
+                events, fused, keyframes_dir, dense_searcher, 
+                metadata_dir=map_keyframes_dir, query_processor=query_processor
+            )
             best_vid = align_res["video_id"]
             best_frame_ids = align_res["frame_ids"]
             
@@ -291,8 +294,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     vid = cand["video_id"]
                     if vid == best_vid:
                         continue
-                    # Lay chuoi frame dai dien
-                    sub_align = solve_task3(events, [cand], keyframes_dir, dense_searcher, metadata_dir=map_keyframes_dir)
+                    # Lay chuoi frame dai dien cho tung video ung vien
+                    sub_align = solve_task3(
+                        events, [cand], keyframes_dir, dense_searcher, 
+                        metadata_dir=map_keyframes_dir, query_processor=query_processor
+                    )
                     sub_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in sub_align["frame_ids"]]
                     if len(sub_fids) == len(events):
                         f_out.write(f"{vid}, " + ", ".join(sub_fids) + "\n")
@@ -302,9 +308,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                         break
                         
                 while count < 100:
-                    dummy_fids = ["0"] * len(events)
+                    dummy_fids = clean_fids if clean_fids else ["0"] * len(events)
                     f_out.write(f"{best_vid}, " + ", ".join(dummy_fids) + "\n")
                     count += 1
+
 
     # 5. Dong goi thu muc submission thanh file submission.zip chuan Codabench
     print("\n-----------------------------------------------------")

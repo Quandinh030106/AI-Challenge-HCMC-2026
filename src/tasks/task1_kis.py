@@ -97,20 +97,56 @@ def solve_task1(query_text, fused_candidates, keyframes_dir, metadata_dir=None, 
     return {"video_id": video_id, "frame_id": frame_id, "score": float(smoothed_scores[best_frame_idx])}
 
 def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=None, total_preds=100):
-    """Phan bo 100 cau tra loi trai dai qua nhieu video ung vien de toi uu R@k."""
+    """
+    Phan bo 100 cau tra loi thong minh bang Non-Maximum Suppression (NMS) 
+    va Temporal Window Expansion de bao trum 100% khoang thoi gian cua su kien.
+    """
     predictions = []
     
     for rank, cand in enumerate(fused_candidates):
         video_id = cand["video_id"]
         dense_info = cand.get("dense_info")
         
-        n_peaks = 4 if rank < 2 else (3 if rank < 10 else (2 if rank < 30 else 1))
-            
         if dense_info is not None and "all_scores" in dense_info:
             scores = dense_info["all_scores"]
+            n_frames = len(scores)
             smoothed = gaussian_smooth_scores(scores, sigma=1.5)
-            top_frame_idxs = np.argsort(smoothed)[::-1][:n_peaks]
-            for f_idx in top_frame_idxs:
+            
+            # Tim cac dinh cuc bo (Local Peaks) bang NMS
+            sorted_indices = np.argsort(smoothed)[::-1]
+            selected_peaks = []
+            min_distance = 8  # Khoang cach toi thieu giua 2 dinh doc lap (~4-8 giay)
+            
+            for idx in sorted_indices:
+                if all(abs(idx - p) >= min_distance for p in selected_peaks):
+                    selected_peaks.append(int(idx))
+                if len(selected_peaks) >= 4:
+                    break
+                    
+            # Phan bo khung hinh theo thu hang video:
+            frame_indices_to_take = []
+            if rank == 0:
+                # Video Top 1: Lay dinh chinh kem theo cac frame lien ke de chac chan trung cua so Ground Truth
+                for p in selected_peaks[:3]:
+                    for delta in [0, -1, 1, 2, -2]:
+                        target_f = p + delta
+                        if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
+                            frame_indices_to_take.append(target_f)
+            elif rank < 4:
+                # Video Top 2-4: Lay 2 dinh va cac frame lien ke
+                for p in selected_peaks[:2]:
+                    for delta in [0, 1, -1]:
+                        target_f = p + delta
+                        if 0 <= target_f < n_frames and target_f not in frame_indices_to_take:
+                            frame_indices_to_take.append(target_f)
+            elif rank < 12:
+                # Video Top 5-12: Lay 2 dinh doc lap
+                frame_indices_to_take = selected_peaks[:2]
+            else:
+                # Video con lai: Lay 1 dinh cao nhat
+                frame_indices_to_take = selected_peaks[:1] if selected_peaks else [int(sorted_indices[0])]
+                
+            for f_idx in frame_indices_to_take:
                 fid = get_frame_id_from_idx(keyframes_dir, video_id, int(f_idx), metadata_dir=metadata_dir)
                 predictions.append({"video_id": video_id, "frame_id": fid})
                 if len(predictions) >= total_preds:
@@ -122,7 +158,10 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
         if len(predictions) >= total_preds:
             break
             
+    # Neu con thieu, bo sung tu cac video tiep theo
     while len(predictions) < total_preds:
-        predictions.append({"video_id": "none", "frame_id": "0000"})
+        last_vid = fused_candidates[0]["video_id"] if fused_candidates else "none"
+        predictions.append({"video_id": last_vid, "frame_id": "0000"})
         
     return predictions[:total_preds]
+
