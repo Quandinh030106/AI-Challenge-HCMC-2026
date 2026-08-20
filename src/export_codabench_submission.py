@@ -173,15 +173,26 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     keyframes_dir = config["data"].get("keyframes_dir")
     map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
     
-    # Tu dong xac dinh thu muc map-keyframes tren Kaggle
+    # Tu dong xac dinh thu muc map-keyframes tren Kaggle sieu toc (< 0.001s)
     map_csv_count = 0
-    if map_keyframes_dir and os.path.exists(map_keyframes_dir):
-        map_csv_count = len(glob.glob(os.path.join(map_keyframes_dir, "*.csv")) + glob.glob(os.path.join(map_keyframes_dir, "**", "*.csv"), recursive=True))
-    if map_csv_count == 0 and os.path.exists("/kaggle/input"):
-        csvs = glob.glob("/kaggle/input/**/L*.csv", recursive=True)
-        if csvs:
-            map_keyframes_dir = os.path.dirname(csvs[0])
-            map_csv_count = len(csvs)
+    candidate_map_dirs = [
+        map_keyframes_dir,
+        "/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes",
+        "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes",
+        "/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes",
+        "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes"
+    ]
+    for cmd in candidate_map_dirs:
+        if cmd and os.path.exists(cmd):
+            try:
+                csv_files = [f for f in os.listdir(cmd) if f.lower().endswith(".csv")]
+                if len(csv_files) > 10:
+                    map_keyframes_dir = cmd
+                    map_csv_count = len(csv_files)
+                    break
+            except Exception:
+                pass
+
             
     print(f"Map-Keyframes Directory: {map_keyframes_dir} ({map_csv_count} CSV files found)")
     if map_csv_count == 0:
