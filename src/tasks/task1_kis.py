@@ -41,11 +41,7 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
         if os.path.exists(c_path):
             target_csv_path = c_path
             break
-            
-    if not target_csv_path and os.path.exists("/kaggle/input"):
-        matches = glob.glob(f"/kaggle/input/**/{video_id}.csv", recursive=True)
-        if matches:
-            target_csv_path = matches[0]
+
                 
     if target_csv_path:
         try:

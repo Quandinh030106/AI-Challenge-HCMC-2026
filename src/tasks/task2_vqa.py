@@ -106,15 +106,6 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
                     image_path = all_imgs[target_idx]
                     break
                     
-    if not image_path and os.path.exists("/kaggle/input"):
-        wildcard_imgs = sorted(
-            glob.glob(f"/kaggle/input/**/{video_id}/*.jpg", recursive=True) +
-            glob.glob(f"/kaggle/input/**/{video_id}/*.jpeg", recursive=True)
-        )
-        if wildcard_imgs:
-            target_idx = min(best_frame_idx, len(wildcard_imgs) - 1)
-            image_path = wildcard_imgs[target_idx]
-
     if not image_path:
         print(f"VQA Canh bao: Khong the dinh vi anh cho video {video_id}")
         return {"video_id": video_id, "frame_id": frame_id, "answer": "không rõ"}
@@ -124,7 +115,9 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     if metadata_dir and os.path.exists(metadata_dir):
         json_candidates = [
             os.path.join(metadata_dir, f"{video_id}.json"),
-            os.path.join(metadata_dir, f"{video_id}_ocr.json")
+            os.path.join(metadata_dir, f"{video_id}_ocr.json"),
+            os.path.join(metadata_dir, "media-info", f"{video_id}.json"),
+            os.path.join(metadata_dir, "media-info-aic25-b1", "media-info", f"{video_id}.json")
         ]
         for jc in json_candidates:
             if os.path.exists(jc):
@@ -147,11 +140,18 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             hint_text = f" (Vật thể: {', '.join(top_entities)})."
     
     ocr_hint = f" (Chữ OCR nhận diện trong video: {ocr_context})" if ocr_context else ""
+    
+    # Ve sinh cau hoi: Thay the 'doan video' thanh 'hinh anh' de Qwen2-VL khong bao gio bi trigger cau tu choi
+    clean_question = question
+    for phrase in ["trong đoạn video có", "trong đoạn video", "đoạn video về", "đoạn video có", "đoạn video", "trong video", "video", "clip"]:
+        clean_question = re.sub(r'\b' + re.escape(phrase) + r'\b', 'hình ảnh', clean_question, flags=re.IGNORECASE)
+        
     prompt_text = (
         f"Quan sát thật kỹ bức ảnh này{hint_text}{ocr_hint}. Hãy đọc các chữ trên biển hiệu, phông nền, tiêu đề hoặc hình ảnh để trả lời câu hỏi sau bằng Tiếng Việt:\n"
-        f"'{question}'\n"
-        f"Trả lời ngắn gọn, trực tiếp vào trọng tâm."
+        f"'{clean_question}'\n"
+        f"Trả lời ngắn gọn, trực tiếp vào trọng tâm, không giải thích."
     )
+
 
     
     raw_answer = ""

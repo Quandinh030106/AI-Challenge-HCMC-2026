@@ -53,15 +53,25 @@ def solve_task3(query_events, fused_candidates, keyframes_dir, dense_searcher, m
     
     video_features = dense_searcher.video_features_dict.get(video_id)
     if video_features is None:
-        feature_file = glob.glob(os.path.join(dense_searcher.features_dir, f"**/{video_id}.npy"), recursive=True)
-        if not feature_file:
-            feature_file = glob.glob(os.path.join(dense_searcher.features_dir, f"{video_id}.npy"))
-        if not feature_file:
+        level = video_id.split('_')[0] if '_' in video_id else ""
+        cand_paths = [
+            os.path.join(dense_searcher.features_dir, f"{video_id}.npy"),
+            os.path.join(dense_searcher.features_dir, f"clip-features-{level}", f"{video_id}.npy"),
+            os.path.join(dense_searcher.features_dir, f"clip_features_{level}", f"{video_id}.npy"),
+            os.path.join(dense_searcher.features_dir, "clip-features-32", f"{video_id}.npy"),
+            os.path.join(dense_searcher.features_dir, "clip-features-32-aic25-b1", "clip-features-32", f"{video_id}.npy")
+        ]
+        for cp in cand_paths:
+            if os.path.exists(cp):
+                try:
+                    video_features = np.load(cp)
+                    break
+                except Exception:
+                    pass
+                    
+        if video_features is None:
             return {"video_id": video_id, "frame_ids": ["0000"] * len(query_events)}
-        try:
-            video_features = np.load(feature_file[0])
-        except Exception:
-            return {"video_id": video_id, "frame_ids": ["0000"] * len(query_events)}
+
         
     event_vectors = []
     for event_text in query_events:

@@ -89,19 +89,16 @@ class ObjectSearcher:
             os.path.join(self._objects_root, f"objects_{level}", "objects", video_id),
             os.path.join(self._objects_root, f"objects_{level}", video_id),
             os.path.join(self._objects_root, level, video_id),
-            os.path.join(self._objects_root, "objects-aic25-b1", "objects", video_id)
+            os.path.join(self._objects_root, "objects-aic25-b1", "objects", video_id),
+            os.path.join(self._objects_root, "objects-aic25-b1", video_id)
         ]
         
         for c in candidate_dirs:
             if os.path.exists(c):
                 return c
                 
-        # Quet fallback
-        matches = glob.glob(os.path.join(self._objects_root, f"**/{video_id}"), recursive=True)
-        if matches and os.path.isdir(matches[0]):
-            return matches[0]
-            
         return None
+
 
     def get_frame_objects(self, video_id, frame_idx):
         """Lay danh sach thuc the cua mot keyframe."""
