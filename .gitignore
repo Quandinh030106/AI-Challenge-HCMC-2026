@@ -27,3 +27,9 @@ env/
 .vscode/
 .idea/
 .DS_Store
+
+# Temporary Test Media
+test_frames_check/
+*.jpg
+*.jpeg
+*.png
