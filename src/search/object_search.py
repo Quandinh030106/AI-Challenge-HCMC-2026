@@ -34,10 +34,11 @@ class ObjectSearcher:
             "dê": ["Goat", "Shirt", "Clothing", "Animal", "Cattle", "Livestock", "Mammal", "Person"],
             "cho dê ăn": ["Goat", "Shirt", "Clothing", "Animal", "Livestock", "Person"],
             "đàn dê": ["Goat", "Shirt", "Animal", "Livestock", "Mammal", "Person"],
-            "hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
-            "đàn hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
-            "con hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
+            "hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
+            "đàn hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
+            "con hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
             "chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
+
             "chú chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
             "loài chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
             "cá mập": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person", "Animal"],
@@ -280,8 +281,9 @@ class ObjectSearcher:
             "helmet", "hat", "boat", "watercraft", "bookcase", "book", "statue",
             "flower", "rose", "banana", "plate", "tableware", "tray", "glass",
             "drink", "bag", "box", "packaging", "sand", "kitchen utensil", "shirt",
-            "dress", "cat", "sea life", "vegetable"
+            "dress", "sea life", "vegetable"
         }
+
         
         if ent in tier1_high_info:
             return 4.5
