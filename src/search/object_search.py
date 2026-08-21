@@ -96,14 +96,6 @@ class ObjectSearcher:
             "sách": ["Book", "Bookcase"],
             "mảnh bìa": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
             "đổ bóng": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
-            "fana": ["Poster", "Billboard", "Bag", "Box", "Person", "Clothing", "Building"],
-            "khánh hòa": ["Poster", "Billboard", "Bag", "Box", "Person", "Clothing"],
-            "từ thiện": ["Poster", "Bag", "Box", "Person", "Clothing"],
-            "covid": ["Poster", "Art", "Bag", "Shirt", "Dress", "Person", "Clothing"],
-            "covid-19": ["Poster", "Art", "Bag", "Shirt", "Dress", "Person", "Clothing"],
-            "nguyễn trung trực": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
-            "đình thần": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
-            "kiên giang": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
             "trang phục": ["Clothing", "Suit", "Dress", "Person"],
             "áo thun": ["Shirt", "Clothing", "Person"],
             "áo sơ mi": ["Shirt", "Clothing", "Person"],
@@ -112,6 +104,7 @@ class ObjectSearcher:
             "hoa": ["Flower", "Rose", "Plant", "Houseplant"],
             "hoa pansy": ["Flower", "Rose", "Plant"]
         }
+
 
 
         
