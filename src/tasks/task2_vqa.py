@@ -155,27 +155,60 @@ def clean_vlm_answer(raw_answer, question=None):
         ans = ans[:100].strip()
     return ans if ans else "Không rõ"
 
+def select_comprehensive_keyframes(dense_info, total_budget=8):
+    """
+    Trich xuat tap hop 6-8 khung hinh bao quat toan dien ca ve chieu sau (Peaks) va chieu rong (Temporal Coverage):
+    1. Cac moc thoi gian trai deu toan video (Bao quat chieu rong toan bo dien bien 5%, 25%, 50%, 75%, 95%).
+    2. Cac dinh cuc dai trong tung phan khuc Dau - Giua - Cuoi video (Chieu sau ngu nghia).
+    3. Dinh cuc dai toan cuc va vung lan can (+-1..2 frames) de bat goc quay can canh.
+    """
+    if not dense_info or "all_scores" not in dense_info:
+        return [0]
+        
+    scores = dense_info["all_scores"]
+    n_frames = len(scores)
+    if n_frames <= total_budget:
+        return list(range(n_frames))
+        
+    from src.tasks.task1_kis import gaussian_smooth_scores
+    smoothed = gaussian_smooth_scores(scores, sigma=1.5)
+    
+    selected_indices = set()
+    
+    # 1. Cac moc thoi gian trai deu toan video
+    for ratio in [0.05, 0.25, 0.50, 0.75, 0.95]:
+        f = int(n_frames * ratio)
+        if 0 <= f < n_frames:
+            selected_indices.add(f)
+            
+    # 2. Cac dinh cuc dai trong 3 phan khuc Dau - Giua - Cuoi
+    segment_len = n_frames // 3
+    for seg_i in range(3):
+        start_s = seg_i * segment_len
+        end_s = (seg_i + 1) * segment_len if seg_i < 2 else n_frames
+        if start_s < end_s:
+            local_peak = start_s + int(np.argmax(smoothed[start_s:end_s]))
+            selected_indices.add(local_peak)
+            
+    # 3. Dinh cuc dai toan cuc va vung lan can (+-1, +-2 frames)
+    global_peak = int(np.argmax(smoothed))
+    selected_indices.add(global_peak)
+    for delta in [-2, -1, 1, 2]:
+        p = global_peak + delta
+        if 0 <= p < n_frames:
+            selected_indices.add(p)
+            
+    sorted_indices = sorted(list(selected_indices))
+    if len(sorted_indices) > total_budget:
+        # Uu tien giu lai cac frame co diem tuong dong cao nhat kem moc trai deu
+        peak_priority = sorted(sorted_indices, key=lambda idx: smoothed[idx], reverse=True)
+        sorted_indices = sorted(peak_priority[:total_budget])
+        
+    return sorted_indices
+
 def solve_single_video_vqa(video_id, dense_info, query_text, question, clean_question, keyframes_dir, model, processor, metadata_dir=None):
-    """Suy luan Multi-Frame can bang toan dien theo dong thoi gian (Uniform Temporal Sampling)."""
-    scores = dense_info.get("all_scores") if dense_info is not None else None
-    frame_indices = []
-    if scores is not None and len(scores) > 0:
-        n_frames = len(scores)
-        peak_idx = int(np.argmax(scores))
-        
-        # Lay mau can bang trai deu: 0% (Dau), 25% (1/4), 50% (Giua), 75% (3/4) va Peak (Dinh)
-        sample_ratios = [0.0, 0.25, 0.50, 0.75]
-        for r in sample_ratios:
-            f_idx = int(n_frames * r)
-            if 0 <= f_idx < n_frames and f_idx not in frame_indices:
-                frame_indices.append(f_idx)
-                
-        if peak_idx not in frame_indices:
-            frame_indices.append(peak_idx)
-    else:
-        frame_indices = [0]
-        
-    frame_indices.sort()
+    """Suy luan Multi-Frame can bang toan dien bao quat ca chieu rong va chieu sau theo dong thoi gian."""
+    frame_indices = select_comprehensive_keyframes(dense_info, total_budget=8)
     best_frame_idx = frame_indices[0] if frame_indices else 0
     frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
@@ -195,6 +228,7 @@ def solve_single_video_vqa(video_id, dense_info, query_text, question, clean_que
         f"- Trả lời ngắn gọn, trực tiếp và chính xác đáp án cần tìm (dưới 20 từ). Không giải thích dài dòng.\n"
         f"- Nếu trong hình ảnh KHÔNG có thông tin hoặc KHÔNG nhìn thấy câu trả lời, hãy chỉ trả lời duy nhất: 'Không rõ'."
     )
+
     
     content_list = []
     for img_p in selected_image_paths:

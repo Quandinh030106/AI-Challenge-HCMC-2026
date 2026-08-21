@@ -120,23 +120,34 @@ class VisualReRanker:
         return min(max(score, 0.0), 10.0)
 
     def get_top_peak_indices(self, dense_info, n_peaks=3):
-        """Trich xuat cac chi so frame dinh cao nhat cua video."""
+        """Trich xuat cac dinh cuc dai dai dien phan bo tren cac phan khuc khac nhau cua video."""
         if not dense_info or "all_scores" not in dense_info:
             return [0]
         scores = dense_info["all_scores"]
-        if len(scores) <= n_peaks:
-            return list(range(len(scores)))
+        n_frames = len(scores)
+        if n_frames <= n_peaks:
+            return list(range(n_frames))
             
         from src.tasks.task1_kis import gaussian_smooth_scores
         smoothed = gaussian_smooth_scores(scores, sigma=1.5)
-        sorted_idx = np.argsort(smoothed)[::-1]
+        
+        # Trich xuat dinh cuc dai toan cuc va cac dinh cuc bo trong cac phan khuc Dau - Giua - Cuoi
         peaks = []
-        for idx in sorted_idx:
-            if all(abs(idx - p) >= 10 for p in peaks):
-                peaks.append(int(idx))
-            if len(peaks) >= n_peaks:
-                break
-        return peaks or [int(sorted_idx[0])]
+        segment_len = n_frames // n_peaks
+        for seg_i in range(n_peaks):
+            start_s = seg_i * segment_len
+            end_s = (seg_i + 1) * segment_len if seg_i < n_peaks - 1 else n_frames
+            if start_s < end_s:
+                local_peak = start_s + int(np.argmax(smoothed[start_s:end_s]))
+                if local_peak not in peaks:
+                    peaks.append(local_peak)
+                    
+        global_peak = int(np.argmax(smoothed))
+        if global_peak not in peaks:
+            peaks.insert(0, global_peak)
+            
+        return sorted(peaks[:n_peaks])
+
 
     def rerank_candidates(self, fused_candidates, query_text, keyframes_dir, top_n_verify=5):
         """Xac thuc thi giac Multi-Peak 3-Frame cho Top N video ung vien va sap xep lai thu hang."""
@@ -176,6 +187,16 @@ class VisualReRanker:
             cand_copy["boosted_score"] = boosted_score
             verified_results.append(cand_copy)
             
-        verified_results.sort(key=lambda x: x["boosted_score"], reverse=True)
-        return verified_results + remaining_candidates
+        # Conservative High-Confidence Gate de bao ve Rank 1 goc cua CLIP:
+        # Neu Rank 1 goc co diem VLM hop le (>= 5.5/10), luon bao toan vi tri Top 1 cua no.
+        # Chi cho phep Rank 2-5 lat nguoc len Top 1 neu Rank 1 goc thuc su yeu (< 5.5/10) va co ung vien khac vuot troi.
+        rank1_vlm = verified_results[0]["vlm_score"]
+        if rank1_vlm >= 5.5:
+            best_cand = verified_results[0]
+            rest_cands = sorted(verified_results[1:], key=lambda x: x["boosted_score"], reverse=True)
+            return [best_cand] + rest_cands + remaining_candidates
+        else:
+            verified_results.sort(key=lambda x: x["boosted_score"], reverse=True)
+            return verified_results + remaining_candidates
+
 
