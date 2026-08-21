@@ -127,9 +127,30 @@ def solve_task3_batch(query_events, fused_candidates, keyframes_dir, dense_searc
         vid = cand["video_id"]
         video_features = dense_searcher.video_features_dict.get(vid)
         if video_features is None:
-            continue
-        scores_matrix = np.dot(video_features, event_vectors.T)
-        aligned_indices, dp_score = align_events_dynamic_programming(scores_matrix)
+            level = vid.split('_')[0] if '_' in vid else ""
+            cand_paths = [
+                os.path.join(dense_searcher.features_dir, f"{vid}.npy"),
+                os.path.join(dense_searcher.features_dir, f"clip-features-{level}", f"{vid}.npy"),
+                os.path.join(dense_searcher.features_dir, f"clip_features_{level}", f"{vid}.npy"),
+                os.path.join(dense_searcher.features_dir, "clip-features-32", f"{vid}.npy"),
+                os.path.join(dense_searcher.features_dir, "clip-features-32-aic25-b1", "clip-features-32", f"{vid}.npy")
+            ]
+            for cp in cand_paths:
+                if os.path.exists(cp):
+                    try:
+                        video_features = np.load(cp)
+                        dense_searcher.video_features_dict[vid] = video_features
+                        break
+                    except Exception:
+                        pass
+                        
+        if video_features is not None:
+            scores_matrix = np.dot(video_features, event_vectors.T)
+            aligned_indices, dp_score = align_events_dynamic_programming(scores_matrix)
+        else:
+            aligned_indices = [int(x) for x in np.linspace(0, 100, len(query_events))]
+            dp_score = -50.0
+            
         evaluated_cands.append({
             "video_id": vid,
             "aligned_indices": aligned_indices,
@@ -146,14 +167,27 @@ def solve_task3_batch(query_events, fused_candidates, keyframes_dir, dense_searc
         frame_ids = [get_frame_id_from_idx(keyframes_dir, vid, idx, metadata_dir=metadata_dir) for idx in cand["aligned_indices"]]
         predictions.append({"video_id": vid, "frame_ids": frame_ids})
         
-    # Bo sung cac video tiep theo neu chua du 100 dong
-    for cand in fused_candidates[len(evaluated_cands):]:
+    # Bo sung cac video tiep theo neu chua du 100 dong, luon dam bao co frame_id hop le, KHONG GIOI HAN FRAME 0
+    evaluated_vids = {c["video_id"] for c in evaluated_cands}
+    for rank_idx, cand in enumerate(fused_candidates):
         vid = cand["video_id"]
-        predictions.append({"video_id": vid, "frame_ids": ["0000"] * len(query_events)})
+        if vid in evaluated_vids:
+            continue
+        # Sinh frame IDs phan bo deu theo linspace cho cac video phu
+        raw_indices = [int(x) for x in np.linspace(rank_idx * 5, rank_idx * 5 + 100, len(query_events))]
+        frame_ids = [get_frame_id_from_idx(keyframes_dir, vid, idx, metadata_dir=metadata_dir) for idx in raw_indices]
+        predictions.append({"video_id": vid, "frame_ids": frame_ids})
         if len(predictions) >= total_preds:
             break
             
+    while len(predictions) < total_preds:
+        fallback_vid = fused_candidates[0]["video_id"] if fused_candidates else "none"
+        raw_indices = [int(x) for x in np.linspace(len(predictions) * 10, len(predictions) * 10 + 100, len(query_events))]
+        frame_ids = [get_frame_id_from_idx(keyframes_dir, fallback_vid, idx, metadata_dir=metadata_dir) for idx in raw_indices]
+        predictions.append({"video_id": fallback_vid, "frame_ids": frame_ids})
+        
     return predictions[:total_preds]
+
 
 
 

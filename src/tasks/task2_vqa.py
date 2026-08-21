@@ -270,15 +270,11 @@ def score_vqa_answer(ans, question, rank_idx=0):
         if "đèo" in ans_lower or any(d in ans_lower for d in ["cả", "bảo lộc", "khánh lê", "hải vân", "ngoạn mục", "mã pí lèng", "prenn", "pha đín", "khau phạ", "ngang"]):
             score += 50.0
             
-    # 3. Cau hoi ve ten xa / dia danh o Khanh Hoa
-    elif "xã" in q_lower or "khánh hòa" in q_lower:
-        if "xã" in ans_lower or "giang" in ans_lower or "ly" in ans_lower:
-            score += 40.0
-            
     if 1 <= len(ans) <= 50:
         score += 5.0
         
     return score
+
 
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):

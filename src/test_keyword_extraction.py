@@ -98,11 +98,17 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         # 2. Trich xuat thuc the & Named Entities
         named_entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', search_target)
         rare_keywords = [kw for kw in [
-            "london zoo", "zoo", "mỏ đá quý", "đá quý", "đậu hà lan", "lắc chảo", "chùm nho", "giàn nho",
-            "vạch đích", "trạm xăng", "mazut", "dầu mazut", "kéo lưới", "bình minh", "fana", "khánh hòa",
-            "động đất", "tâm chấn", "sạt lở", "cột mốc", "kẻng đồng", "đèo", "nấm mèo", "bí đỏ", "ngoạm",
-            "con gấu", "áo mưa", "remember", "sơ đồ", "slide", "lục bình", "trống cơ", "khăn đỏ", "panna cotta"
+            "chạm mũi chân", "công trình thủy lợi", "con đập", "cân cá", "lên cân",
+            "london zoo", "zoo", "đậu hà lan", "lắc chảo", "mỏ đá quý", "đá quý",
+            "súp lơ", "đậu bắp", "bí xanh", "dạng thanh", "hình hoa", "lội nước",
+            "chùm nho", "giàn nho", "vạch đích", "trạm xăng", "mazut", "dầu mazut",
+            "kéo lưới", "bình minh", "động đất", "tâm chấn", "kẻng đồng", "lân rồng",
+            "sạt lở", "cột mốc", "đèo", "nấm mèo", "bí đỏ", "ngoạm", "lân bí đỏ",
+            "con gấu", "áo mưa", "tôm", "bánh mì", "remember", "sơ đồ", "slide",
+            "lục bình", "trống cơ", "khăn đỏ"
         ] if kw in search_target.lower()]
+
+
 
         
         print(f"🏷️  Thực thể viết hoa    : {named_entities if named_entities else 'Không có'}")

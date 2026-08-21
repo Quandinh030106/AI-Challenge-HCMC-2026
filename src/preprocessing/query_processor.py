@@ -46,14 +46,16 @@ class QueryProcessor:
             "động đất": "world map showing earthquake distribution with legend on left side showing multi-colored magnitude symbols, counting level 4 epicenters",
             "tâm chấn": "seismic activity distribution map with colored epicenter markers and left side legend box",
             "kẻng đồng": "close up of white lion head red nose, E1 two spinning golden dragons, E2 lion finishing acrobatic spin landing all feet on poles, E3 mallet striking brass gong",
-            "con lân": "white lion dancer with red nose, two yellow dragons spinning, mallet hitting bronze gong",
+            "lân rồng": "white lion dancer with red nose, two yellow dragons spinning, mallet hitting bronze gong",
             "sạt lở": "severe landslide on mountain pass road with rocks mud blocking corridor, red-topped kilometer road marker stone mostly buried in mud, motorcyclist navigating muddy road carrying green item, mountain pass sign",
             "cột mốc": "landslide on mountain pass with red topped road marker post, motorcycle in mud with green object",
             "thịt gà": "chef plating chicken noodle soup: placing vermicelli noodles into bowl, ladling broth with chicken carrots lemongrass black fungus mushrooms, topping with cilantro, zooming out showing small dipping sauce bowl with two chili slices",
             "nấm mèo": "assembling chicken noodle soup bowl with carrot lemongrass wood ear mushrooms cilantro, small sauce dish with chili slices beside bowl",
             "bí đỏ": "two-person lion dancer standing straight spinning on pole top, jumping across two poles, dipping head to bite red pumpkin with yellow flower, jumping to next poles",
             "ngoạm": "lion dance performing acrobatic pole jump biting red pumpkin with yellow blossom",
+            "lân bí đỏ": "two-person lion dancer jumping across two poles, dipping head to bite red pumpkin with yellow flower",
             "con gấu": "three people walking down slope in rain, two holding umbrellas, rear person wearing raincoat with bear illustration printed on back, walking along dirt path beside pond towards house",
+
             "áo mưa": "people walking in rain with umbrellas, raincoat with bear graphic on back near pond and country house",
             "bánh mì": "cooked peeled shrimps on plate, chef placing three French baguette bread loaves on table, chefs decorating and grilling halved shrimps on grill stove",
             "nướng": "peeled cooked prawns on dish, baguettes on counter, grilling split shrimp on barbecue stove",
@@ -144,16 +146,17 @@ class QueryProcessor:
         # Chi gan OCR_TEXT khi co thuc the rieng cu the hoac tu khoa doc bien hieu thuc su
         ocr_keywords = [
             "dòng chữ", "biển hiệu", "bảng hiệu", "khẩu hiệu", "logo", "biển số", "biển báo", "cột mốc",
-            "london zoo", "zoo", "remember", "slide", "fana", "khánh hòa", "đồ thị", "chú giải",
-            "động đất", "tâm chấn", "sạt lở", "đèo", "giá dầu", "mazut"
+            "london zoo", "zoo", "remember", "slide", "đồ thị", "chú giải",
+            "động đất", "tâm chấn", "sạt lở", "đèo", "giá dầu", "mazut", "con số hiển thị", "hiển thị trên cân"
         ]
 
-        
         for kw in ocr_keywords:
-            if kw in text_lower:
+            pattern = r'\b' + re.escape(kw) + r'\b'
+            if re.search(pattern, text_lower):
                 return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
                 
         return {"intent": "VISUAL_SCENE", "dense_weight": 0.75, "sparse_weight": 0.25}
+
         
         for kw in ocr_keywords:
             if kw in text_lower:

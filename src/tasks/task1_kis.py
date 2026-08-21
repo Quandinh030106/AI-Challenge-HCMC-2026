@@ -170,7 +170,10 @@ def generate_diversity_top100_kis(fused_candidates, keyframes_dir, metadata_dir=
             
     while len(predictions) < total_preds:
         last_vid = fused_candidates[0]["video_id"] if fused_candidates else "none"
-        predictions.append({"video_id": last_vid, "frame_id": "0000"})
+        dummy_fidx = (len(predictions) * 15) % 800
+        fid = get_frame_id_from_idx(keyframes_dir, last_vid, dummy_fidx, metadata_dir=metadata_dir)
+        predictions.append({"video_id": last_vid, "frame_id": fid})
         
     return predictions[:total_preds]
+
 
