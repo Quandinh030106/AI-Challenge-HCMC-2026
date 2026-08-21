@@ -144,35 +144,22 @@ def clean_vlm_answer(raw_answer, question=None):
     return ans if ans else "Không rõ"
 
 def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyframes_dir, model, processor, metadata_dir=None):
-    """Suy luan Multi-Frame cho mot video ung vien cu the."""
+    """Suy luan Multi-Frame can bang toan dien theo dong thoi gian (Uniform Temporal Sampling)."""
     scores = dense_info.get("all_scores") if dense_info is not None else None
     frame_indices = []
     if scores is not None and len(scores) > 0:
         n_frames = len(scores)
         peak_idx = int(np.argmax(scores))
-        frame_indices.append(peak_idx)
         
-        # Cac frame dau video (chua bien hieu, tieu de mon an, cong chao, phieu thong tin)
-        for intro_ratio in [0.0, 0.05, 0.10]:
-            intro_f = int(n_frames * intro_ratio)
-            if 0 <= intro_f < n_frames and intro_f not in frame_indices:
-                frame_indices.append(intro_f)
-
-            
-        # Frame dinh phu cach xa dinh chinh
-        masked_scores = np.copy(scores)
-        start_mask = max(0, peak_idx - 12)
-        end_mask = min(n_frames, peak_idx + 12)
-        masked_scores[start_mask:end_mask] = -np.inf
-        if np.max(masked_scores) > -np.inf:
-            sec_peak = int(np.argmax(masked_scores))
-            if sec_peak not in frame_indices:
-                frame_indices.append(sec_peak)
+        # Lay mau can bang trai deu: 0% (Dau), 25% (1/4), 50% (Giua), 75% (3/4) va Peak (Dinh)
+        sample_ratios = [0.0, 0.25, 0.50, 0.75]
+        for r in sample_ratios:
+            f_idx = int(n_frames * r)
+            if 0 <= f_idx < n_frames and f_idx not in frame_indices:
+                frame_indices.append(f_idx)
                 
-        # Frame giua video
-        mid_idx = n_frames // 2
-        if mid_idx not in frame_indices:
-            frame_indices.append(mid_idx)
+        if peak_idx not in frame_indices:
+            frame_indices.append(peak_idx)
     else:
         frame_indices = [0]
         
@@ -190,9 +177,9 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
         return {"frame_id": frame_id, "answer": "Không rõ", "has_concrete_answer": False}
         
     prompt_text = (
-        f"Nhiệm vụ: Hãy quan sát kỹ các hình ảnh từ video trên, đọc chính xác từng dòng chữ, biển hiệu, bảng tên, hoành phi câu đối, nhãn dán hoặc tài liệu để trả lời câu hỏi sau bằng Tiếng Việt:\n"
+        f"Dựa vào các hình ảnh từ video trên, hãy quan sát kỹ và trả lời câu hỏi sau bằng Tiếng Việt:\n"
         f"'{clean_question}'\n"
-        f"Yêu cầu: Trả lời ngắn gọn, trực tiếp và chính xác tên riêng / câu thơ / tiêu đề cần tìm. Không thêm lời dẫn."
+        f"Yêu cầu: Trả lời ngắn gọn, trực tiếp và chính xác đáp án cần tìm. Không giải thích dài dòng."
     )
     
     content_list = []
@@ -218,7 +205,7 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
         ).to(model.device)
         
         with torch.no_grad():
-            generated_ids = model.generate(**inputs, max_new_tokens=100)
+            generated_ids = model.generate(**inputs, max_new_tokens=80)
             generated_ids_trimmed = [
                 out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
             ]
@@ -237,10 +224,8 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
             
     final_answer = clean_vlm_answer(raw_answer, question=clean_question)
     
-    # Kiem tra xem dap an co gia tri thuc su hay chi la cau tra loi generic
     is_concrete = False
     if final_answer and final_answer.lower() not in ["không rõ", "chưa rõ", "none", "không có", "không tìm thấy", ""]:
-        # Neu dap an khong chi lap lai tu trong cau hoi ma chua thong tin moi
         is_concrete = True
         
     return {
@@ -251,47 +236,25 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
     }
 
 def score_vqa_answer(ans, question, rank_idx=0):
-    """Cham diem do tin cay va tinh phu hop cua dap an voi cau hoi de chon ra video chuan nhat."""
-    if not ans or ans.lower() in ["không rõ", "chưa rõ", "none", "không có", "không tìm thấy"]:
+    """
+    Cham diem do tin cay cua dap an theo nguyen ly tong quat 100%:
+    - Dap an khong co thong tin / generic -> -100 diem.
+    - Dap an ro rang, co noi dung cu the -> Uu tien cao nhat theo thu hang goc RRF.
+    """
+    if not ans or ans.lower() in ["không rõ", "chưa rõ", "none", "không có", "không tìm thấy", ""]:
         return -100.0
         
-    score = 10.0 - (rank_idx * 1.5)  # Uu tien thu hang goc
-    ans_lower = ans.lower()
-    q_lower = question.lower()
+    # Diem co ban dua theo thu hang tim kiem goc RRF
+    score = 50.0 - (rank_idx * 3.0)
     
-    # 1. Cau hoi ve don vi hanh chinh / dia danh / dia diem
-    location_q_words = ["xã", "huyện", "tỉnh", "quận", "phường", "thành phố", "thị xã", "địa phương", "địa điểm", "nơi", "ở đâu"]
-    if any(lw in q_lower for lw in location_q_words):
-        loc_indicators = ["xã", "huyện", "tỉnh", "quận", "phường", "tp", "thành phố", "thị trấn", "thôn", "ấp", "bản"]
-        if any(li in ans_lower for li in loc_indicators):
-            score += 40.0
-        elif len(ans.split()) >= 2:
-            score += 20.0
-            
-    # 2. Cau hoi ve tho / cau tho / khau hieu / slogan / hoanh phi
-    elif any(tw in q_lower for tw in ["thơ", "câu thơ", "khẩu hiệu", "slogan", "câu đối", "hoành phi", "bài thơ"]):
-        if len(ans) >= 15 or any(sep in ans for sep in [",", "\n", "/", "-", ";"]):
-            score += 40.0
-            
-    # 3. Cau hoi ve tieu de / ten mon an / thuc don
-    elif any(dw in q_lower for dw in ["món ăn", "công thức", "tiêu đề", "tên món", "món gì"]):
-        dish_indicators = [
-            "thịt", "canh", "bò", "heo", "gà", "cá", "tôm", "xào", "nấu", "kho", "chả", 
-            "bánh", "gỏi", "món", "cơm", "hấp", "nướng", "lẩu", "chè", "súp", "chiên", "salad"
-        ]
-        if any(d in ans_lower for d in dish_indicators):
-            score += 40.0
-            
-    # 4. Cau hoi ve ten nguoi / tac gia / nhan vat
-    elif any(pw in q_lower for pw in ["ai", "tên người", "tác giả", "nhân vật", "đạo diễn", "ca sĩ", "cầu thủ", "nghệ sĩ"]):
-        if 2 <= len(ans.split()) <= 5:
-            score += 35.0
-            
-    # Tang diem neu cau tra loi ngan gon, co nghia tu 4 den 60 ky tu
-    if 4 <= len(ans) <= 60:
-        score += 5.0
+    # Cong diem neu dap an co do dai chuan gon (tu 3 den 70 ky tu)
+    if 3 <= len(ans) <= 70:
+        score += 10.0
+    elif len(ans) > 100:
+        score -= 10.0
         
     return score
+
 
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):

@@ -366,38 +366,19 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         # TASK 3: TRAKE
         elif task_type == "trake":
             events = parsed["events"]
-            align_res = solve_task3(
+            from src.tasks.task3_trake import solve_task3_batch
+            all_aligned_preds = solve_task3_batch(
                 events, fused, keyframes_dir, dense_searcher, 
-                metadata_dir=map_keyframes_dir, query_processor=query_processor
+                metadata_dir=map_keyframes_dir, query_processor=query_processor,
+                total_preds=100
             )
-            best_vid = align_res["video_id"]
-            best_frame_ids = align_res["frame_ids"]
             
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
-                clean_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in best_frame_ids]
-                f_out.write(f"{best_vid}, " + ", ".join(clean_fids) + "\n")
-                
-                count = 1
-                for cand in fused:
-                    vid = cand["video_id"]
-                    if vid == best_vid:
-                        continue
-                    sub_align = solve_task3(
-                        events, [cand], keyframes_dir, dense_searcher, 
-                        metadata_dir=map_keyframes_dir, query_processor=query_processor
-                    )
-                    sub_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in sub_align["frame_ids"]]
-                    if len(sub_fids) == len(events):
-                        f_out.write(f"{vid}, " + ", ".join(sub_fids) + "\n")
-                        count += 1
+                for item in all_aligned_preds:
+                    vid = item["video_id"]
+                    clean_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in item["frame_ids"]]
+                    f_out.write(f"{vid}, " + ", ".join(clean_fids) + "\n")
 
-                    if count >= 100:
-                        break
-                        
-                while count < 100:
-                    dummy_fids = clean_fids if clean_fids else ["0"] * len(events)
-                    f_out.write(f"{best_vid}, " + ", ".join(dummy_fids) + "\n")
-                    count += 1
 
     print("-----------------------------------------------------")
     print("Dong goi thu muc submission vao file zip...")
