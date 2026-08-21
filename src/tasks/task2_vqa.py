@@ -99,7 +99,7 @@ def find_image_for_frame(keyframes_dir, video_id, frame_idx, frame_id=""):
     return None
 
 def clean_vlm_answer(raw_answer, question=None):
-    """Lam sach tien to dan chuyen nhung GIU NGUYEN VEN toan bo do dai noi dung cau tra loi duoi 100 ky tu."""
+    """Lam sach tien to dan chuyen va loai bo chatbot refusals / placeholders."""
     if not raw_answer:
         return "Không rõ"
         
@@ -120,6 +120,8 @@ def clean_vlm_answer(raw_answer, question=None):
         r'^(?:hình ảnh|đoạn video|video|clip)(?:\s+[^:–\-]+?)?\s*(?:là|đó là|chính là)?\s*[:\-\.]?\s*',
         r'^(?:câu thơ|hai câu thơ|bài thơ|tiêu đề|tên(?:\s+của)?\s+[^:–\-]+?|đáp án|câu trả lời|kết quả)\s*(?:là|đó là|chính là)\s*[:\-\.]?\s*',
         r'^(?:câu thơ|hai câu thơ|bài thơ|tiêu đề|tên(?:\s+của)?\s+[^:–\-]+?|đáp án|câu trả lời|kết quả)\s*[:\-\.]\s*',
+        r'^(?:món ăn|món|công thức|tiêu đề)(?:\s+này)?(?:\s+có)?(?:\s+tiêu đề|\s+tên)?\s*(?:là|đó là|chính là)\s*[:\-\.]?\s*',
+        r'^(?:xã|huyện|tỉnh|địa phương|nơi)(?:\s+này)?(?:\s+có)?(?:\s+tên)?\s*(?:là|đó là|chính là)\s*[:\-\.]?\s*',
         r'^(?:dựa vào|nhìn vào|theo|quan sát)\s+hình ảnh\s*[,:]?\s*(?:thì|ta thấy|có thể thấy)?\s*',
         r'^(?:trong hình|trên hình|trong ảnh|trên ảnh)\s*[,:]?\s*',
         r'^(?:đó là|nó là|chính là|là)\s*[:\-\.]?\s*',
@@ -128,7 +130,6 @@ def clean_vlm_answer(raw_answer, question=None):
     ]
 
 
-    
     changed = True
     while changed:
         changed = False
@@ -139,11 +140,22 @@ def clean_vlm_answer(raw_answer, question=None):
                 changed = True
                 
     ans = ans.strip().strip('"').strip("'").rstrip('.!?;:')
+    
+    # 3. Bo loc tu choi Chatbot va Placeholder pho bien
+    refusal_keywords = [
+        "không rõ", "chưa rõ", "none", "không có", "không tìm thấy", "không thể",
+        "tôi không", "xin lỗi", "hãy xin lỗi", "tôi không hiểu", "không hiểu",
+        "không thấy", "không xác định", "xã a", "xã b", "món a", "món b", "người a", "người b", "công thức a"
+    ]
+    ans_lower = ans.lower()
+    if any(k in ans_lower for k in refusal_keywords):
+        return "Không rõ"
+        
     if len(ans) > 100:
         ans = ans[:100].strip()
     return ans if ans else "Không rõ"
 
-def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyframes_dir, model, processor, metadata_dir=None):
+def solve_single_video_vqa(video_id, dense_info, query_text, question, clean_question, keyframes_dir, model, processor, metadata_dir=None):
     """Suy luan Multi-Frame can bang toan dien theo dong thoi gian (Uniform Temporal Sampling)."""
     scores = dense_info.get("all_scores") if dense_info is not None else None
     frame_indices = []
@@ -177,9 +189,11 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
         return {"frame_id": frame_id, "answer": "Không rõ", "has_concrete_answer": False}
         
     prompt_text = (
-        f"Dựa vào các hình ảnh từ video trên, hãy quan sát kỹ và trả lời câu hỏi sau bằng Tiếng Việt:\n"
-        f"'{clean_question}'\n"
-        f"Yêu cầu: Trả lời ngắn gọn, trực tiếp và chính xác đáp án cần tìm. Không giải thích dài dòng."
+        f"Bối cảnh video: {query_text}\n"
+        f"Câu hỏi: {clean_question}\n"
+        f"Yêu cầu: Dựa vào các hình ảnh trên, hãy quan sát kỹ các chi tiết, chữ viết, biển hiệu hoặc hành động để trả lời câu hỏi bằng Tiếng Việt.\n"
+        f"- Trả lời ngắn gọn, trực tiếp và chính xác đáp án cần tìm (dưới 20 từ). Không giải thích dài dòng.\n"
+        f"- Nếu trong hình ảnh KHÔNG có thông tin hoặc KHÔNG nhìn thấy câu trả lời, hãy chỉ trả lời duy nhất: 'Không rõ'."
     )
     
     content_list = []
@@ -238,7 +252,7 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
 def score_vqa_answer(ans, question, rank_idx=0):
     """
     Cham diem do tin cay cua dap an theo nguyen ly tong quat 100%:
-    - Dap an khong co thong tin / generic -> -100 diem.
+    - Dap an khong co thong tin / generic / refusal -> -100 diem.
     - Dap an ro rang, co noi dung cu the -> Uu tien cao nhat theo thu hang goc RRF.
     """
     if not ans or ans.lower() in ["không rõ", "chưa rõ", "none", "không có", "không tìm thấy", ""]:
@@ -254,8 +268,6 @@ def score_vqa_answer(ans, question, rank_idx=0):
         score -= 10.0
         
     return score
-
-
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
     """
@@ -282,11 +294,12 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         print(f"VQA: Kiem tra Ung vien #{rank_idx + 1} ({vid})...")
         
         res = solve_single_video_vqa(
-            vid, dense_info, question, clean_question, 
+            vid, dense_info, query_text, question, clean_question, 
             keyframes_dir, model, processor, metadata_dir=metadata_dir
         )
         
         q_score = score_vqa_answer(res["answer"], question, rank_idx=rank_idx)
+
         print(f"  -> Video {vid} | Dap an: '{res['answer']}' (Diem chat luong: {q_score:.1f})")
         
         evaluated_results.append({

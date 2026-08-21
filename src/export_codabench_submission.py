@@ -307,14 +307,18 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
         dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
         sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
+        dense_w = 0.4 if task_type == "qa" else intent["dense_weight"]
+        sparse_w = 0.6 if task_type == "qa" else intent["sparse_weight"]
+        
         fused = reciprocal_rank_fusion(
             dense_res, sparse_res,
-            dense_weight=intent["dense_weight"],
-            sparse_weight=intent["sparse_weight"],
+            dense_weight=dense_w,
+            sparse_weight=sparse_w,
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
         fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
+
 
 
         # TASK 1: TEXTUAL KIS

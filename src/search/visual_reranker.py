@@ -119,8 +119,27 @@ class VisualReRanker:
             
         return min(max(score, 0.0), 10.0)
 
+    def get_top_peak_indices(self, dense_info, n_peaks=3):
+        """Trich xuat cac chi so frame dinh cao nhat cua video."""
+        if not dense_info or "all_scores" not in dense_info:
+            return [0]
+        scores = dense_info["all_scores"]
+        if len(scores) <= n_peaks:
+            return list(range(len(scores)))
+            
+        from src.tasks.task1_kis import gaussian_smooth_scores
+        smoothed = gaussian_smooth_scores(scores, sigma=1.5)
+        sorted_idx = np.argsort(smoothed)[::-1]
+        peaks = []
+        for idx in sorted_idx:
+            if all(abs(idx - p) >= 10 for p in peaks):
+                peaks.append(int(idx))
+            if len(peaks) >= n_peaks:
+                break
+        return peaks or [int(sorted_idx[0])]
+
     def rerank_candidates(self, fused_candidates, query_text, keyframes_dir, top_n_verify=5):
-        """Xac thuc thi giac cho Top N video ung vien va sap xep lai thu hang."""
+        """Xac thuc thi giac Multi-Peak 3-Frame cho Top N video ung vien va sap xep lai thu hang."""
         if not fused_candidates:
             return []
             
@@ -131,19 +150,26 @@ class VisualReRanker:
         for cand in candidates_to_verify:
             vid = cand["video_id"]
             dense_info = cand.get("dense_info")
-            best_idx = dense_info.get("best_frame_idx", 0) if dense_info else 0
+            peak_indices = self.get_top_peak_indices(dense_info, n_peaks=3)
             
-            img_path = self.find_keyframe_image(keyframes_dir, vid, best_idx)
-            if img_path and os.path.exists(img_path):
-                try:
-                    vlm_score = self.verify_single_image(img_path, query_text)
-                except Exception:
-                    vlm_score = 5.0
-            else:
-                vlm_score = 0.0
+            frame_scores = []
+            for p_idx in peak_indices:
+                img_path = self.find_keyframe_image(keyframes_dir, vid, p_idx)
+                if img_path and os.path.exists(img_path):
+                    try:
+                        s = self.verify_single_image(img_path, query_text)
+                        frame_scores.append(s)
+                    except Exception:
+                        pass
+                        
+            vlm_score = max(frame_scores) if frame_scores else 5.0
                 
             original_rrf = cand.get("rrf_score", 0.0)
-            boosted_score = original_rrf + (vlm_score / 10.0) * 0.15
+            # vlm_delta nam trong khoang [-0.5, +0.5]
+            # Neu VLM xac nhan cao (>=7.0) -> Cong manh diem (+0.03 den +0.05)
+            # Neu VLM phu dinh (<=3.0) -> Tru diem manh de loai bo video sai (-0.03 den -0.05)
+            vlm_delta = (vlm_score - 5.0) / 10.0
+            boosted_score = original_rrf + (vlm_delta * 0.08)
             
             cand_copy = dict(cand)
             cand_copy["vlm_score"] = vlm_score
@@ -152,3 +178,4 @@ class VisualReRanker:
             
         verified_results.sort(key=lambda x: x["boosted_score"], reverse=True)
         return verified_results + remaining_candidates
+
