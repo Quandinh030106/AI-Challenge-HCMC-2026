@@ -145,14 +145,17 @@ class DenseSearcher:
             sim_matrix = torch.matmul(self.global_tensor, q_matrix.T)
             
             if q_matrix.shape[0] > 1:
-                # Ket hop 50% Max Peak (bat chi tiet dac biet) va 50% Mean (bao toan ngu canh lon)
+                # Ưu tiên trọng số cho Prompt Vàng (Prompt đầu tiên từ visual_knowledge_map nếu có):
+                golden_sim = sim_matrix[:, 0]
                 max_scores, _ = torch.max(sim_matrix, dim=-1)
                 mean_scores = torch.mean(sim_matrix, dim=-1)
-                sim_scores = 0.5 * max_scores + 0.5 * mean_scores
+                # 50% Prompt Vàng + 30% Max Peak + 20% Ngữ cảnh chung
+                sim_scores = 0.50 * golden_sim + 0.30 * max_scores + 0.20 * mean_scores
             else:
                 sim_scores = sim_matrix.squeeze(-1)
                 
             sim_scores_np = sim_scores.float().cpu().numpy()
+
 
         results = []
         for meta in self.video_metadata_list:
