@@ -25,7 +25,7 @@ from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
 from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
-from src.tasks.task2_vqa import solve_task2
+from src.tasks.task2_vqa import solve_task2, clean_vlm_answer
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
 from src.search.object_search import ObjectSearcher
 from src.search.visual_reranker import VisualReRanker
@@ -183,7 +183,8 @@ def format_answer_for_csv(ans_text):
     """Format cau tra loi VQA cho file CSV tuan thu dung quy dinh toi da 100 ky tu cua BTC."""
     if not ans_text or str(ans_text).strip() in ["", '""', "''", "None"]:
         ans_text = "Không rõ"
-    ans_cleaned = str(ans_text).strip().strip('"').strip("'").replace("\n", " ").strip()
+    ans_cleaned = clean_vlm_answer(str(ans_text))
+    ans_cleaned = ans_cleaned.strip().strip('"').strip("'").replace("\n", " ").strip()
     # Quy dinh cua BTC: Answer (Q&A) co do dai toi da 100 ky tu
     if len(ans_cleaned) > 100:
         ans_cleaned = ans_cleaned[:100].strip()
@@ -191,6 +192,7 @@ def format_answer_for_csv(ans_text):
         ans_cleaned = "Không rõ"
     ans_escaped = ans_cleaned.replace('"', '""')
     return f'"{ans_escaped}"'
+
 
 
 
