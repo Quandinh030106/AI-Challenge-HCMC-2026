@@ -95,21 +95,33 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         print(f"🌐 Dịch Tiếng Anh (NLLB): {trans_en}")
         print(f"🎯 Phân loại Intent     : {intent_info.get('intent')} (Dense weight: {intent_info.get('dense_weight')}, Sparse weight: {intent_info.get('sparse_weight')})")
         
-        # 2. Trich xuat thuc the & Named Entities
-        named_entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', search_target)
-        rare_keywords = [kw for kw in ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn", "dê", "xe đạp", "bánh rán", "cá mập", "tàu vũ trụ", "ống kính", "máy ảnh", "thịt xay", "măng tây", "nấm", "đậu hũ", "củ năng"] if kw in search_target.lower()]
+        # 2. Trich xuat thuc the & Named Entities dong theo chuan NLP
+        VN_UPPER = 'A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ'
+        VN_LOWER = 'a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ'
         
-        print(f"🏷️  Thực thể viết hoa    : {named_entities if named_entities else 'Không có'}")
-        print(f"🔑 Từ khóa đặc biệt     : {rare_keywords if rare_keywords else 'Không có'}")
+        sentences = re.split(r'[\.\?\!\n]+', search_target)
+        proper_names = []
+        for s in sentences:
+            words = s.strip().split()
+            if len(words) > 1:
+                interior = ' '.join(words[1:])
+                matches = re.findall(rf'\b[{VN_UPPER}][{VN_LOWER}]+(?:\s+[{VN_UPPER}][{VN_LOWER}]+)+\b', interior)
+                proper_names.extend(matches)
+                
+        acronyms = re.findall(rf'\b(?:[{VN_UPPER}]{{2,}}[0-9\-]*|[{VN_UPPER}]+-[0-9]+)\b', search_target)
+        
+        print(f"🏷️  Thực thể viết hoa    : {proper_names if proper_names else 'Không có'}")
+        print(f"🔑 Từ viết tắt / Mã hiệu: {acronyms if acronyms else 'Không có'}")
         
         # 3. Anh xa sang lop vat the Object Detection & 3 Tier Ham luong Thong tin
         tiered_res = object_searcher.extract_tiered_entities(search_target)
         mapped_objects = tiered_res["all"]
         print(f"📦 Objects tương ứng    : {mapped_objects if mapped_objects else 'Không có'}")
         if mapped_objects:
-            print(f"   ⭐ Tier 1 (Chủ thể quyết định x4.5) : {tiered_res['tier1']}")
-            print(f"   🔹 Tier 2 (Bối cảnh & Đạo cụ x2.5)   : {tiered_res['tier2']}")
+            print(f"   ⭐ Tier 1 (Chủ thể quyết định x3.5) : {tiered_res['tier1']}")
+            print(f"   🔹 Tier 2 (Đạo cụ & Bối cảnh x2.0)   : {tiered_res['tier2']}")
             print(f"   🔸 Tier 3 (Tác nhân nền x0.5)        : {tiered_res['tier3']}")
+
 
         
         # 4. Cac bien the Prompt Ensemble gui cho CLIP

@@ -29,13 +29,16 @@ class ObjectSearcher:
             "tàu vũ trụ": ["Rocket", "Space vehicle", "Helmet", "Suit", "Aircraft", "Airplane", "Clothing", "Person", "Vehicle"],
             # Tu dien danh tu thuc the don thuan (khong doan mo boi canh)
             "người": ["Person"],
-            "nam": ["Man", "Person"],
-            "nữ": ["Woman", "Person"],
+            "nam giới": ["Man", "Person"],
+            "nữ giới": ["Woman", "Person"],
             "phụ nữ": ["Woman", "Person"],
             "đàn ông": ["Man", "Person"],
             "trẻ em": ["Girl", "Boy", "Person"],
             "cô gái": ["Girl", "Woman", "Person"],
             "chàng trai": ["Boy", "Man", "Person"],
+            "con trai": ["Boy", "Man", "Person"],
+            "con gái": ["Girl", "Woman", "Person"],
+
             "xe đạp": ["Bicycle", "Vehicle"],
             "xe máy": ["Motorcycle", "Vehicle"],
             "ô tô": ["Car", "Vehicle"],
@@ -234,6 +237,14 @@ class ObjectSearcher:
         # 1. Khop tu khoa Tieng Viet qua Bang Anh Xa Thuc The
         for kw, ents in self.entity_map.items():
             if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
+                # Xu ly loai tru cac tu dong am dac thu cua tieng Viet
+                if kw == "đàn" and ("đàn hổ" in text_lower or "đàn dê" in text_lower or "đàn bò" in text_lower or "đàn chim" in text_lower or "người đàn ông" in text_lower or "đàn ong" in text_lower or "đàn cá" in text_lower):
+                    if not any(m in text_lower for m in ["chơi đàn", "gảy đàn", "tiếng đàn", "đàn guitar", "đàn piano", "đàn tranh", "nhạc cụ"]):
+                        continue
+                if kw == "tượng" and ("tượng trưng" in text_lower or "tượng hình" in text_lower):
+                    if not any(s in text_lower for s in ["bức tượng", "tượng đài", "tạc tượng", "pho tượng"]):
+                        continue
+                        
                 for e in ents:
                     target_entities.add(e.lower())
                     
@@ -252,7 +263,7 @@ class ObjectSearcher:
             "vase", "scissors", "teddy bear", "hair drier", "toothbrush", "camera", "camera lens", "electronics",
             "rocket", "aircraft", "space vehicle", "vehicle", "clothing", "suit", "helmet", "sculpture", "statue",
             "art", "sand", "flower", "plant", "rose", "mushroom", "vegetable", "meat", "beef", "pork", "fruit",
-            "pineapple", "dish", "spring roll", "robot", "toy", "glass", "tableware", "kitchen utensil"
+            "pineapple", "dish", "spring roll", "robot", "toy", "glass", "tableware", "kitchen utensil", "wheel"
         }
         
         words = re.findall(r'\b[a-z]{3,}\b', text_lower)
@@ -264,32 +275,45 @@ class ObjectSearcher:
 
     def get_entity_information_weight(self, entity_name, query_text=""):
         """
-        Dinh luong trong so thuc the theo nguyen ly Saliency tong quat 100%:
-        - Nen pho quat (Person, Clothing, Tree, Plant, Building...): Trong so 0.5 (xuat hien o hau het moi frame)
-        - Thuc the tieu diem cu the (Dong vat, Phuong tien, Nhac cu, Thiet bi, Mon an...): Trong so 3.0 (mang tinh phan biet cao)
+        Dinh luong trong so thuc the theo nguyen ly Saliency 3 Tang (Visual Saliency Taxonomy):
+        - ⭐ Tier 1 (x3.5): Chu the tieu diem doc nhat (Dong vat, Phuong tien, Nhac cu, Mon an cu the, Thiet bi, Nghe thuat...)
+        - 🔹 Tier 2 (x2.0): Dao cu, Do noi that, Phu kien ca nhan (Chao, dia, bat, ban, ghe, ke sach, mu, non, kinh, balo, tui...)
+        - 🔸 Tier 3 (x0.5): Tac nhan nen & Boi canh pho quat (Person, Man, Woman, Clothing, Shirt, Plant, Tree, Building, Wall...)
         """
         ent = entity_name.lower().strip()
         
-        generic_background = {
+        tier3_generic = {
             "person", "man", "woman", "girl", "boy", "human",
             "clothing", "shirt", "dress", "pants", "suit",
-            "tree", "plant", "building", "window", "door", "wall", "sky", "floor", "ground", "road",
-            "furniture", "table", "chair", "tableware", "food", "animal", "vehicle"
+            "plant", "tree", "building", "window", "door", "wall", "sky", "floor", "ground", "road", "sand",
+            "food", "animal", "vehicle"
         }
         
-        if ent in generic_background:
+        tier2_props = {
+            "plate", "tableware", "tray", "bowl", "cup", "glass", "kitchen utensil", "bottle", "fork", "knife", "spoon",
+            "table", "chair", "bookcase", "book", "bed", "couch", "furniture",
+            "hat", "helmet", "backpack", "handbag", "tie", "costume", "box", "bag", "packaging",
+            "vase", "clock", "toy"
+        }
+        
+        if ent in tier3_generic:
             return 0.5
-        return 3.0
+        elif ent in tier2_props:
+            return 2.0
+        else:
+            return 3.5
 
     def extract_tiered_entities(self, query_text):
-        """Boc tach thuc the: Tier 1 (Vat the tieu diem cu the) va Tier 3 (Boi canh nen pho quat)."""
+        """Boc tach thuc the day du 3 Tang: Tier 1 (Chu the), Tier 2 (Dao cu/Noi that), Tier 3 (Boi canh nen)."""
         all_ents = self.extract_target_entities(query_text)
         t1, t2, t3 = [], [], []
         
         for e in all_ents:
             w = self.get_entity_information_weight(e, query_text)
-            if w >= 2.0:
+            if w >= 3.0:
                 t1.append(e)
+            elif w >= 1.5:
+                t2.append(e)
             else:
                 t3.append(e)
                 
@@ -299,8 +323,6 @@ class ObjectSearcher:
             "tier2": sorted(list(set(t2))),
             "tier3": sorted(list(set(t3)))
         }
-
-
 
     def boost_candidates(self, candidates, query_text):
         """
@@ -317,7 +339,8 @@ class ObjectSearcher:
             return candidates
             
         # Xac dinh xem cau hoi co chua chu the hiem (Tier 1) hay khong
-        has_tier1_target = any(self.get_entity_information_weight(e, query_text) >= 4.0 for e in target_entities)
+        has_tier1_target = any(self.get_entity_information_weight(e, query_text) >= 3.0 for e in target_entities)
+
         
         boosted_candidates = []
         

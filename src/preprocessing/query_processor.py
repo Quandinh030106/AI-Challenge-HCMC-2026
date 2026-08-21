@@ -54,15 +54,35 @@ class QueryProcessor:
                 cleaned_words.append(w)
         return " ".join(cleaned_words)
 
+    def preprocess_query_vi(self, text_vi):
+        """Chuan hoa cac cum tu tieng Viet da nghia/chuyen nganh truoc khi dich sang Tieng Anh."""
+        if not text_vi:
+            return ""
+        cleaned = text_vi
+        replacements = [
+            (r'\bvệ sinh (?:máy ảnh|ống kính|thiết bị|cảm biến|camera|lens)\b', 'lau chùi bảo dưỡng máy ảnh'),
+            (r'\bmăng tây\b', 'asparagus'),
+            (r'\bmúa lân\b', 'lion dance performance'),
+            (r'\bcon lân\b', 'lion dance performer'),
+            (r'\bbọ cánh cứng\b', 'beetle insect'),
+            (r'\bđiêu khắc cát\b', 'sand sculpture'),
+            (r'\bngười đàn ông\b', 'man'),
+            (r'\bngười phụ nữ\b', 'woman')
+        ]
+        for pattern, repl in replacements:
+            cleaned = re.sub(pattern, repl, cleaned, flags=re.IGNORECASE)
+        return cleaned
+
     def translate_vi_to_en(self, text_vi):
         """Dich cau truy van sang Tieng Anh chat luong cao bang Meta NLLB-200."""
         if not text_vi.strip():
             return ""
             
+        text_vi_clean = self.preprocess_query_vi(text_vi)
         translated = ""
         if self.translator_available:
             try:
-                inputs = self.tokenizer(text_vi, return_tensors="pt", padding=True, truncation=True, max_length=150).to(self.device)
+                inputs = self.tokenizer(text_vi_clean, return_tensors="pt", padding=True, truncation=True, max_length=150).to(self.device)
                 gen_kwargs = {
                     "max_length": 150,
                     "no_repeat_ngram_size": 3,
@@ -79,46 +99,55 @@ class QueryProcessor:
                 translated = ""
                 
         if not translated or len(translated.split()) < 2:
-            translated = text_vi
+            translated = text_vi_clean
             
         return translated
 
-
     def detect_query_intent(self, text_vi):
-        """Phan loai y dinh cau hoi de gan trong so RRF hop ly."""
+        """
+        Phan loai y dinh cau hoi (Intent Classification) theo chuan Ngon ngu hoc & Thi giac:
+        - VISUAL_SCENE: Mo ta hanh dong, phong canh, doi tuong (Dense weight 0.75, Sparse weight 0.25).
+        - OCR_TEXT: Co chua ten rieng, ma hieu, tu viet tat hoac tu chi dan bien hieu (Dense 0.4, Sparse 0.6).
+        """
         text_lower = text_vi.lower()
+        VN_UPPER = 'A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ'
+        VN_LOWER = 'a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ'
         
-        # 1. Tu khoa OCR chi dan tong quat (khong chua bat ky ten rieng nao)
+        # 1. Tu khoa OCR chi dan tong quat ro rang
         generic_ocr_keywords = [
-
             "dòng chữ", "biển hiệu", "bảng hiệu", "khẩu hiệu", "logo", "biển số", "biển báo",
-            "bảng tên", "chữ viết", "tiêu đề", "tên của", "bảng chữ", "tên gọi", "phông nền",
+            "bảng tên", "chữ viết", "tiêu đề", "bảng chữ", "tên gọi", "phông nền",
             "băng rôn", "banner", "poster", "nhãn dán", "ghi là", "có chữ", "đọc chữ",
             "thương hiệu", "nhãn hiệu", "tên quán", "tên đường", "slogan", "chữ in", "số áo",
             "hoành phi", "câu đối"
         ]
-        
-        # Kiem tra xem co chua tu khoa OCR tong quat khong
         if any(kw in text_lower for kw in generic_ocr_keywords):
             return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
             
-        # 2. Nhan dien dong cac tu viet tat / ma hieu (vi du: COVID-19, NASA, HTV, VTV, FANA, ...)
-        acronyms = re.findall(r'\b[A-Z0-9\-]{2,}\b', text_vi)
+        # 2. Tu viet tat / Ma hieu (Phai chua it nhat 2 chu cai in hoa, vi du: FANA, COVID-19, NASA, HTV9)
+        acronyms = re.findall(rf'\b(?:[{VN_UPPER}]{{2,}}[0-9\-]*|[{VN_UPPER}]+-[0-9]+)\b', text_vi)
         if acronyms:
             return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
             
-        # 3. Nhan dien dong cum tu ten rieng viet hoa lien tiep (vi du: Nguyen Trung Truc, Khanh Hoa, ...)
-        proper_names = re.findall(r'\b[A-ZÀ-Ỵ][a-zà-ỹ0-9\-]+(?:\s+[A-ZÀ-Ỵ][a-zà-ỹ0-9\-]+)+\b', text_vi)
-        # Loai tru tu dau cau bi viet hoa tu nhien
-        proper_names = [p for p in proper_names if not text_vi.startswith(p) or len(p.split()) >= 2]
+        # 3. Cum danh tu rieng viet hoa lien tiep o TRONG CAU (Bo qua tu dau cau bi viet hoa do ngu phap)
+        sentences = re.split(r'[\.\?\!\n]+', text_vi)
+        proper_names = []
+        for s in sentences:
+            words = s.strip().split()
+            if len(words) > 1:
+                interior = ' '.join(words[1:])
+                matches = re.findall(rf'\b[{VN_UPPER}][{VN_LOWER}]+(?:\s+[{VN_UPPER}][{VN_LOWER}]+)+\b', interior)
+                proper_names.extend(matches)
+                
         if proper_names:
             return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
             
-        # 4. Co chua noi dung trong ngoac kep can tim chinh xac
-        if re.search(r'["“][^"”]+["”]', text_vi):
+        # 4. Co chua cum tu trong ngoac kep can tim chinh xac
+        if re.search(r'["“][^"”]{3,}["”]', text_vi):
             return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
                 
         return {"intent": "VISUAL_SCENE", "dense_weight": 0.75, "sparse_weight": 0.25}
+
 
 
 
