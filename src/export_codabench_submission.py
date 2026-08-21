@@ -36,51 +36,33 @@ def load_config(config_path="configs/default.yaml"):
         return yaml.safe_load(f)
 
 def extract_trake_events(raw_lines):
-    """Boc tach cac su kien TRAKE: Uu tien tuyet doi cac dong co tien to (E1:, E2:, E3:, Su kien 1:, Buoc 1:...)."""
+    """Boc tach cac su kien TRAKE: Loai bo dong dan nhap co dau 2 cham hoac tu khoa dan nhap, giu lai 100% cac dong su kien thuc te."""
     prefix_pattern = r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*'
-    
-    # 1. Kiem tra xem file co dong nao chua tien to su kien ro rang hay khong
-    has_explicit_prefix = any(
-        re.match(r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))', l.strip(), re.IGNORECASE)
-        for l in raw_lines if l.strip()
-    )
+    intro_keywords = [
+        "tìm các sự kiện", "gồm các khoảnh khắc", "các sự kiện sau", "khoảnh khắc sơ chế", "tìm sự kiện", "gồm các sự kiện", "các sự kiện:"
+    ]
     
     events = []
-    if has_explicit_prefix:
-        for l in raw_lines:
-            l_strip = l.strip()
-            if not l_strip:
-                continue
-            if re.match(r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))', l_strip, re.IGNORECASE):
-                cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
-                if cleaned:
-                    events.append(cleaned)
-    else:
-        # Fallback neu file khong ghi ro E1, E2: Bo qua cac dong dan nhap
-        intro_keywords = [
-            "tìm các sự kiện", "tìm sự kiện", "gồm các khoảnh khắc", "gồm các sự kiện",
-            "khoảnh khắc sơ chế", "các sự kiện sau", "các khoảnh khắc", "sự kiện sau", "các sự kiện"
-        ]
-        for l in raw_lines:
-            l_strip = l.strip()
-            if not l_strip:
-                continue
-            l_lower = l_strip.lower()
-            is_intro = any(kw in l_lower for kw in intro_keywords) or (
-                l_lower.endswith(":") and not any(
-                    l_lower.startswith(p) for p in ["sự kiện", "su kien", "event", "bước", "buoc", "khoảnh khắc", "e1", "e2", "1.", "2.", "(1)", "(2)"]
-                )
-            )
-            if is_intro:
-                continue
-            cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
-            if cleaned:
-                events.append(cleaned)
-                
+    for l in raw_lines:
+        l_strip = l.strip()
+        if not l_strip:
+            continue
+        l_lower = l_strip.lower()
+        
+        # Mot dong chi la dong dan nhap/tieude neu no KET THUC BANG DAU 2 CHAM (:) HOAC CHUA TU KHOA DAN NHAP
+        is_intro_header = l_lower.endswith(":") or any(kw in l_lower for kw in intro_keywords)
+        if is_intro_header and not any(l_lower.startswith(p) for p in ["e1", "e2", "e3", "e4", "e5", "sự kiện 1", "bước 1", "event 1"]):
+            continue
+            
+        cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
+        if cleaned:
+            events.append(cleaned)
+            
     if not events:
         events = [re.sub(prefix_pattern, '', l, flags=re.IGNORECASE).strip() for l in raw_lines if l.strip()]
         
     return events
+
 
 
 def parse_query_file(file_path):
