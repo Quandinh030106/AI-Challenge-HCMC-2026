@@ -85,16 +85,14 @@ class VisualReRanker:
         return None
 
     def verify_single_image(self, image_path, query_text):
-        """Danh gia do trung khop cua anh tren thang diem 0-10."""
+        """Đánh giá độ trùng khớp của ảnh trên thang điểm 0-10."""
         self._load_model()
-        
         prompt = (
             f"Hãy quan sát kỹ bức ảnh này và cho biết: Bức ảnh có chứa đúng phân cảnh được mô tả sau đây không: "
             f"'{query_text}'?\n"
-            f"Đánh giá độ trùng khớp trên thang điểm từ 0 đến 10 (10 = hoàn toàn trùng khớp chi tiết, 0 = hoàn toàn không liên quan). "
-            f"Chỉ trả về duy nhất 1 con số điểm (ví dụ: 10 hoặc 2), không giải thích."
+            f"Đánh giá độ trùng khớp trên thang điểm từ 0 đến 10 (10 = hoàn toàn trùng khớp chi tiết, 0 = hoàn toàn không liên quan).\n"
+            f"Trả về kết quả theo định dạng: Score: X (ví dụ: Score: 9.5 hoặc Score: 2)."
         )
-        
         messages = [
             {
                 "role": "user",
@@ -104,20 +102,25 @@ class VisualReRanker:
                 ]
             }
         ]
-        
         text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         image_inputs, video_inputs = process_vision_info(messages)
-        
         inputs = self.processor(
-            text=[text],
-            images=image_inputs,
-            videos=video_inputs,
-            padding=True,
+            text=[text], 
+            images=image_inputs, 
+            videos=video_inputs, 
+            padding=True, 
             return_tensors="pt"
         ).to(self.model.device)
-        
+
         with torch.no_grad():
-            generated_ids = self.model.generate(**inputs, max_new_tokens=10)
+            generated_ids = self.model.generate(
+                **inputs, 
+                max_new_tokens=60,       # Tăng token để VLM kịp trả về chuỗi hoàn chỉnh
+                do_sample=False,         # Tắt lấy mẫu ngẫu nhiên
+                temperature=0.0,         # Cố định câu trả lời tuyệt đối
+                top_p=1.0,
+                repetition_penalty=1.1
+            )
             generated_ids_trimmed = [
                 out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
             ]
@@ -128,13 +131,16 @@ class VisualReRanker:
             )
             
         ans = output_text[0].strip()
-        digits = re.findall(r'\b(10|[0-9])\b', ans)
-        if digits:
-            score = float(digits[0])
+        
+        # Chỉ lấy số đứng sau định dạng "Score: X"
+        score_match = re.search(r'Score:\s*([0-9]+(?:\.[0-9]+)?)', ans, re.IGNORECASE)
+        if score_match:
+            score = float(score_match.group(1))
         else:
-            score = 5.0 if any(w in ans.lower() for w in ["có", "đúng", "chính xác", "yes"]) else 1.0
+            # Nếu không tìm thấy tiền tố Score:, mới xét từ khóa
+            score = 8.0 if any(w in ans.lower() for w in ["yes", "có", "đúng", "match"]) else 1.0
             
-        return score
+        return min(max(score, 0.0), 10.0)
 
     def rerank_candidates(self, fused_candidates, query_text, keyframes_dir, top_n_verify=5):
         """Xac thuc thi giac cho Top N video ung vien va sap xep lai thu hang."""
