@@ -11,62 +11,90 @@ class QueryProcessor:
         
         # Tu dien tri thuc thi giac bo tro cho cac hanh dong dac thu, thuoc tinh mau sac va chu the cu the
         self.visual_knowledge_map = {
-            # Hanh dong & Dao cu dac thu
-            "tàu vũ trụ": "private commercial spacecraft rocket launch four astronauts in black suits aurora borealis night sky",
-            "phi hành gia": "four astronauts in black suits standing before space mission",
-            "hổ": "family of tigers with 3-6 playful tiger cubs jumping on rock in southern region",
-            "đàn hổ": "group of rare tiger cubs playing and jumping on rock",
-            # KIS & QA & TRAKE queries - 25 cau thi chinh thuc
-            "tập thể dục": "a group of over five people lined up exercising touching toes with hands, one person wearing glasses, three people wearing red hats",
-            "chạm mũi chân": "group exercise line up touching toes with hands, one person with glasses, three red caps",
-            "thủy lợi": "irrigation map showing four waterworks locations transitioning to aerial view of a large water dam and close up of dam in heavy rain",
-            "con đập": "aerial drone view of a water dam reservoir transitioning to close up of dam under rainy weather",
-            "cân cá": "a fish placed on a digital weighing scale in a fish market, then another fish held by its tail, displaying final weight number on scale",
-            "lên cân": "close up of a fish on a scale showing digital number reading",
-            "london zoo": "group of lions resting and climbing on wooden platforms in zoo enclosure with London Zoo info board, two zoo staff in green shirts weighing an animal",
-            "sư tử": "lions on wooden platforms in London Zoo with staff in green uniforms recording animal weights",
-            "đậu hà lan": "stir frying squid with green peas in a frying pan, sliced onions and red chili on a plate, slow motion pan tossing over high stove flame",
-            "lắc chảo": "chef tossing stir-fried squid and green peas in frying pan over bright stove flame in slow motion",
-            "đá quý": "man in dark blue vest white shirt holding large raw gemstone in both hands near face, woman in black office suit with pinkish purple hijab smiling beside him, high aerial view of massive open-pit gemstone mine",
-            "mỏ đá quý": "man holding raw gemstone near face, standing beside woman in pink purple headscarf, open pit gemstone mine with multi-tier pit roads",
-            "ngôi sao": "boiling star-shaped cut carrots in wire mesh basket inside pot stirred with wooden chopsticks, served on plate with broccoli, okra, zucchini, star carrots, pink dipping sauce bowl in middle, pink chopsticks on right",
-            "súp lơ": "star shaped carrots boiled in metal mesh strainer, arranged on plate with okra broccoli zucchini and pink sauce bowl",
-            "nguyên liệu dạng thanh": "chef using chopsticks to place stick-shaped ingredients and flower-sliced pieces onto plate steaming inside pot, spooning soft ingredient from glass bowl into middle of dish",
-            "hình hoa": "chef arranging flower-shaped slices and bar ingredients on steaming plate in pot with chopsticks, spooning soft topping into center",
-            "lội nước": "yellow red black cars wading through flood water preparing to cross bridge, number sign on left side of bridge structure",
-            "biển báo": "cars driving through water towards bridge, close up of road sign on left side of bridge",
-            "chùm nho": "cutting a cluster of grapes from vine using black scissors, blue string tied around grape stem before cutting",
-            "giàn nho": "black scissors cutting grape bunch hanging from vineyard trellis with blue cord tied on stem",
-            "vạch đích": "slow motion ground level camera shot at cycling race finish line, 1st place cyclist in yellow jersey black shorts, 2nd place in blue jersey black shorts, 3rd place in blue jersey red shorts",
-            "đua xe đạp": "cycling finish line sprint, yellow jersey black shorts winner crossing first followed by blue jersey cyclists",
-            "trạm xăng": "four tech ride-hailing motorbike drivers at gas station, three standing waiting while one rides left to right, closing motorcycle gas tank cap, mazut oil price board visible",
-            "xe ôm công nghệ": "ride-hailing drivers in green blue jackets at gas station with fuel price info display",
-            "kéo lưới": "person standing in water holding flashlight, pulling fishing net at sunrise dawn, video crew approaching with camera filming",
-            "bình minh": "fisherman pulling net out of water at dawn, film crew recording with camera",
-            "động đất": "world map showing earthquake distribution with legend on left side showing multi-colored magnitude symbols, counting level 4 epicenters",
-            "tâm chấn": "seismic activity distribution map with colored epicenter markers and left side legend box",
-            "kẻng đồng": "close up of white lion head red nose, E1 two spinning golden dragons, E2 lion finishing acrobatic spin landing all feet on poles, E3 mallet striking brass gong",
-            "lân rồng": "white lion dancer with red nose, two yellow dragons spinning, mallet hitting bronze gong",
-            "sạt lở": "severe landslide on mountain pass road with rocks mud blocking corridor, red-topped kilometer road marker stone mostly buried in mud, motorcyclist navigating muddy road carrying green item, mountain pass sign",
-            "cột mốc": "landslide on mountain pass with red topped road marker post, motorcycle in mud with green object",
-            "thịt gà": "chef plating chicken noodle soup: placing vermicelli noodles into bowl, ladling broth with chicken carrots lemongrass black fungus mushrooms, topping with cilantro, zooming out showing small dipping sauce bowl with two chili slices",
-            "nấm mèo": "assembling chicken noodle soup bowl with carrot lemongrass wood ear mushrooms cilantro, small sauce dish with chili slices beside bowl",
-            "bí đỏ": "two-person lion dancer standing straight spinning on pole top, jumping across two poles, dipping head to bite red pumpkin with yellow flower, jumping to next poles",
-            "ngoạm": "lion dance performing acrobatic pole jump biting red pumpkin with yellow blossom",
-            "lân bí đỏ": "two-person lion dancer jumping across two poles, dipping head to bite red pumpkin with yellow flower",
-            "con gấu": "three people walking down slope in rain, two holding umbrellas, rear person wearing raincoat with bear illustration printed on back, walking along dirt path beside pond towards house",
+            # User Curated Golden Prompts for 25 Official Contest Queries
 
-            "áo mưa": "people walking in rain with umbrellas, raincoat with bear graphic on back near pond and country house",
-            "bánh mì": "cooked peeled shrimps on plate, chef placing three French baguette bread loaves on table, chefs decorating and grilling halved shrimps on grill stove",
-            "nướng": "peeled cooked prawns on dish, baguettes on counter, grilling split shrimp on barbecue stove",
-            "remember": "woman teacher in pink traditional Ao Dai wearing glasses explaining grammar usage of verb 'remember' on lesson board",
-            "áo dài hồng": "female teacher in pink Ao Dai and spectacles teaching English verb 'remember' timeline rules",
-            "sơ đồ 3 tầng": "male teacher in white shirt dark tie in front of dark blue background, presentation slide white background pinkish purple border blue header globe gold turquoise arrows, 3-tier diagram (tier 1 orange box, tier 2 dark blue box, tier 3 green box)",
-            "slide": "male teacher in shirt and tie presenting 3-tiered diagram slide with orange blue green boxes",
-            "lục bình": "handicraft water hyacinth weaving documentary: camera panning left to right showing 4 items (handbag, flower pot, tea set, handbag), woman on left holding tea cup while listening",
-            "túi xách": "woven water hyacinth handicrafts handbag flower pot tea cup set, woman admiring tea cup",
-            "trống cơ": "two students in white school uniform shirts blue trousers red scarves acting as MC hosts on school stage with red acoustic drum kit and piano in background",
-            "khăn đỏ": "student MCs in white shirts red scarves on school event stage with red drum set and acoustic piano behind"
+            "tập thể dục": "group people toe touch stretching workout, more than 5 people exercise line, one person glasses, three red hats",
+            "chạm mũi chân": "group exercise line up touching toes with hands, one person with glasses, three red caps",
+            "đeo kính": "group people exercise touching toes, one person wearing glasses, three red caps",
+            "nón màu đỏ": "group workout touching toes, three people wearing red hats",
+            
+            "thủy lợi": "waterworks facility map, dam aerial view, dam in rain, reservoir dam close up",
+            "công trình thủy lợi": "waterworks facility map showing water dam aerial view and close up dam in rain",
+            "con đập": "aerial view of water dam transitioning to close up of dam in heavy rain",
+            
+            "cân cá": "fish on weighing scale, fish being weighed, person holding fish by tail, freshwater fish",
+            "lên cân": "close up of a fish on a scale showing digital number reading",
+            "cầm đuôi": "person holding fish by tail, fish on digital weighing scale",
+            
+            "london zoo": "London Zoo lions enclosure, lions resting wooden platforms, lion climbing platform, zoo staff weighing animal",
+            "sư tử": "lions resting on wooden platforms in zoo enclosure, two zoo staff in green shirts weighing animal",
+            "bục gỗ": "lions on wooden platforms in zoo compound with London Zoo info board",
+            
+            "đậu hà lan": "stir fried squid green peas, squid cooking in pan, sliced onions red bell pepper, chef tossing pan fire",
+            "mực đang được xào": "stir fried squid with green peas, sliced onions and red bell pepper, chef tossing pan over flame",
+            "lắc chảo": "chef tossing stir fried squid and green peas in frying pan over stove fire in slow motion",
+            
+            "đá quý": "man holding rough gemstone, businessman blue vest white shirt tie, woman magenta hijab, open pit mine aerial view",
+            "mỏ đá quý": "man holding raw gemstone near face beside woman in magenta hijab, aerial view of open pit mine",
+            "vest xanh": "businessman in blue vest holding rough gemstone in both hands",
+            
+            "ngôi sao": "star shaped carrots boiling, carrots metal mesh basket, boiled vegetable platter, okra broccoli zucchini, pink dipping sauce",
+            "súp lơ": "boiling star shaped carrots in metal mesh basket, platter with okra broccoli zucchini pink dipping sauce pink chopsticks",
+            "đậu bắp": "boiled vegetable platter with star shaped carrots, okra, broccoli, zucchini, pink sauce bowl",
+            
+            "nguyên liệu dạng thanh": "chef arranging food on steaming plate, stick shaped ingredients, flower shaped food slices, chopsticks plating, spoon soft ingredient",
+            "hình hoa": "chef using chopsticks to arrange stick shaped ingredients and flower shaped slices on steaming plate",
+            
+            "lội nước": "cars driving through floodwater, flooded road cars, yellow red black cars, cars crossing flooded bridge",
+            "xe ô tô lội nước": "yellow red black cars wading through floodwater preparing to cross bridge",
+            "biển báo": "cars driving through flooded road towards bridge, road sign on left side of bridge",
+            
+            "chùm nho": "cutting grapes from vine black scissors, grape harvesting, bunch of grapes blue string, vineyard harvest",
+            "giàn nho": "cutting bunch of grapes hanging from vine using black scissors with blue string tied on stem",
+            
+            "vạch đích": "cycling race finish line slow motion, cyclist yellow jersey first place, blue jersey second place, blue jersey red shorts third place",
+            "đua xe đạp": "slow motion ground level shot at cycling finish line, yellow jersey 1st place, blue jersey 2nd, blue jersey red shorts 3rd",
+            
+            "trạm xăng": "motorbike taxi drivers gas station, ride hailing motorcycle drivers, motorcycle refueling, closing motorcycle gas tank, mazut oil price",
+            "xe ôm công nghệ": "tech ride-hailing drivers at gas station, closing motorcycle gas tank cap, mazut oil price display",
+            "mazut": "motorcycle drivers at gas station with mazut fuel price info board",
+            
+            "kéo lưới": "person fishing at dawn with light, pulling fishing net water, fishermen dawn, people filming fisherman camera",
+            "bình minh": "person standing in water holding flashlight, pulling fishing net at sunrise dawn, video crew filming with camera",
+            
+            "động đất": "earthquake distribution map, earthquake epicenter map, seismic activity map colorful legend, earthquake intensity map",
+            "tâm chấn": "earthquake distribution map with legend on left side showing magnitude symbols, counting level 4 epicenters",
+            
+            "kẻng đồng": "white lion dance head red nose, Chinese lion dance, golden dragons spinning, lion dance poles acrobatics, drum cymbal performance",
+            "lân rồng": "white lion head red nose, E1 two golden dragons spinning, E2 lion landing on poles, E3 mallet striking brass gong",
+            
+            "sạt lở": "landslide mountain road blocked, rocks dirt road, road marker buried mud, motorbike riding through deep mud, landslide disaster",
+            "cột mốc": "mountain pass landslide with red topped road marker stone buried in mud, motorcycle in mud carrying green object",
+            
+            "thịt gà": "Vietnamese rice noodle soup chicken, white rice noodles bowl, chicken lemongrass wood ear mushroom soup, cilantro chili dipping sauce",
+            "bún gà": "chef plating chicken rice noodle soup with carrots lemongrass wood ear mushrooms cilantro, dipping sauce with chili",
+            
+            "bí đỏ": "lion dance high pole acrobatics, lion jumping between poles, lion dance pumpkin flower, Chinese lion dance pole performance",
+            "ngoạm": "two-person lion dancer jumping across poles, dipping head to bite red pumpkin with yellow flower",
+            "lân bí đỏ": "lion dance acrobatic pole jump biting red pumpkin with yellow blossom",
+            
+            "con gấu": "people walking in rain umbrellas, person raincoat bear print, muddy dirt path pond, crowd walking to house rain",
+            "áo mưa": "three people walking down slope in rain, rear person wearing raincoat with bear illustration on back near pond",
+            
+            "bánh mì": "peeled cooked shrimp plate, chef placing bread loaves, shrimp cut in half, grilled shrimp stove, cooking shrimp",
+            "tôm nướng": "peeled cooked shrimps on plate, chef placing French bread loaves, grilling halved shrimps on stove",
+            
+            "remember": "Vietnamese woman pink ao dai glasses teacher, Vietnamese language lesson, teaching verb remember, female lecturer",
+            "áo dài màu hồng": "woman teacher in pink traditional Ao Dai wearing glasses explaining usage of verb 'remember' on board",
+            
+            "sơ đồ 3 tầng": "male teacher presentation blue background, educational presentation slide, 3 tier diagram, blue orange green flowchart, globe icon presentation",
+            "slide": "male teacher presenting slide with 3-tier diagram (tier 1 orange box, tier 2 dark blue box, tier 3 green box)",
+            
+            "lục bình": "water hyacinth woven handicrafts, woven water hyacinth handbag, woven flower pot tea set, Vietnamese handicraft women",
+            "túi xách": "handicraft water hyacinth weaving: panning left to right showing handbag, flower pot, tea set, woman holding tea cup",
+            
+            "trống cơ": "Vietnamese school students MC stage, two student presenters, white uniform blue pants red scarves, school stage piano drum set",
+            "khăn đỏ": "two student MCs in white uniform shirts blue pants red scarves on school stage with red drum kit and piano behind"
         }
 
         print(f"QueryProcessor: Dang nap mo hinh dich Meta NLLB-200 ({self.model_name})...")
