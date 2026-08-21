@@ -35,6 +35,54 @@ def load_config(config_path="configs/default.yaml"):
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+def extract_trake_events(raw_lines):
+    """Boc tach cac su kien TRAKE: Uu tien tuyet doi cac dong co tien to (E1:, E2:, E3:, Su kien 1:, Buoc 1:...)."""
+    prefix_pattern = r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*'
+    
+    # 1. Kiem tra xem file co dong nao chua tien to su kien ro rang hay khong
+    has_explicit_prefix = any(
+        re.match(r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))', l.strip(), re.IGNORECASE)
+        for l in raw_lines if l.strip()
+    )
+    
+    events = []
+    if has_explicit_prefix:
+        for l in raw_lines:
+            l_strip = l.strip()
+            if not l_strip:
+                continue
+            if re.match(r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))', l_strip, re.IGNORECASE):
+                cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
+                if cleaned:
+                    events.append(cleaned)
+    else:
+        # Fallback neu file khong ghi ro E1, E2: Bo qua cac dong dan nhap
+        intro_keywords = [
+            "tìm các sự kiện", "tìm sự kiện", "gồm các khoảnh khắc", "gồm các sự kiện",
+            "khoảnh khắc sơ chế", "các sự kiện sau", "các khoảnh khắc", "sự kiện sau", "các sự kiện"
+        ]
+        for l in raw_lines:
+            l_strip = l.strip()
+            if not l_strip:
+                continue
+            l_lower = l_strip.lower()
+            is_intro = any(kw in l_lower for kw in intro_keywords) or (
+                l_lower.endswith(":") and not any(
+                    l_lower.startswith(p) for p in ["sự kiện", "su kien", "event", "bước", "buoc", "khoảnh khắc", "e1", "e2", "1.", "2.", "(1)", "(2)"]
+                )
+            )
+            if is_intro:
+                continue
+            cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
+            if cleaned:
+                events.append(cleaned)
+                
+    if not events:
+        events = [re.sub(prefix_pattern, '', l, flags=re.IGNORECASE).strip() for l in raw_lines if l.strip()]
+        
+    return events
+
+
 def parse_query_file(file_path):
     """Phan tich noi dung file cau hoi (.txt) uu tien tuyet doi theo ten duoi file."""
     filename = os.path.basename(file_path)
@@ -105,13 +153,7 @@ def parse_query_file(file_path):
 
         
     if is_explicit_trake:
-        events = []
-        for line in raw_lines:
-            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-            if cleaned:
-                events.append(cleaned)
-        if not events:
-            events = raw_lines
+        events = extract_trake_events(raw_lines)
         print(f"[{query_id}] -> Xac dinh theo ten file: TASK 3 (TRAKE) | {len(events)} su kien")
         return {
             "query_id": query_id,
@@ -147,11 +189,7 @@ def parse_query_file(file_path):
         
     has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
     if has_trake_flag and len(raw_lines) >= 3:
-        events = []
-        for line in raw_lines:
-            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-            if cleaned:
-                events.append(cleaned)
+        events = extract_trake_events(raw_lines)
         print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
         return {"query_id": query_id, "task_type": "trake", "events": events, "query": " ".join(events)}
 
