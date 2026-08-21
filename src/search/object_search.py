@@ -38,18 +38,14 @@ class ObjectSearcher:
             "đàn hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
             "con hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
             "chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
-
             "chú chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
             "loài chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
             "cá mập": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person", "Animal"],
-            "steven spielberg": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person"],
-            "spielberg": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person"],
             "bạch tuộc": ["Sea life", "Animal", "Toy", "Bag", "Box", "Packaging", "Person", "Clothing"],
             "con mực": ["Sea life", "Animal", "Toy", "Bag", "Box", "Packaging", "Person", "Clothing"],
             "bọ": ["Beetle", "Robot", "Insect", "Arthropod", "Electronics", "Animal", "Toy"],
             "bọ cánh cứng": ["Beetle", "Robot", "Insect", "Arthropod", "Electronics", "Animal", "Toy"],
             "robot": ["Robot", "Beetle", "Electronics", "Toy"],
-            "lausanne": ["Beetle", "Robot", "Electronics", "Toy", "Building"],
             
             # Am thuc & Nau an
             "bánh rán": ["Cake", "Doughnut", "Pastry", "Banana", "Dessert", "Plate", "Tableware", "Tray", "Food", "Fruit", "Plant"],
@@ -95,8 +91,8 @@ class ObjectSearcher:
             "nhạc cụ": ["Musical instrument", "Bookcase", "Book", "Furniture", "Person", "Clothing"],
             "kệ sách": ["Bookcase", "Book", "Furniture"],
             "sách": ["Book", "Bookcase"],
-            "mảnh bìa": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
-            "đổ bóng": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
+            "mảnh bìa": ["Box", "Poster", "Furniture", "Clothing", "Person"],
+            "đổ bóng": ["Art", "Sculpture", "Person", "Clothing"],
             "trang phục": ["Clothing", "Suit", "Dress", "Person"],
             "áo thun": ["Shirt", "Clothing", "Person"],
             "áo sơ mi": ["Shirt", "Clothing", "Person"],
@@ -105,6 +101,7 @@ class ObjectSearcher:
             "hoa": ["Flower", "Rose", "Plant", "Houseplant"],
             "hoa pansy": ["Flower", "Rose", "Plant"]
         }
+
 
 
 

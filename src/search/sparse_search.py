@@ -94,22 +94,28 @@ class SparseSearcher:
             
         tokenized_query = self.preprocess_text(query_text)
         
-        # Phat hien cac thuc the viet hoa va tu khoa hiem de nhan trong so (Entity Boosting 5x)
+        # Phat hien dong cac thuc the viet hoa, tu viet tat va tu khoa trong ngoac kep (khong hardcode)
         entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', query_text)
-        rare_keywords = ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn"]
+        acronyms = re.findall(r'\b[A-Z0-9\-]{2,}\b', query_text)
+        quoted_terms = re.findall(r'["“]([^"”]+)["”]', query_text)
         
         boosted_tokens = list(tokenized_query)
         for ent in entities:
             ent_lower = ent.lower()
-            if len(ent_lower) > 2:
-                boosted_tokens.extend([ent_lower] * 4)
+            if len(ent_lower) > 2 and not query_text.startswith(ent):
+                boosted_tokens.extend([ent_lower] * 3)
                 
-        for rk in rare_keywords:
-            if rk in query_text.lower():
-                for kw in rk.split():
-                    boosted_tokens.extend([kw] * 4)
+        for acr in acronyms:
+            acr_lower = acr.lower()
+            if len(acr_lower) > 1:
+                boosted_tokens.extend([acr_lower] * 4)
+                
+        for qt in quoted_terms:
+            for w in self.preprocess_text(qt):
+                boosted_tokens.extend([w] * 4)
                     
         scores = self.bm25.get_scores(boosted_tokens)
+
         
         results = []
         for i, video_id in enumerate(self.video_ids):

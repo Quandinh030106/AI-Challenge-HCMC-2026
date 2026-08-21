@@ -106,14 +106,17 @@ def clean_vlm_answer(raw_answer, question=None):
             ans = ans[len(q_clean):].lstrip(' : là,.-')
             
     prefix_patterns = [
-        r'^(hình ảnh|đoạn video|video|clip)(\s+về\s+[^:]+)?\s*(là|đó là|chính là)?\s*[:\-\.]?\s*',
-        r'^(câu thơ|hai câu thơ|bài thơ|tiêu đề|tên món ăn|tên của xã|tên xã|đáp án|câu trả lời|kết quả)(\s+của\s+[^:]+)?\s*(là|đó là|chính là)?\s*[:\-\.]?\s*',
-        r'^(dựa vào|nhìn vào|theo|quan sát)\s+hình ảnh\s*[,:]?\s*(thì|ta thấy|có thể thấy)?\s*',
-        r'^(trong hình|trên hình|trong ảnh|trên ảnh)\s*[,:]?\s*',
-        r'^(đó là|nó là|chính là|là)\s*[:\-\.]?\s*',
-        r'^đáp án\s*(là)?\s*[:\-\.]?\s*',
-        r'^trả lời\s*(là)?\s*[:\-\.]?\s*'
+        r'^(?:hình ảnh|đoạn video|video|clip)(?:\s+[^:–\-]+?)?\s*(?:là|đó là|chính là)?\s*[:\-\.]?\s*',
+        r'^(?:câu thơ|hai câu thơ|bài thơ|tiêu đề|tên(?:\s+của)?\s+[^:–\-]+?|đáp án|câu trả lời|kết quả)\s*(?:là|đó là|chính là)\s*[:\-\.]?\s*',
+        r'^(?:câu thơ|hai câu thơ|bài thơ|tiêu đề|tên(?:\s+của)?\s+[^:–\-]+?|đáp án|câu trả lời|kết quả)\s*[:\-\.]\s*',
+        r'^(?:dựa vào|nhìn vào|theo|quan sát)\s+hình ảnh\s*[,:]?\s*(?:thì|ta thấy|có thể thấy)?\s*',
+        r'^(?:trong hình|trên hình|trong ảnh|trên ảnh)\s*[,:]?\s*',
+        r'^(?:đó là|nó là|chính là|là)\s*[:\-\.]?\s*',
+        r'^đáp án\s*(?:là)?\s*[:\-\.]?\s*',
+        r'^trả lời\s*(?:là)?\s*[:\-\.]?\s*'
     ]
+
+
     
     changed = True
     while changed:
@@ -138,10 +141,12 @@ def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyfr
         peak_idx = int(np.argmax(scores))
         frame_indices.append(peak_idx)
         
-        # Frame dau video (chua bien hieu, tieu de, cong chao)
-        intro_idx = max(0, min(5, n_frames // 10))
-        if intro_idx not in frame_indices:
-            frame_indices.append(intro_idx)
+        # Cac frame dau video (chua bien hieu, tieu de mon an, cong chao, phieu thong tin)
+        for intro_ratio in [0.0, 0.05, 0.10]:
+            intro_f = int(n_frames * intro_ratio)
+            if 0 <= intro_f < n_frames and intro_f not in frame_indices:
+                frame_indices.append(intro_f)
+
             
         # Frame dinh phu cach xa dinh chinh
         masked_scores = np.copy(scores)
@@ -243,29 +248,40 @@ def score_vqa_answer(ans, question, rank_idx=0):
     ans_lower = ans.lower()
     q_lower = question.lower()
     
-    # 1. Cau hoi ve ten xa / dia danh o Khanh Hoa
-    if "xã" in q_lower or "khánh hòa" in q_lower:
-        if "xã" in ans_lower or "giang" in ans_lower or "ly" in ans_lower:
+    # 1. Cau hoi ve don vi hanh chinh / dia danh / dia diem
+    location_q_words = ["xã", "huyện", "tỉnh", "quận", "phường", "thành phố", "thị xã", "địa phương", "địa điểm", "nơi", "ở đâu"]
+    if any(lw in q_lower for lw in location_q_words):
+        loc_indicators = ["xã", "huyện", "tỉnh", "quận", "phường", "tp", "thành phố", "thị trấn", "thôn", "ấp", "bản"]
+        if any(li in ans_lower for li in loc_indicators):
             score += 40.0
-        elif "hà nội" in ans_lower or "sài gòn" in ans_lower:
-            score -= 15.0  # Phat vi lac de so voi Khanh Hoa
+        elif len(ans.split()) >= 2:
+            score += 20.0
             
-    # 2. Cau hoi ve 2 cau tho
-    elif "thơ" in q_lower or "câu thơ" in q_lower:
-        if len(ans) > 20 or "," in ans or "\n" in ans or "/" in ans:
+    # 2. Cau hoi ve tho / cau tho / khau hieu / slogan / hoanh phi
+    elif any(tw in q_lower for tw in ["thơ", "câu thơ", "khẩu hiệu", "slogan", "câu đối", "hoành phi", "bài thơ"]):
+        if len(ans) >= 15 or any(sep in ans for sep in [",", "\n", "/", "-", ";"]):
             score += 40.0
             
-    # 3. Cau hoi ve tieu de / ten mon an
-    elif "món ăn" in q_lower or "công thức" in q_lower or "tiêu đề" in q_lower:
-        dish_indicators = ["thịt", "canh", "bò", "heo", "xào", "nấu", "kho", "chả", "bánh", "gỏi", "món", "cơm", "hấp", "nướng"]
+    # 3. Cau hoi ve tieu de / ten mon an / thuc don
+    elif any(dw in q_lower for dw in ["món ăn", "công thức", "tiêu đề", "tên món", "món gì"]):
+        dish_indicators = [
+            "thịt", "canh", "bò", "heo", "gà", "cá", "tôm", "xào", "nấu", "kho", "chả", 
+            "bánh", "gỏi", "món", "cơm", "hấp", "nướng", "lẩu", "chè", "súp", "chiên", "salad"
+        ]
         if any(d in ans_lower for d in dish_indicators):
             score += 40.0
             
-    # Tang diem neu cau tra loi co do dai cu the tu 3 den 40 ky tu
+    # 4. Cau hoi ve ten nguoi / tac gia / nhan vat
+    elif any(pw in q_lower for pw in ["ai", "tên người", "tác giả", "nhân vật", "đạo diễn", "ca sĩ", "cầu thủ", "nghệ sĩ"]):
+        if 2 <= len(ans.split()) <= 5:
+            score += 35.0
+            
+    # Tang diem neu cau tra loi ngan gon, co nghia tu 4 den 60 ky tu
     if 4 <= len(ans) <= 60:
         score += 5.0
         
     return score
+
 
 def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
     """

@@ -131,17 +131,40 @@ class QueryProcessor:
     def detect_query_intent(self, text_vi):
         """Phan loai y dinh cau hoi de gan trong so RRF hop ly."""
         text_lower = text_vi.lower()
-        # Chi gan OCR_TEXT khi co thuc the rieng cu the hoac tu khoa doc bien hieu thuc su
-        ocr_keywords = [
+        
+        # 1. Tu khoa OCR chi dan tong quat (khong chua bat ky ten rieng nao)
+        generic_ocr_keywords = [
+
             "dòng chữ", "biển hiệu", "bảng hiệu", "khẩu hiệu", "logo", "biển số", "biển báo",
-            "fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "covid"
+            "bảng tên", "chữ viết", "tiêu đề", "tên của", "bảng chữ", "tên gọi", "phông nền",
+            "băng rôn", "banner", "poster", "nhãn dán", "ghi là", "có chữ", "đọc chữ",
+            "thương hiệu", "nhãn hiệu", "tên quán", "tên đường", "slogan", "chữ in", "số áo",
+            "hoành phi", "câu đối"
         ]
         
-        for kw in ocr_keywords:
-            if kw in text_lower:
-                return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
+        # Kiem tra xem co chua tu khoa OCR tong quat khong
+        if any(kw in text_lower for kw in generic_ocr_keywords):
+            return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
+            
+        # 2. Nhan dien dong cac tu viet tat / ma hieu (vi du: COVID-19, NASA, HTV, VTV, FANA, ...)
+        acronyms = re.findall(r'\b[A-Z0-9\-]{2,}\b', text_vi)
+        if acronyms:
+            return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
+            
+        # 3. Nhan dien dong cum tu ten rieng viet hoa lien tiep (vi du: Nguyen Trung Truc, Khanh Hoa, ...)
+        proper_names = re.findall(r'\b[A-ZÀ-Ỵ][a-zà-ỹ0-9\-]+(?:\s+[A-ZÀ-Ỵ][a-zà-ỹ0-9\-]+)+\b', text_vi)
+        # Loai tru tu dau cau bi viet hoa tu nhien
+        proper_names = [p for p in proper_names if not text_vi.startswith(p) or len(p.split()) >= 2]
+        if proper_names:
+            return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
+            
+        # 4. Co chua noi dung trong ngoac kep can tim chinh xac
+        if re.search(r'["“][^"”]+["”]', text_vi):
+            return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
                 
         return {"intent": "VISUAL_SCENE", "dense_weight": 0.75, "sparse_weight": 0.25}
+
+
 
     def generate_prompt_ensemble(self, query_en, query_vi=""):
         """Sinh tap bien the Prompt Ensemble da tang toi uu hoa cho CLIP."""

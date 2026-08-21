@@ -314,10 +314,12 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
 
 
         # TASK 1: TEXTUAL KIS
-
-
         if task_type == "kis":
-
+            if visual_reranker is not None:
+                fused = visual_reranker.rerank_candidates(
+                    fused, query_text, keyframes_dir, top_n_verify=5
+                )
+            
             top100_preds = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
             )
@@ -327,6 +329,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     vid = pred["video_id"]
                     fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
                     f_out.write(f"{vid}, {fid}\n")
+
                     
         # TASK 2: VISUAL Q&A
         elif task_type == "qa":
