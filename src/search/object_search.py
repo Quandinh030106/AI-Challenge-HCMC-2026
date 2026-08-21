@@ -251,11 +251,42 @@ class ObjectSearcher:
                 
         return sorted(list(target_entities))
 
+    def get_entity_information_weight(self, entity_name, query_text=""):
+        """
+        Dinh luong Ham luong Thong tin (Information Density) va Nang luc Phan biet cua thuc the:
+        - Tier 1 (x4.5): Chu the doc nhat, mang tinh quyet dinh dinh danh phan canh (Goat, Tiger, Camera, Mushroom, Shark...).
+        - Tier 2 (x2.5): Dao cu & Boi canh phan biet (Bookcase, Boat, Musical instrument, Flower, Suit, Cake...).
+        - Tier 3 (x0.5): Tac nhan pho quat / Nen (Person, Clothing, Building, Tree...).
+        """
+        ent = entity_name.lower().strip()
+        
+        tier1_high_info = {
+            "goat", "tiger", "camera", "camera lens", "rocket", "space vehicle",
+            "mushroom", "pineapple", "skateboard", "robot", "beetle", "shark",
+            "lantern", "dragon", "lion", "carnivore"
+        }
+        
+        tier2_context_props = {
+            "bicycle", "boat", "watercraft", "musical instrument", "bookcase",
+            "sculpture", "statue", "cake", "doughnut", "flower", "rose", "banana",
+            "meat", "beef", "pork", "hat", "helmet", "suit", "bag", "box",
+            "packaging", "tableware", "plate", "tray", "sand", "spring roll",
+            "dessert", "glass", "bird", "cat"
+        }
+        
+        if ent in tier1_high_info:
+            return 4.5
+        elif ent in tier2_context_props:
+            return 2.5
+        else:
+            return 0.5
+
     def boost_candidates(self, candidates, query_text):
         """
-        Khai thac toan dien du lieu Objects:
-        1. Nang diem khung hinh nao chua dung vat the muc tieu (Frame Grounding).
-        2. Cong diem thuong cho video chua dung vat the do (Video Re-ranking).
+        Khai thac toan dien du lieu Objects dua tren Ham luong Thong tin (Information Content):
+        1. Nang diem khung hinh nao chua vat the co gia tri thong tin cao.
+        2. Cong huong diem thuong cho video chua dong thoi cac thuc the cot loi.
+        3. Phat nhe cac video thieu hut chu the quyet dinh (Tier 1).
         """
         if not self._objects_root or not candidates:
             return candidates
@@ -264,6 +295,9 @@ class ObjectSearcher:
         if not target_entities:
             return candidates
             
+        # Xac dinh xem cau hoi co chua chu the hiem (Tier 1) hay khong
+        has_tier1_target = any(self.get_entity_information_weight(e, query_text) >= 4.0 for e in target_entities)
+        
         boosted_candidates = []
         
         for rank, cand in enumerate(candidates):
@@ -286,6 +320,11 @@ class ObjectSearcher:
                 top_frame_idxs = np.argsort(scores)[::-1][:12]
                 video_object_bonus = 0.0
                 video_matched_entities = set()
+                video_has_tier1_match = False
+                
+                # He so dong thuan boi canh CLIP: Danh gia muc do phu hop cua background/ngu nghia
+                base_rrf = cand.get("rrf_score", 0.0)
+                semantic_gate = max(0.4, min(1.0, base_rrf * 15.0 if base_rrf > 0 else 0.5))
                 
                 for f_idx in top_frame_idxs:
                     objs = self.get_frame_objects(video_id, int(f_idx))
@@ -295,27 +334,40 @@ class ObjectSearcher:
                     frame_match_score = 0.0
                     for obj in objs:
                         ent_lower = obj["entity"].lower()
-                        # Khop chinh xac (Exact Matching) hoac khop ten lop chuan
                         if ent_lower in target_entities or any(t_ent == ent_lower for t_ent in target_entities):
-                            frame_match_score += float(obj["score"])
+                            # Tinh trong so theo Ham luong Thong tin cua thuc the
+                            info_weight = self.get_entity_information_weight(ent_lower, query_text)
+                            frame_match_score += float(obj["score"]) * (info_weight / 2.0)
                             video_matched_entities.add(ent_lower)
+                            if info_weight >= 4.0:
+                                video_has_tier1_match = True
                             
                     if frame_match_score > 0:
-                        scores[f_idx] += frame_match_score * 0.25
-                        video_object_bonus += frame_match_score * 0.08
+                        # Dieu bien nhan (Multiplicative): Khung hinh phai vua hop boi canh CLIP, VUA chua vat the
+                        scores[f_idx] = scores[f_idx] * (1.0 + 0.12 * frame_match_score)
+                        video_object_bonus += frame_match_score * 0.04
                         
-                # Diem thuong cong huong khi video chua dong thoi tu 2 vat the muc tieu tro len
+                # 1. Diem thuong cong huong khi video chua dong thoi tu 2 vat the muc tieu tro len
                 if len(video_matched_entities) >= 2:
                     video_object_bonus += 0.15 * len(video_matched_entities)
+                    
+                # 2. Thuong them khi khop dung chu the Tier 1 (nhung phai qua cong kiem duyet ngu nghia)
+                if video_has_tier1_match:
+                    video_object_bonus += 0.25 * semantic_gate
+                elif has_tier1_target and not video_has_tier1_match:
+                    # Phat nhe vi video hoan toan khong co chu the hiem cua de bai
+                    video_object_bonus -= 0.08 * semantic_gate
                     
                 cand_copy["dense_info"]["all_scores"] = scores
                 cand_copy["dense_info"]["best_frame_idx"] = int(np.argmax(scores))
                 cand_copy["dense_info"]["max_score"] = float(np.max(scores))
-                cand_copy["rrf_score"] = cand.get("rrf_score", 0.0) + video_object_bonus
+                # Cong diem thuong da duoc kiem duyet boi canh va ngu nghia
+                cand_copy["rrf_score"] = base_rrf + (video_object_bonus * semantic_gate)
                 
             boosted_candidates.append(cand_copy)
 
             
         boosted_candidates.sort(key=lambda x: x.get("rrf_score", 0.0), reverse=True)
         return boosted_candidates
+
 
