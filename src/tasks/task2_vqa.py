@@ -5,9 +5,24 @@ import re
 import torch
 import numpy as np
 
+import sys
+import subprocess
+
+try:
+    from qwen_vl_utils import process_vision_info
+except ImportError:
+    try:
+        print("VQA: Dang tu dong cai dat thu vien 'qwen-vl-utils'...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "qwen-vl-utils", "--quiet"])
+        from qwen_vl_utils import process_vision_info
+        print("VQA: Cai dat 'qwen-vl-utils' thanh cong!")
+    except Exception as e:
+        print(f"VQA Canh bao ({e}). Khong the khoi tao qwen_vl_utils.")
+        process_vision_info = None
+
 from transformers import AutoProcessor
-from qwen_vl_utils import process_vision_info
 from src.tasks.task1_kis import get_frame_id_from_idx
+
 
 _vlm_model = None
 _vlm_processor = None
