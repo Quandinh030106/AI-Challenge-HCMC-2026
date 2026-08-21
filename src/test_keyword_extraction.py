@@ -102,9 +102,19 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         print(f"🏷️  Thực thể viết hoa    : {named_entities if named_entities else 'Không có'}")
         print(f"🔑 Từ khóa đặc biệt     : {rare_keywords if rare_keywords else 'Không có'}")
         
-        # 3. Anh xa sang lop vat the Object Detection
+        # 3. Anh xa sang lop vat the Object Detection & Ham luong Thong tin
         mapped_objects = object_searcher.extract_target_entities(search_target)
         print(f"📦 Objects tương ứng    : {mapped_objects if mapped_objects else 'Không có'}")
+        if mapped_objects:
+            tier1_obs = [o for o in mapped_objects if object_searcher.get_entity_information_weight(o, search_target) >= 4.0]
+            tier2_obs = [o for o in mapped_objects if 2.0 <= object_searcher.get_entity_information_weight(o, search_target) < 4.0]
+            tier3_obs = [o for o in mapped_objects if object_searcher.get_entity_information_weight(o, search_target) < 2.0]
+            if tier1_obs:
+                print(f"   ⭐ Tier 1 (Chủ thể quyết định x4.5) : {tier1_obs}")
+            if tier2_obs:
+                print(f"   🔹 Tier 2 (Bối cảnh & Đạo cụ x2.5)   : {tier2_obs}")
+            if tier3_obs:
+                print(f"   🔸 Tier 3 (Tác nhân nền x0.5)        : {tier3_obs}")
         
         # 4. Cac bien the Prompt Ensemble gui cho CLIP
         print(f"🚀 Prompt Ensemble ({len(prompts)} biến thể):")
@@ -112,6 +122,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
             print(f"    {p_idx}. \"{p}\"")
         if len(prompts) > 3:
             print(f"    ... và {len(prompts) - 3} biến thể khác")
+
             
     print("\n================================================================")
     print("✅ HOAN TAT KIEM TRA TOAN BO 24 CAU HOI!")
