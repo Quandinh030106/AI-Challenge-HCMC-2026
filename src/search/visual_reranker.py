@@ -35,12 +35,13 @@ class VisualReRanker:
                 )
                 
             min_pixels = 256 * 28 * 28
-            max_pixels = 512 * 28 * 28
+            max_pixels = 1024 * 28 * 28
             try:
                 self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=min_pixels, max_pixels=max_pixels)
             except Exception:
                 self.processor = AutoProcessor.from_pretrained(self.model_id)
-            print("VisualReRanker: Khoi tao thanh cong.")
+            print("VisualReRanker: Khoi tao thanh cong (HD Mode).")
+
 
 
 

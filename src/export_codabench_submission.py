@@ -337,6 +337,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                 metadata_dir=map_keyframes_dir,
                 object_searcher=object_searcher
             )
+            
+            promoted_idx = ans_res.get("promoted_idx", 0)
+            if promoted_idx > 0 and promoted_idx < len(fused):
+                promoted_cand = fused.pop(promoted_idx)
+                fused.insert(0, promoted_cand)
 
             vlm_answer = format_answer_for_csv(ans_res["answer"])
             
@@ -349,6 +354,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                     vid = pred["video_id"]
                     fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
                     f_out.write(f"{vid}, {fid}, {vlm_answer}\n")
+
                     
         # TASK 3: TRAKE
         elif task_type == "trake":

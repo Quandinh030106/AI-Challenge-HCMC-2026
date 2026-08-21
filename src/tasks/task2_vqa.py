@@ -13,10 +13,10 @@ _vlm_model = None
 _vlm_processor = None
 
 def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
-    """Nap mo hinh VLM dung chung cho VQA va Visual Re-ranking sieu nhe chong OOM."""
+    """Nap mo hinh VLM Qwen2-VL-2B-Instruct o che do do phan giai HD cao de doc chu ro net."""
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
-        print(f"VQA: Nap mo hinh {model_id}...")
+        print(f"VQA: Nap mo hinh {model_id} (che do OCR HD)...")
         device_map = "auto" if torch.cuda.is_available() else None
         torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         
@@ -36,12 +36,12 @@ def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
             )
             
         min_pixels = 256 * 28 * 28
-        max_pixels = 512 * 28 * 28
+        max_pixels = 1024 * 28 * 28  # Do phan giai HD sac net cho OCR bien hieu va van ban
         try:
             _vlm_processor = AutoProcessor.from_pretrained(model_id, min_pixels=min_pixels, max_pixels=max_pixels)
         except Exception:
             _vlm_processor = AutoProcessor.from_pretrained(model_id)
-        print("VQA: Khoi tao mo hinh VLM thanh cong (toi uu VRAM).")
+        print("VQA: Khoi tao mo hinh VLM HD thanh cong (toi uu VRAM).")
     return _vlm_model, _vlm_processor
 
 def find_image_for_frame(keyframes_dir, video_id, frame_idx, frame_id=""):
@@ -129,30 +129,16 @@ def clean_vlm_answer(raw_answer, question=None):
         ans = ans[:100].strip()
     return ans if ans else "Không rõ"
 
-
-def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
-    """
-    Giai quyet Task 2 (Visual Q&A) bang co che Multi-Frame Visual Reasoning:
-    1. Nap chuoi 3-4 keyframes tieu bieu (Intro/Signboard, Peak, Context) vao Qwen2-VL.
-    2. VLM quan sat toan chuoi anh de suy luan khach quan theo bang chung thi giac thuc te.
-    """
-    if not fused_candidates:
-        return {"video_id": "none", "frame_id": "0000", "answer": "không rõ"}
-        
-    best_candidate = fused_candidates[0]
-    video_id = best_candidate["video_id"]
-    dense_info = best_candidate.get("dense_info")
-    
+def solve_single_video_vqa(video_id, dense_info, question, clean_question, keyframes_dir, model, processor, metadata_dir=None):
+    """Suy luan Multi-Frame cho mot video ung vien cu the."""
     scores = dense_info.get("all_scores") if dense_info is not None else None
-    
-    # 1. Chon chuoi 3-4 chi so frame tieu bieu (Multi-Frame Candidates)
     frame_indices = []
     if scores is not None and len(scores) > 0:
         n_frames = len(scores)
         peak_idx = int(np.argmax(scores))
         frame_indices.append(peak_idx)
         
-        # Frame dau video (thuong chua bien hieu, tieu de, cong chao)
+        # Frame dau video (chua bien hieu, tieu de, cong chao)
         intro_idx = max(0, min(5, n_frames // 10))
         if intro_idx not in frame_indices:
             frame_indices.append(intro_idx)
@@ -178,7 +164,6 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
     best_frame_idx = frame_indices[0] if frame_indices else 0
     frame_id = get_frame_id_from_idx(keyframes_dir, video_id, best_frame_idx, metadata_dir=metadata_dir)
     
-    # 2. Dinh vi cac file anh vat ly
     selected_image_paths = []
     for f_idx in frame_indices:
         p = find_image_for_frame(keyframes_dir, video_id, f_idx, frame_id)
@@ -186,31 +171,20 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
             selected_image_paths.append(p)
             
     if not selected_image_paths:
-        print(f"VQA Canh bao: Khong the dinh vi anh cho video {video_id}")
-        return {"video_id": video_id, "frame_id": frame_id, "answer": "không rõ"}
-        
-    print(f"VQA: Suy luan Multi-Frame cho video {video_id} tren {len(selected_image_paths)} khung hinh...")
-    model, processor = load_vlm(model_id)
-
-    # 3. Ve sinh cau hoi thi giac
-    clean_question = question
-    for phrase in ["trong đoạn video có", "trong đoạn video", "đoạn video về", "đoạn video có", "đoạn video", "trong video", "video", "clip"]:
-        clean_question = re.sub(r'\b' + re.escape(phrase) + r'\b', 'hình ảnh', clean_question, flags=re.IGNORECASE)
+        return {"frame_id": frame_id, "answer": "Không rõ", "has_concrete_answer": False}
         
     prompt_text = (
-        f"Quan sát các hình ảnh từ video trên. Hãy đọc các dòng chữ, biển hiệu, phông nền hoặc chi tiết thị giác để trả lời câu hỏi sau bằng Tiếng Việt:\n"
+        f"Nhiệm vụ: Hãy quan sát kỹ các hình ảnh từ video trên, đọc chính xác từng dòng chữ, biển hiệu, bảng tên, hoành phi câu đối, nhãn dán hoặc tài liệu để trả lời câu hỏi sau bằng Tiếng Việt:\n"
         f"'{clean_question}'\n"
-        f"Trả lời trực tiếp vào trọng tâm câu hỏi, không giải thích."
+        f"Yêu cầu: Trả lời ngắn gọn, trực tiếp và chính xác tên riêng / câu thơ / tiêu đề cần tìm. Không thêm lời dẫn."
     )
     
-    # 4. Tao cau truc message da anh (Multi-Image Input)
     content_list = []
     for img_p in selected_image_paths:
         content_list.append({"type": "image", "image": img_p})
     content_list.append({"type": "text", "text": prompt_text})
     
     messages = [{"role": "user", "content": content_list}]
-    
     raw_answer = ""
     try:
         if torch.cuda.is_available():
@@ -245,12 +219,71 @@ def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id=
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
             
-    print(f"VQA Dap an: '{raw_answer}'")
     final_answer = clean_vlm_answer(raw_answer, question=clean_question)
-
     
+    # Kiem tra xem dap an co gia tri thuc su hay chi la cau tra loi generic
+    is_concrete = False
+    if final_answer and final_answer.lower() not in ["không rõ", "chưa rõ", "none", "không có", "không tìm thấy", ""]:
+        # Neu dap an khong chi lap lai tu trong cau hoi ma chua thong tin moi
+        is_concrete = True
+        
     return {
-        "video_id": video_id,
         "frame_id": frame_id,
-        "answer": final_answer
+        "raw_answer": raw_answer,
+        "answer": final_answer,
+        "has_concrete_answer": is_concrete
     }
+
+def solve_task2(query_text, question, fused_candidates, keyframes_dir, model_id="Qwen/Qwen2-VL-2B-Instruct", metadata_dir=None, object_searcher=None):
+    """
+    Giai quyet Task 2 (Visual Q&A) bang co che QA-Driven Multi-Candidate Verification:
+    1. Quet qua Top 3-4 video ung vien hang dau.
+    2. Video nao doc duoc dap an thuc te ro rang (khac 'khong ro') se duoc thang hang len Top 1!
+    """
+    if not fused_candidates:
+        return {"video_id": "none", "frame_id": "0000", "answer": "không rõ", "promoted_idx": 0}
+        
+    model, processor = load_vlm(model_id)
+    
+    clean_question = question
+    for phrase in ["trong đoạn video có", "trong đoạn video", "đoạn video về", "đoạn video có", "đoạn video", "trong video", "video", "clip"]:
+        clean_question = re.sub(r'\b' + re.escape(phrase) + r'\b', 'hình ảnh', clean_question, flags=re.IGNORECASE)
+        
+    eval_candidates = fused_candidates[:4]
+    best_candidate_result = None
+    promoted_index = 0
+    
+    for rank_idx, cand in enumerate(eval_candidates):
+        vid = cand["video_id"]
+        dense_info = cand.get("dense_info")
+        print(f"VQA: Kiem tra Ung vien #{rank_idx + 1} ({vid})...")
+        
+        res = solve_single_video_vqa(
+            vid, dense_info, question, clean_question, 
+            keyframes_dir, model, processor, metadata_dir=metadata_dir
+        )
+        
+        print(f"  -> Video {vid} | Dap an: '{res['answer']}' (Co bang chung: {res['has_concrete_answer']})")
+        
+        # Neu tim duoc video co dap an ro rang, uu tien tuyet doi video nay
+        if res["has_concrete_answer"]:
+            best_candidate_result = {
+                "video_id": vid,
+                "frame_id": res["frame_id"],
+                "answer": res["answer"],
+                "promoted_idx": rank_idx
+            }
+            promoted_index = rank_idx
+            print(f"🎯 VQA: XAC THUC THANH CONG! Thang hang Video {vid} (Rank #{rank_idx + 1}) len Top 1 voi dap an: '{res['answer']}'")
+            break
+            
+        if best_candidate_result is None:
+            best_candidate_result = {
+                "video_id": vid,
+                "frame_id": res["frame_id"],
+                "answer": res["answer"],
+                "promoted_idx": 0
+            }
+            
+    return best_candidate_result
+
