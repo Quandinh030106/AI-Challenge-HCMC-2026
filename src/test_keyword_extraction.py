@@ -97,7 +97,13 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         
         # 2. Trich xuat thuc the & Named Entities
         named_entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', search_target)
-        rare_keywords = [kw for kw in ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn", "dê", "xe đạp", "bánh rán", "cá mập", "tàu vũ trụ", "ống kính", "máy ảnh", "thịt xay", "măng tây", "nấm", "đậu hũ", "củ năng"] if kw in search_target.lower()]
+        rare_keywords = [kw for kw in [
+            "london zoo", "zoo", "mỏ đá quý", "đá quý", "đậu hà lan", "lắc chảo", "chùm nho", "giàn nho",
+            "vạch đích", "trạm xăng", "mazut", "dầu mazut", "kéo lưới", "bình minh", "fana", "khánh hòa",
+            "động đất", "tâm chấn", "sạt lở", "cột mốc", "kẻng đồng", "đèo", "nấm mèo", "bí đỏ", "ngoạm",
+            "con gấu", "áo mưa", "remember", "sơ đồ", "slide", "lục bình", "trống cơ", "khăn đỏ", "panna cotta"
+        ] if kw in search_target.lower()]
+
         
         print(f"🏷️  Thực thể viết hoa    : {named_entities if named_entities else 'Không có'}")
         print(f"🔑 Từ khóa đặc biệt     : {rare_keywords if rare_keywords else 'Không có'}")
