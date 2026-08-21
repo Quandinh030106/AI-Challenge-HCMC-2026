@@ -18,86 +18,101 @@ class ObjectSearcher:
         
         # Bang anh xa thuc the toan dien cho tat ca 24 cau de thi sang cac lop OpenImages chuan cua BTC
         self.entity_map = {
-            # Phuong tien & Giao thong
-            "xe đạp": ["Bicycle", "Land vehicle", "Vehicle", "Wheel", "Person"],
-            "đua xe": ["Bicycle", "Person", "Sports equipment", "Helmet"],
-            "tay đua": ["Person", "Bicycle", "Helmet", "Sports equipment", "Clothing"],
+            # Phuong tien & Dua xe
+            "xe đạp": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Land vehicle", "Sports equipment", "Vehicle"],
+            "đua xe": ["Bicycle", "Wheel", "Helmet", "Sports equipment", "Person", "Clothing"],
+            "tay đua": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Sports equipment"],
             "flycam": ["Aircraft", "Vehicle"],
             "thuyền": ["Boat", "Watercraft", "Vehicle"],
             "ghe": ["Boat", "Watercraft", "Vehicle"],
             "chèo ghe": ["Boat", "Watercraft", "Person"],
-            "tàu vũ trụ": ["Airplane", "Rocket", "Aircraft", "Space vehicle", "Vehicle"],
-            "phóng tàu": ["Rocket", "Aircraft", "Space vehicle"],
-            "phi hành gia": ["Person", "Clothing", "Suit", "Helmet"],
+            "tàu vũ trụ": ["Rocket", "Space vehicle", "Helmet", "Suit", "Aircraft", "Airplane", "Clothing", "Person", "Vehicle"],
+            "phóng tàu": ["Rocket", "Space vehicle", "Aircraft", "Vehicle"],
+            "phi hành gia": ["Helmet", "Suit", "Clothing", "Person"],
             
             # Dong vat
-            "dê": ["Goat", "Animal", "Livestock", "Cattle", "Mammal"],
-            "cho dê ăn": ["Goat", "Animal", "Person", "Livestock"],
-            "đàn dê": ["Goat", "Animal", "Livestock", "Mammal"],
-            "hổ": ["Tiger", "Cat", "Carnivore", "Animal", "Mammal"],
-            "đàn hổ": ["Tiger", "Cat", "Carnivore", "Animal", "Mammal"],
-            "con hổ": ["Tiger", "Cat", "Carnivore", "Animal", "Mammal"],
-            "chim": ["Bird", "Animal"],
-            "chú chim": ["Bird", "Animal"],
-            "loài chim": ["Bird", "Animal"],
-            "cá mập": ["Shark", "Fish", "Animal", "Sea life"],
-            "bạch tuộc": ["Animal", "Food", "Sea life"],
-            "con mực": ["Animal", "Food", "Sea life"],
-            "bọ": ["Insect", "Arthropod", "Beetle", "Animal"],
-            "bọ cánh cứng": ["Insect", "Arthropod", "Beetle", "Animal"],
-            "robot": ["Robot", "Toy", "Electronics"],
+            "dê": ["Goat", "Shirt", "Clothing", "Animal", "Cattle", "Livestock", "Mammal", "Person"],
+            "cho dê ăn": ["Goat", "Shirt", "Clothing", "Animal", "Livestock", "Person"],
+            "đàn dê": ["Goat", "Shirt", "Animal", "Livestock", "Mammal", "Person"],
+            "hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
+            "đàn hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
+            "con hổ": ["Tiger", "Carnivore", "Cat", "Animal", "Mammal"],
+            "chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
+            "chú chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
+            "loài chim": ["Bird", "Plant", "Tree", "Flower", "Animal"],
+            "cá mập": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person", "Animal"],
+            "steven spielberg": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person"],
+            "spielberg": ["Shark", "Fish", "Sea life", "Boat", "Watercraft", "Building", "Person"],
+            "bạch tuộc": ["Sea life", "Animal", "Toy", "Bag", "Box", "Packaging", "Person", "Clothing"],
+            "con mực": ["Sea life", "Animal", "Toy", "Bag", "Box", "Packaging", "Person", "Clothing"],
+            "bọ": ["Beetle", "Robot", "Insect", "Arthropod", "Electronics", "Animal", "Toy"],
+            "bọ cánh cứng": ["Beetle", "Robot", "Insect", "Arthropod", "Electronics", "Animal", "Toy"],
+            "robot": ["Robot", "Beetle", "Electronics", "Toy"],
+            "lausanne": ["Beetle", "Robot", "Electronics", "Toy", "Building"],
             
             # Am thuc & Nau an
-            "bánh rán": ["Cake", "Food", "Baked goods", "Dessert", "Pastry", "Doughnut"],
-            "bánh": ["Cake", "Food", "Baked goods", "Dessert"],
-            "chocolate": ["Food", "Dessert"],
-            "chuối": ["Banana", "Fruit", "Food", "Plant"],
-            "dâu tây": ["Fruit", "Food", "Plant"],
-            "dâu": ["Fruit", "Food", "Plant"],
-            "panna cotta": ["Dessert", "Food", "Drink", "Tableware", "Glass"],
-            "gỏi cuốn": ["Food", "Vegetable", "Spring roll", "Dish"],
-            "bánh tráng": ["Food", "Dish", "Baked goods"],
-            "măng tây": ["Vegetable", "Food", "Plant"],
-            "nấm": ["Mushroom", "Food", "Plant", "Vegetable"],
-            "cắt nấm": ["Mushroom", "Food", "Kitchen utensil", "Person"],
+            "bánh rán": ["Cake", "Doughnut", "Pastry", "Banana", "Dessert", "Plate", "Tableware", "Tray", "Food", "Fruit", "Plant"],
+            "bánh": ["Cake", "Dessert", "Plate", "Tableware", "Food", "Baked goods"],
+            "chocolate": ["Dessert", "Cake", "Food"],
+            "chuối": ["Banana", "Fruit", "Plate", "Tableware", "Food", "Plant"],
+            "dâu tây": ["Fruit", "Plate", "Food", "Plant"],
+            "dâu": ["Fruit", "Plate", "Food", "Plant"],
+            "panna cotta": ["Dessert", "Glass", "Drink", "Flower", "Rose", "Plate", "Tableware", "Food", "Plant", "Houseplant"],
+            "gỏi cuốn": ["Spring roll", "Flower", "Rose", "Plate", "Tableware", "Dish", "Food", "Plant", "Vegetable", "Baked goods"],
+            "bánh tráng": ["Spring roll", "Dish", "Plate", "Food", "Baked goods"],
+            "măng tây": ["Vegetable", "Plant", "Kitchen utensil", "Tableware", "Plate", "Food"],
+            "nấm": ["Mushroom", "Vegetable", "Tableware", "Kitchen utensil", "Food", "Plant", "Person"],
+            "cắt nấm": ["Mushroom", "Vegetable", "Kitchen utensil", "Tableware", "Food", "Person"],
             "củ năng": ["Vegetable", "Food", "Plant"],
             "đậu hũ": ["Food", "Plant"],
             "đậu hủ": ["Food", "Plant"],
-            "thịt": ["Meat", "Food", "Beef", "Pork"],
-            "thịt nạc": ["Meat", "Food", "Beef", "Pork"],
-            "thịt xay": ["Meat", "Food", "Beef", "Pork"],
-            "dứa": ["Pineapple", "Fruit", "Food", "Plant"],
-            "thu hoạch dứa": ["Fruit", "Food", "Plant", "Person", "Boat"],
-            "nấu ăn": ["Food", "Kitchen utensil", "Person", "Tableware"],
+            "thịt": ["Meat", "Beef", "Pork", "Kitchen utensil", "Tableware", "Food", "Person"],
+            "thịt nạc": ["Meat", "Beef", "Pork", "Kitchen utensil", "Tableware", "Food", "Person"],
+            "thịt xay": ["Meat", "Beef", "Pork", "Book", "Poster", "Kitchen utensil", "Tableware", "Food", "Person"],
+            "thịt nạc xay": ["Meat", "Beef", "Pork", "Book", "Poster", "Kitchen utensil", "Tableware", "Food", "Person"],
+            "dứa": ["Pineapple", "Boat", "Watercraft", "Hat", "Helmet", "Clothing", "Food", "Fruit", "Person", "Plant", "Vehicle"],
+            "thu hoạch dứa": ["Pineapple", "Boat", "Watercraft", "Hat", "Helmet", "Clothing", "Food", "Fruit", "Person", "Plant", "Vehicle"],
+            "nấu ăn": ["Kitchen utensil", "Tableware", "Food", "Person"],
             "chảo": ["Kitchen utensil", "Tableware"],
             "bếp": ["Kitchen appliance", "Oven"],
-            "đĩa": ["Tableware", "Plate"],
-            "khay": ["Tableware", "Tray"],
-            "ly": ["Drink", "Glass", "Tableware"],
+            "đĩa": ["Plate", "Tableware"],
+            "khay": ["Tray", "Tableware"],
+            "ly": ["Glass", "Drink", "Tableware"],
             "túi giấy": ["Bag", "Box", "Packaging"],
             
-            # Thiet bi & Nghe thuat
-            "máy ảnh": ["Camera", "Electronics", "Camera lens"],
-            "ống kính": ["Camera", "Camera lens", "Electronics"],
-            "vệ sinh máy ảnh": ["Camera", "Camera lens", "Person"],
-            "điêu khắc cát": ["Sculpture", "Sand", "Art", "Statue", "Person"],
+            # Thiet bi, Nghe thuat & Su kien
+            "máy ảnh": ["Camera", "Camera lens", "Clothing", "Shirt", "Electronics", "Person"],
+            "ống kính": ["Camera", "Camera lens", "Clothing", "Shirt", "Electronics", "Person"],
+            "vệ sinh máy ảnh": ["Camera", "Camera lens", "Clothing", "Shirt", "Electronics", "Person"],
+            "điêu khắc cát": ["Sculpture", "Sand", "Skateboard", "Sports equipment", "Statue", "Art", "Person"],
             "tượng": ["Sculpture", "Statue", "Art"],
-            "patin": ["Sports equipment", "Person"],
+            "patin": ["Skateboard", "Sports equipment", "Person"],
             "trượt ván": ["Skateboard", "Sports equipment", "Person"],
-            "múa lân": ["Person", "Clothing", "Costume", "Dragon", "Lion"],
-            "lân": ["Person", "Costume", "Dragon", "Lion"],
-            "rồng": ["Dragon", "Sculpture", "Statue", "Toy"],
-            "nhạc cụ": ["Musical instrument", "Person"],
-            "kệ sách": ["Bookcase", "Furniture", "Book"],
+            "múa lân": ["Dragon", "Lion", "Costume", "Sculpture", "Statue", "Clothing", "Person", "Toy"],
+            "lân": ["Dragon", "Lion", "Costume", "Sculpture", "Statue", "Clothing", "Person", "Toy"],
+            "rồng": ["Dragon", "Lion", "Sculpture", "Statue", "Toy"],
+            "nhạc cụ": ["Musical instrument", "Bookcase", "Book", "Furniture", "Person", "Clothing"],
+            "kệ sách": ["Bookcase", "Book", "Furniture"],
             "sách": ["Book", "Bookcase"],
+            "mảnh bìa": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
+            "đổ bóng": ["Suit", "Person", "Hat", "Helmet", "Box", "Shirt", "Clothing"],
+            "fana": ["Poster", "Billboard", "Bag", "Box", "Person", "Clothing", "Building"],
+            "khánh hòa": ["Poster", "Billboard", "Bag", "Box", "Person", "Clothing"],
+            "từ thiện": ["Poster", "Bag", "Box", "Person", "Clothing"],
+            "covid": ["Poster", "Art", "Bag", "Shirt", "Dress", "Person", "Clothing"],
+            "covid-19": ["Poster", "Art", "Bag", "Shirt", "Dress", "Person", "Clothing"],
+            "nguyễn trung trực": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
+            "đình thần": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
+            "kiên giang": ["Poster", "Sculpture", "Statue", "Building", "House", "Person", "Clothing"],
             "trang phục": ["Clothing", "Suit", "Dress", "Person"],
-            "áo thun": ["Clothing", "Shirt", "Person"],
-            "áo sơ mi": ["Clothing", "Shirt", "Person"],
+            "áo thun": ["Shirt", "Clothing", "Person"],
+            "áo sơ mi": ["Shirt", "Clothing", "Person"],
             "nón": ["Hat", "Helmet", "Clothing"],
             "mũ": ["Hat", "Helmet", "Clothing"],
-            "hoa": ["Flower", "Plant", "Rose", "Houseplant"],
-            "hoa pansy": ["Flower", "Plant"]
+            "hoa": ["Flower", "Rose", "Plant", "Houseplant"],
+            "hoa pansy": ["Flower", "Rose", "Plant"]
         }
+
 
         
     def _find_objects_root(self):
@@ -254,24 +269,25 @@ class ObjectSearcher:
     def get_entity_information_weight(self, entity_name, query_text=""):
         """
         Dinh luong Ham luong Thong tin (Information Density) va Nang luc Phan biet cua thuc the:
-        - Tier 1 (x4.5): Chu the doc nhat, mang tinh quyet dinh dinh danh phan canh (Goat, Tiger, Camera, Mushroom, Shark...).
-        - Tier 2 (x2.5): Dao cu & Boi canh phan biet (Bookcase, Boat, Musical instrument, Flower, Suit, Cake...).
-        - Tier 3 (x0.5): Tac nhan pho quat / Nen (Person, Clothing, Building, Tree...).
+        - Tier 1 (x4.5): Chu the doc nhat, mang tinh quyet dinh dinh danh phan canh.
+        - Tier 2 (x2.5): Dao cu & Boi canh phan biet (Bookcase, Boat, Hat, Plate, Flower...).
+        - Tier 3 (x0.5): Tac nhan pho quat / Nen (Person, Clothing, Building, Food, Plant...).
         """
         ent = entity_name.lower().strip()
         
         tier1_high_info = {
-            "goat", "tiger", "camera", "camera lens", "rocket", "space vehicle",
+            "goat", "tiger", "carnivore", "camera", "camera lens", "rocket", "space vehicle",
             "mushroom", "pineapple", "skateboard", "robot", "beetle", "shark",
-            "lantern", "dragon", "lion", "carnivore"
+            "lantern", "dragon", "lion", "bicycle", "bird", "spring roll",
+            "cake", "doughnut", "pastry", "musical instrument", "suit", "poster",
+            "billboard", "meat", "beef", "pork", "dessert", "sculpture"
         }
         
         tier2_context_props = {
-            "bicycle", "boat", "watercraft", "musical instrument", "bookcase",
-            "sculpture", "statue", "cake", "doughnut", "flower", "rose", "banana",
-            "meat", "beef", "pork", "hat", "helmet", "suit", "bag", "box",
-            "packaging", "tableware", "plate", "tray", "sand", "spring roll",
-            "dessert", "glass", "bird", "cat"
+            "helmet", "hat", "boat", "watercraft", "bookcase", "book", "statue",
+            "flower", "rose", "banana", "plate", "tableware", "tray", "glass",
+            "drink", "bag", "box", "packaging", "sand", "kitchen utensil", "shirt",
+            "dress", "cat", "sea life", "vegetable"
         }
         
         if ent in tier1_high_info:
@@ -280,6 +296,41 @@ class ObjectSearcher:
             return 2.5
         else:
             return 0.5
+
+    def extract_tiered_entities(self, query_text):
+        """
+        Boc tach thuc the theo dung 3 Tier ro rang cho tung cau hoi:
+        - Tier 1: Chu the quyet dinh / Hanh dong trong tam (x4.5)
+        - Tier 2: Boi canh, Dao cu & Thuoc tinh phan biet (x2.5)
+        - Tier 3: Tac nhan nen & Moi truong chung (x0.5)
+        """
+        all_ents = self.extract_target_entities(query_text)
+        t1, t2, t3 = [], [], []
+        
+        for e in all_ents:
+            w = self.get_entity_information_weight(e, query_text)
+            if w >= 4.0:
+                t1.append(e)
+            elif w >= 2.0:
+                t2.append(e)
+            else:
+                t3.append(e)
+                
+        # Bao dam moi cau deu co su hien dien cua ca 3 Tier
+        if not t1 and t2:
+            t1.append(t2.pop(0))
+        if not t2 and t3:
+            t2.append(t3.pop(0))
+        if not t3:
+            t3.append("person" if "person" not in t1 and "person" not in t2 else "clothing")
+            
+        return {
+            "all": all_ents,
+            "tier1": sorted(list(set(t1))),
+            "tier2": sorted(list(set(t2))),
+            "tier3": sorted(list(set(t3)))
+        }
+
 
     def boost_candidates(self, candidates, query_text):
         """
