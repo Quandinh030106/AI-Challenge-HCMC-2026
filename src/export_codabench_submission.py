@@ -174,8 +174,8 @@ def format_answer_for_csv(ans_text):
 
 
 
-def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip"):
-    """Chay toan bo pipeline tren bo de thi va tao file submission.zip."""
+def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip", query_filter=None):
+    """Chay pipeline tren bo de thi (hoac 1 cau hoi cu the neu co query_filter)."""
     start_time = time.time()
     config = load_config(config_path)
     
@@ -188,6 +188,8 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     print("=====================================================")
     print("KHOI CHAY HE THONG TAO SUBMISSION AIC 2026")
     print(f"Thu muc de thi : {input_dir}")
+    if query_filter:
+        print(f"Bo loc cau hoi : CHI CHAY CAU TRUY VAN MANG TUKHOA '{query_filter}'")
     print(f"File zip xuat  : {output_zip}")
     print("=====================================================")
     
@@ -277,16 +279,22 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                             pass
 
     txt_files = sorted(list(set(all_found_txts)), key=natural_sort_key)
+    
+    # Loc rieng cau hoi theo query_filter neu nguoi dung yeu cau
+    if query_filter:
+        txt_files = [f for f in txt_files if str(query_filter).lower() in os.path.basename(f).lower()]
+        
     if not txt_files:
-        print(f"Khong tim thay file .txt nao trong {input_dir}!")
+        print(f"Khong tim thay file .txt nao phu hop voi bo loc '{query_filter}'!")
         return
 
-    print(f"Tim thay DAY DU {len(txt_files)} file cau hoi theo dung thu tu:")
+    print(f"Tim thay {len(txt_files)} file cau hoi duoc chon de chay:")
     for f in txt_files:
         print(f"  -> {os.path.basename(f)}")
     print("-----------------------------------------------------")
     
     for file_path in tqdm(txt_files, desc="Xu ly cau hoi"):
+
         parsed = parse_query_file(file_path)
         task_type = parsed["task_type"]
         query_id = parsed["query_id"]
@@ -394,6 +402,8 @@ if __name__ == "__main__":
     parser.add_argument("--input_dir", required=True, help="Thu muc chua cac file .txt truy van cua BTC")
     parser.add_argument("--config", default="configs/default.yaml")
     parser.add_argument("--output_zip", default="submission.zip")
+    parser.add_argument("--query_filter", default=None, help="Chi chay rieng mot cau hoi chua tu khoa nay (vd: 19 hoac p1-19-qa)")
     args = parser.parse_args()
     
-    run_codabench_pipeline(args.input_dir, args.config, args.output_zip)
+    run_codabench_pipeline(args.input_dir, args.config, args.output_zip, query_filter=args.query_filter)
+

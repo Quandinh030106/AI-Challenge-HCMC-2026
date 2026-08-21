@@ -43,6 +43,8 @@ class QueryProcessor:
             "nấm": "cooking mushroom dish preparation slicing mushrooms water chestnuts tofu on cutting board placing pan on fire",
             "cắt nấm": "chef slicing mushrooms and water chestnuts on cutting board stove fire appearing",
             "nguyễn trung trực": "Nguyen Trung Truc hero temple shrine with inscribed poetry tablets in Kien Giang",
+            "đền thờ nguyễn trung trực": "traditional sanctum interior of Nguyen Trung Truc hero temple shrine in Kien Giang, red lacquered ancestral altar, gold calligraphy poetry boards",
+            "đền thờ": "traditional Vietnamese historical hero temple shrine interior red lacquered altar gold calligraphy couplet boards Kiên Giang",
             "đình thần": "Nguyen Trung Truc temple shrine interior with two-line poetic verses in Kien Giang",
             "panna cotta": "three glasses of white panna cotta dessert garnished with sliced red grapes mint leaves and red yellow edible flowers on round white plate",
             "bọ cánh cứng": "flying beetle wing flapping mechanics research for robot design at Lausanne University",
@@ -54,8 +56,6 @@ class QueryProcessor:
             "xe đạp": "aerial direct overhead view of three team cyclists in white jerseys yellow-green shorts riding in a straight line with white red black helmets",
             "đua xe đạp": "drone flycam overhead view of bicycle cycling race cyclist in blue and white jersey overtaking three riders to lead race to finish line"
         }
-
-
 
         print(f"QueryProcessor: Dang nap mo hinh dich Meta NLLB-200 ({self.model_name})...")
 
@@ -134,8 +134,14 @@ class QueryProcessor:
         # Chi gan OCR_TEXT khi co thuc the rieng cu the hoac tu khoa doc bien hieu thuc su
         ocr_keywords = [
             "dòng chữ", "biển hiệu", "bảng hiệu", "khẩu hiệu", "logo", "biển số", "biển báo",
-            "fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "covid"
+            "fana", "khánh hòa", "đền thờ nguyễn trung trực", "đền thờ", "đình thần", "nguyễn trung trực", "kiên giang", "lausanne", "covid"
         ]
+        
+        for kw in ocr_keywords:
+            if kw in text_lower:
+                return {"intent": "OCR_TEXT", "dense_weight": 0.4, "sparse_weight": 0.6}
+                
+        return {"intent": "VISUAL_SCENE", "dense_weight": 0.75, "sparse_weight": 0.25}
         
         for kw in ocr_keywords:
             if kw in text_lower:

@@ -96,7 +96,8 @@ class SparseSearcher:
         
         # Phat hien cac thuc the viet hoa va tu khoa hiem de nhan trong so (Entity Boosting 5x)
         entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', query_text)
-        rare_keywords = ["fana", "khánh hòa", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn"]
+        rare_keywords = ["fana", "khánh hòa", "đền thờ nguyễn trung trực", "đền thờ", "đình thần", "nguyễn trung trực", "kiên giang", "lausanne", "spielberg", "covid", "panna cotta", "múa lân", "gỏi cuốn"]
+
         
         boosted_tokens = list(tokenized_query)
         for ent in entities:
