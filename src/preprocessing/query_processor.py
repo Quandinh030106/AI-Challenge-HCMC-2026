@@ -9,55 +9,11 @@ class QueryProcessor:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model_name = "facebook/nllb-200-distilled-600M"
         
-        # Tu dien tri thuc thi giac bo tro cho cac hanh dong dac thu, thuoc tinh mau sac va chu the cu the
-        self.visual_knowledge_map = {
-            # Hanh dong & Dao cu dac thu
-            "tàu vũ trụ": "private commercial spacecraft rocket launch four astronauts in black suits aurora borealis night sky",
-            "phi hành gia": "four astronauts in black suits standing before space mission",
-            "hổ": "family of tigers with 3-6 playful tiger cubs jumping on rock in southern region",
-            "đàn hổ": "group of rare tiger cubs playing and jumping on rock",
-            "măng tây": "cooking fresh green asparagus stalks in frying pan with hot oil on white plate",
-            "cho dê ăn": "two smiling women in white shirt and purple striped shirt feeding goats in wooden barn with tin roof",
-            "dê": "feeding goats in spacious wooden barn with fence and long rows of goats",
-            "gỏi cuốn": "chef arranging vegetarian spring rolls wrapped in yellow and purple rice paper with edible pansy flower petals on plate",
-            "chim": "bird with dark blue iridescent head and upper body reddish brown back and bright red eyes perched under large tree in forest",
-            "chú chim": "close-up of forest bird with iridescent dark blue feathers red brown wings and glowing red eyes on dry leaf ground",
-            "bạch tuộc": "young girl wearing red octopus squid plush on her chest holding a paper bag at Japanese food festival",
-            "con mực": "girl wearing red squid octopus toy in front of chest holding paper bag",
-            "thu hoạch dứa": "elderly woman sitting near pineapple baskets chatting with girl in pink shirt and checkered scarf near green wooden boat on Mekong riverbank",
-            "dứa": "harvesting ripe pineapples woman in conical hat holding pineapple near green boat on rural riverbank",
-            "nhạc cụ": "three people playing metallic round handpan hang drum with indentations in front of colorful multi-tier bookshelf",
-            "kệ sách": "person in white shirt between two people in black shirts playing round hollow metal drum in front of colorful bookshelf",
-            "mảnh bìa": "young man in black cap white t-shirt arranging cardboard cutouts light casting shadow portrait of man in suit on wall",
-            "đổ bóng": "cardboard cutout pieces casting detailed shadow portrait of sleek haired man in suit on wall",
-            "bánh rán": "decorating fried donuts on white porcelain plate on rectangular wooden tray drizzling chocolate sauce and sliced banana strawberries",
-            "vệ sinh máy ảnh": "disassembling camera placing camera lens on purple pink towel and cleaning lens sensor with cotton swab",
-            "ống kính": "cleaning camera lens with cotton swab placed on purple pink cloth",
-            "điêu khắc cát": "sand sculpture of youth street sports roller skating and skateboarding with arch engraved pattern and two pink smoke columns",
-            "fana": "FANA charity club volunteer group giving gifts to poor children at Giang Ly commune Khanh Hoa banner",
-            "khánh hòa": "charity ceremony gift giving in Khanh Hoa province with club banner",
-            "múa lân": "yellow white black lion dance acrobatic spin on pole number 4 landing on four feet and bowing to dragon with moving head",
-            "con rồng": "dragon dance head moving and greeting lion performer",
-            "covid": "charity ceremony at hospital two men in pink and white shirts presenting COVID-19 orphan relief sign to four children in red white pink blue",
-            "covid-19": "financial aid for children orphaned by COVID-19 charity banner event with medical logo gift bags",
-            "nấm": "cooking mushroom dish preparation slicing mushrooms water chestnuts tofu on cutting board placing pan on fire",
-            "cắt nấm": "chef slicing mushrooms and water chestnuts on cutting board stove fire appearing",
-            "nguyễn trung trực": "Nguyen Trung Truc hero temple shrine with inscribed poetry tablets in Kien Giang",
-            "đình thần": "Nguyen Trung Truc temple shrine interior with two-line poetic verses in Kien Giang",
-            "panna cotta": "three glasses of white panna cotta dessert garnished with sliced red grapes mint leaves and red yellow edible flowers on round white plate",
-            "bọ cánh cứng": "flying beetle wing flapping mechanics research for robot design at Lausanne University",
-            "lausanne": "Lausanne University laboratory research on flying beetle mechanics to build biomimetic robots",
-            "thịt nạc xay": "cooking class woman instructor showing recipe titled dish with 200g minced ground meat",
-            "thịt xay": "cooking class recipe sheet with 200g minced pork beef ground meat",
-            "steven spielberg": "coastal town with tourists and dangerous marine animal giant white shark featured in Steven Spielberg 1975 movie Jaws",
-            "cá mập": "giant white shark in coastal town ocean film Steven Spielberg 1975",
-            "xe đạp": "aerial direct overhead view of three team cyclists in white jerseys yellow-green shorts riding in a straight line with white red black helmets",
-            "đua xe đạp": "drone flycam overhead view of bicycle cycling race cyclist in blue and white jersey overtaking three riders to lead race to finish line"
-        }
-
-
+        # Khong hardcode bat ky kich ban nao - Dua hoan toan vao ban dich chat luong cao cua NLLB-200
+        self.visual_knowledge_map = {}
 
         print(f"QueryProcessor: Dang nap mo hinh dich Meta NLLB-200 ({self.model_name})...")
+
 
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, src_lang="vie_Latn")

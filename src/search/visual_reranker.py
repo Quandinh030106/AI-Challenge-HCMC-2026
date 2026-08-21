@@ -14,33 +14,10 @@ class VisualReRanker:
         self.processor = None
         
     def _load_model(self):
-        if self.model is None:
-            print(f"VisualReRanker: Nap mo hinh {self.model_id}...")
-            device_map = "auto" if torch.cuda.is_available() else None
-            torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
-            
-            try:
-                from transformers import Qwen2VLForConditionalGeneration
-                self.model = Qwen2VLForConditionalGeneration.from_pretrained(
-                    self.model_id,
-                    torch_dtype=torch_dtype,
-                    device_map=device_map
-                )
-            except Exception:
-                from transformers import AutoModelForVision2Seq
-                self.model = AutoModelForVision2Seq.from_pretrained(
-                    self.model_id,
-                    torch_dtype=torch_dtype,
-                    device_map=device_map
-                )
-                
-            min_pixels = 256 * 28 * 28
-            max_pixels = 1024 * 28 * 28
-            try:
-                self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=min_pixels, max_pixels=max_pixels)
-            except Exception:
-                self.processor = AutoProcessor.from_pretrained(self.model_id)
-            print("VisualReRanker: Khoi tao thanh cong (HD Mode).")
+        if self.model is None or self.processor is None:
+            from src.tasks.task2_vqa import load_vlm
+            self.model, self.processor = load_vlm(self.model_id)
+
 
 
 

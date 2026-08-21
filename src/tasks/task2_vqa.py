@@ -13,12 +13,22 @@ _vlm_model = None
 _vlm_processor = None
 
 def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
-    """Nap mo hinh VLM Qwen2-VL-2B-Instruct o che do do phan giai HD cao de doc chu ro net."""
+    """Nap duy nhat 1 instance mo hinh VLM chia se toan bo he thong, tu dong gan len GPU 1 neu co Dual-GPU."""
     global _vlm_model, _vlm_processor
     if _vlm_model is None:
-        print(f"VQA: Nap mo hinh {model_id} (che do OCR HD)...")
-        device_map = "auto" if torch.cuda.is_available() else None
-        torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
+        print(f"VLM: Nap mo hinh {model_id} (Shared Singleton Instance)...")
+        
+        # Neu co tu 2 GPU tro len tren Kaggle, uu tien dat VLM sang cuda:1 de tach biet voi CLIP o cuda:0
+        if torch.cuda.is_available():
+            if torch.cuda.device_count() >= 2:
+                device_map = {"": "cuda:1"}
+                print("VLM: Phat hien Dual-GPU -> Tu dong gan VLM doc quyen tren cuda:1 (15GB VRAM)!")
+            else:
+                device_map = "auto"
+            torch_dtype = torch.bfloat16
+        else:
+            device_map = None
+            torch_dtype = torch.float32
         
         try:
             from transformers import Qwen2VLForConditionalGeneration
@@ -41,8 +51,9 @@ def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
             _vlm_processor = AutoProcessor.from_pretrained(model_id, min_pixels=min_pixels, max_pixels=max_pixels)
         except Exception:
             _vlm_processor = AutoProcessor.from_pretrained(model_id)
-        print("VQA: Khoi tao mo hinh VLM HD thanh cong (toi uu VRAM).")
+        print("VLM: Khoi tao mo hinh VLM thanh cong (Khong nhan ban, toi uu VRAM tuyet doi).")
     return _vlm_model, _vlm_processor
+
 
 def find_image_for_frame(keyframes_dir, video_id, frame_idx, frame_id=""):
     """Dinh vi nhanh file anh vat ly cua mot frame idx."""

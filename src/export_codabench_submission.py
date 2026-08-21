@@ -1,7 +1,11 @@
 import os
 import sys
 
+# Cau hinh bo nho GPU chong phan manh VRAM tren Kaggle
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
 # Dam bao thu muc goc cua du an luon nam trong sys.path
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
