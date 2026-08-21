@@ -1,9 +1,23 @@
 import os
+import sys
 import json
 import re
-from rank_bm25 import BM25Okapi
+import subprocess
+
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError:
+    try:
+        print("SparseSearcher: Dang tu dong cai dat thu vien 'rank-bm25'...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "rank-bm25", "--quiet"])
+        from rank_bm25 import BM25Okapi
+        print("SparseSearcher: Cai dat 'rank-bm25' thanh cong!")
+    except Exception as e:
+        print(f"SparseSearcher: Canh bao ({e}). BM25Okapi khong kha thi.")
+        BM25Okapi = None
 
 class SparseSearcher:
+
     def __init__(self, config):
         self.config = config
         self.metadata_dir = config["data"]["metadata_dir"]
@@ -81,11 +95,12 @@ class SparseSearcher:
                 self.corpus.append(tokenized_doc)
                 self.video_ids.append(video_id)
                 
-        if self.corpus:
+        if self.corpus and BM25Okapi is not None:
             self.bm25 = BM25Okapi(self.corpus)
             print(f"SparseSearcher: Da hoan thanh chi muc BM25 cho {len(self.video_ids)} videos.")
         else:
-            print("SparseSearcher: Canh bao: Khong co van ban nao duoc index cho BM25!")
+            print("SparseSearcher: Canh bao: Khong the khoi tao BM25 (Co the do thieu thu vien rank-bm25 hoac khong co metadata).")
+
 
     def search(self, query_text, top_k_videos=25):
         """Tim kiem video theo tu khoa cau hoi, tang cuong trong so cho Named Entities."""
