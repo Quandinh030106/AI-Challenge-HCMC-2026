@@ -1,17 +1,17 @@
 import json
 import re
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM, BitsAndBytesConfig
 
 class LLMQueryParser:
     """
     Dynamic NLP Semantic Parser module powered by LLM.
-    Extracts structured golden schema (intent, prompts, keywords, object classes, VLM questions, weights)
-    without hardcoded dictionaries or query bias.
+    Extracts structured golden schema without hardcoded dictionaries or query bias.
+    Optimized with 4-bit NF4 quantization on cuda:0 to prevent Kaggle multi-GPU P2P deadlocks.
     """
     def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct", device=None):
         self.model_id = model_id
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device or ("cuda:0" if torch.cuda.is_available() else "cpu")
         self.llm_available = False
         self.tokenizer = None
         self.model = None
@@ -21,26 +21,48 @@ class LLMQueryParser:
         self.fallback_model = None
 
     def load_model(self):
-        """Loads NLP LLM model into VRAM using FP16 precision optimized for Nvidia T4 GPUs."""
+        """Loads NLP LLM on a single GPU (cuda:0) with 4-bit NF4 quantization for maximum speed and zero P2P locks."""
         if self.llm_available:
             return
             
         print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id})...")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
+            
+            # Cấu hình 4-bit NF4 Quantization siêu nhẹ (~4.5GB VRAM) chạy mượt trên 1 GPU cuda:0
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True
+            )
+            
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
+                quantization_config=bnb_config if torch.cuda.is_available() else None,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="auto" if torch.cuda.is_available() else None,
+                device_map="cuda:0" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
             self.model.eval()
             self.llm_available = True
-            print("[INFO] LLMQueryParser: Loaded NLP LLM successfully.")
+            print("[INFO] LLMQueryParser: Loaded NLP LLM successfully in 4-bit NF4 mode on cuda:0.")
         except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Switching to fallback.")
-            self.llm_available = False
-            self._init_fallback_translator()
+            print(f"[WARNING] 4-bit quantization loading failed ({e}). Retrying with standard FP16 on cuda:0...")
+            try:
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_id,
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    device_map="cuda:0" if torch.cuda.is_available() else None,
+                    trust_remote_code=True
+                )
+                self.model.eval()
+                self.llm_available = True
+                print("[INFO] LLMQueryParser: Loaded NLP LLM in standard FP16 mode on cuda:0.")
+            except Exception as e2:
+                print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e2}). Switching to fallback.")
+                self.llm_available = False
+                self._init_fallback_translator()
 
     def _init_fallback_translator(self):
         """Initializes fallback NLLB translation model if primary LLM is unavailable."""
@@ -99,11 +121,12 @@ class LLMQueryParser:
         
         try:
             prompt_text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            inputs = self.tokenizer([prompt_text], return_tensors="pt").to(self.model.device)
+            target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
+            inputs = self.tokenizer([prompt_text], return_tensors="pt").to(target_device)
             
             with torch.no_grad():
                 outputs = self.model.generate(**inputs, max_new_tokens=512, temperature=0.1)
-                generated_ids = [out[len(inp):] for inp, out in zip(inputs.input_ids, outputs)]
+                generated_ids = [out[len(inp):] for inp, out in zip(inputs["input_ids"], outputs)]
                 response_text = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
                 
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
