@@ -2,30 +2,65 @@ import os
 import glob
 import json
 import re
+import csv
 import numpy as np
 import torch
 from PIL import Image
 from transformers import AutoProcessor, BitsAndBytesConfig
 
+try:
+    from qwen_vl_utils import process_vision_info
+except ImportError:
+    process_vision_info = None
+
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
-    """Resolves physical keyframe filename from 0-based frame index."""
+    """
+    Resolves physical keyframe filename from 0-based frame index.
+    Supports 3-digit (002.jpg), 4-digit (0002.jpg), 5-digit, and map-keyframes CSV lookup.
+    """
+    if metadata_dir and os.path.exists(metadata_dir):
+        level = video_id.split('_')[0] if '_' in video_id else ""
+        csv_candidates = [
+            os.path.join(metadata_dir, "map-keyframes-aic25-b1", "map-keyframes", f"{video_id}.csv"),
+            os.path.join(metadata_dir, "map-keyframes", f"{video_id}.csv"),
+            os.path.join(metadata_dir, f"{video_id}.csv")
+        ]
+        for csv_path in csv_candidates:
+            if os.path.exists(csv_path):
+                try:
+                    with open(csv_path, "r", encoding="utf-8") as f:
+                        reader = csv.reader(f)
+                        rows = [r for r in reader if r]
+                        if rows and len(rows[0]) >= 2:
+                            header_offset = 1 if not rows[0][0].isdigit() else 0
+                            target_row_idx = header_offset + frame_idx
+                            if target_row_idx < len(rows):
+                                frame_id_val = rows[target_row_idx][1].strip()
+                                return os.path.splitext(frame_id_val)[0]
+                except Exception:
+                    pass
+
     if not keyframes_dir or not os.path.exists(keyframes_dir):
-        return f"{frame_idx:04d}"
+        return f"{frame_idx:03d}"
 
     level = video_id.split('_')[0] if '_' in video_id else ""
+    idx_3d = f"{frame_idx:03d}"
     idx_4d = f"{frame_idx:04d}"
     idx_5d = f"{frame_idx:05d}"
     idx_raw = str(frame_idx)
-    idx_1based = f"{frame_idx + 1:04d}"
+    idx_3d_1based = f"{frame_idx + 1:03d}"
+    idx_4d_1based = f"{frame_idx + 1:04d}"
 
     candidate_img_paths = [
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_3d}.jpg"),
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_3d_1based}.jpg"),
         os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_4d}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{idx_4d}.jpg"),
-        os.path.join(keyframes_dir, level, "keyframes", video_id, f"{idx_4d}.jpg"),
-        os.path.join(keyframes_dir, "keyframes", video_id, f"{idx_4d}.jpg"),
-        os.path.join(keyframes_dir, video_id, f"{idx_4d}.jpg"),
+        os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{idx_3d}.jpg"),
+        os.path.join(keyframes_dir, level, "keyframes", video_id, f"{idx_3d}.jpg"),
+        os.path.join(keyframes_dir, "keyframes", video_id, f"{idx_3d}.jpg"),
+        os.path.join(keyframes_dir, video_id, f"{idx_3d}.jpg"),
         os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_raw}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_1based}.jpg"),
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_4d_1based}.jpg"),
         os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_5d}.jpg")
     ]
 
@@ -49,7 +84,7 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
                 fname = os.path.splitext(os.path.basename(all_imgs[target_idx]))[0]
                 return fname
 
-    return f"{frame_idx:04d}"
+    return f"{frame_idx:03d}"
 
 
 def clean_vlm_answer(raw_answer, question=""):
@@ -88,7 +123,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
-    Optimized with direct PIL image feeding and robust keyframe path resolution.
+    Supports 3-digit frame resolution (002.jpg) matching exact Kaggle dataset paths.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -176,7 +211,7 @@ class TaskSolvers:
             
             fid = get_frame_id_from_idx(self.keyframes_dir, vid, f_idx, metadata_dir=self.metadata_dir)
             if not fid or fid in ["0", "0000", ""]:
-                fid = f"{rank * 10:04d}"
+                fid = f"{rank * 10:03d}"
 
             predictions.append({
                 "video_id": vid,
@@ -189,7 +224,7 @@ class TaskSolvers:
     def solve_vqa(self, parsed_schema, fused_candidates):
         """Solves Visual Q&A task using Qwen2.5-VL-7B over top keyframe candidates."""
         if not fused_candidates:
-            return {"video_id": "none", "frame_id": "0000", "answer": "Không rõ", "promoted_idx": 0}
+            return {"video_id": "none", "frame_id": "000", "answer": "Không rõ", "promoted_idx": 0}
 
         self.load_vlm()
         vlm_question = parsed_schema.get("vlm_question", parsed_schema.get("query_vi", ""))
@@ -198,7 +233,7 @@ class TaskSolvers:
         best_candidate_idx = 0
         best_score = -999.0
         best_answer = "Không rõ"
-        best_frame_id = "0000"
+        best_frame_id = "000"
 
         for rank_idx, cand in enumerate(eval_candidates):
             vid = cand["video_id"]
@@ -233,7 +268,7 @@ class TaskSolvers:
         }
 
     def _infer_vlm_single_image(self, image_path, question_text):
-        """Runs single-frame visual reasoning using Qwen2.5-VL-7B with direct PIL image feeding."""
+        """Runs single-frame visual reasoning using Qwen2.5-VL-7B with PIL image and qwen_vl_utils support."""
         prompt_text = (
             f"Nhiệm vụ: Quan sát kỹ bức ảnh này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
@@ -247,20 +282,32 @@ class TaskSolvers:
             ]
         }]
         try:
-            raw_image = Image.open(image_path).convert("RGB")
-            text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
+            text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             
-            inputs = self.vlm_processor(
-                text=[text], images=[raw_image], padding=True, return_tensors="pt"
-            ).to(target_device)
+            if process_vision_info:
+                try:
+                    image_inputs, video_inputs = process_vision_info(messages)
+                    inputs = self.vlm_processor(
+                        text=[text], images=image_inputs, videos=video_inputs, padding=True, return_tensors="pt"
+                    ).to(target_device)
+                except Exception:
+                    raw_image = Image.open(image_path).convert("RGB")
+                    inputs = self.vlm_processor(
+                        text=[text], images=[raw_image], padding=True, return_tensors="pt"
+                    ).to(target_device)
+            else:
+                raw_image = Image.open(image_path).convert("RGB")
+                inputs = self.vlm_processor(
+                    text=[text], images=[raw_image], padding=True, return_tensors="pt"
+                ).to(target_device)
 
             with torch.inference_mode():
                 gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=60)
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
                 
-            del inputs, raw_image
+            del inputs
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 
@@ -272,7 +319,7 @@ class TaskSolvers:
             return "Không rõ"
 
     def _find_keyframe_image(self, video_id, frame_idx, frame_id=""):
-        """Locates physical keyframe image path on disk using robust candidate search and auto-discovery."""
+        """Locates physical keyframe image path supporting 3-digit (002.jpg) matching Kaggle input layout."""
         cache_key = f"{video_id}_{frame_idx}_{frame_id}"
         if cache_key in self._keyframe_cache:
             return self._keyframe_cache[cache_key]
@@ -281,12 +328,12 @@ class TaskSolvers:
             return None
 
         level = video_id.split('_')[0] if '_' in video_id else ""
+        idx_3d = f"{frame_idx:03d}"
+        idx_3d_1based = f"{frame_idx + 1:03d}"
         idx_4d = f"{frame_idx:04d}"
-        idx_5d = f"{frame_idx:05d}"
         idx_raw = str(frame_idx)
-        idx_1based = f"{frame_idx + 1:04d}"
         
-        fnames = [idx_4d, frame_id, idx_5d, idx_raw, idx_1based]
+        fnames = [idx_3d, idx_3d_1based, frame_id, idx_4d, idx_raw]
         fnames = [f for f in fnames if f]
 
         for fn in fnames:
