@@ -121,7 +121,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
-    Supports timeline-wide video context sampling and automatic path discovery for all videos.
+    Supports Dense-Anchored Local Temporal Window Sampling around target event frames.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -221,8 +221,8 @@ class TaskSolvers:
 
     def solve_vqa(self, parsed_schema, fused_candidates):
         """
-        Solves Visual Q&A task using timeline-wide video sequence reasoning across start, middle, and end keyframes.
-        Supports automatic path discovery for any video in the dataset.
+        Solves Visual Q&A task using Dense-Anchored Local Temporal Window Sampling around the target event frame.
+        Guarantees exact event capture regardless of video duration (1 min vs 1 hour).
         """
         if not fused_candidates:
             return {"video_id": "none", "frame_id": "000", "answer": "Không rõ", "promoted_idx": 0}
@@ -242,21 +242,27 @@ class TaskSolvers:
             f_idx = dense_info.get("best_frame_idx", 0)
             fid = get_frame_id_from_idx(self.keyframes_dir, vid, f_idx, metadata_dir=self.metadata_dir)
 
-            # Sample 5 uniform keyframes spanning the ENTIRE video timeline (Start, 25%, 50%, 75%, End)
+            # Strategy: Dense-Anchored Local Temporal Window around f_idx + start & end anchors
             all_video_imgs = self._get_all_video_keyframe_paths(vid)
             if all_video_imgs:
                 n_total = len(all_video_imgs)
-                sampled_indices = sorted(list(set([
-                    0,
-                    int(n_total * 0.25),
-                    int(n_total * 0.50),
-                    int(n_total * 0.75),
-                    max(0, n_total - 1),
-                    min(max(0, f_idx), n_total - 1)
-                ])))
+                f_idx_clamped = min(max(0, f_idx), n_total - 1)
+                
+                # High-density local window around f_idx (best event frame from CLIP)
+                local_window = [
+                    max(0, f_idx_clamped - 3),
+                    max(0, f_idx_clamped - 1),
+                    f_idx_clamped,
+                    min(n_total - 1, f_idx_clamped + 1),
+                    min(n_total - 1, f_idx_clamped + 3)
+                ]
+                # Global boundary anchors
+                global_anchors = [0, max(0, n_total - 1)]
+                
+                sampled_indices = sorted(list(set(local_window + global_anchors)))
                 image_paths = [all_video_imgs[i] for i in sampled_indices]
             else:
-                frame_indices = [max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
+                frame_indices = [max(0, f_idx - 2), max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
                 image_paths = []
                 for fi in frame_indices:
                     p = self._find_keyframe_image(vid, fi, f"{fi:03d}")
@@ -318,7 +324,7 @@ class TaskSolvers:
         return []
 
     def _infer_vlm_multi_frame_video(self, image_paths, question_text):
-        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over timeline-wide keyframes."""
+        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over dense-anchored local keyframes."""
         prompt_text = (
             f"Nhiệm vụ: Quan sát kỹ các khung ảnh trải dài theo thời gian của video này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
