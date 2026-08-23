@@ -28,8 +28,9 @@ class LLMQueryParser:
         print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id})...")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
-            
-            # Cấu hình 4-bit NF4 Quantization siêu nhẹ (~4.5GB VRAM) chạy mượt trên 1 GPU cuda:0
+            if self.tokenizer.pad_token_id is None:
+                self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
+
             bnb_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_compute_dtype=torch.float16,
@@ -96,7 +97,7 @@ class LLMQueryParser:
             return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_llm(self, query_vi, task_type="kis", raw_question=""):
-        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct."""
+        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct with optimized generation parameters."""
         system_prompt = (
             "Bạn là chuyên gia phân tích ngữ nghĩa thị giác đa phương thức.\n"
             "Nhiệm vụ: Hãy đọc hiểu câu hỏi Tiếng Việt được cung cấp và trích xuất ra duy nhất một đối tượng JSON chuẩn gồm các trường:\n"
@@ -124,8 +125,18 @@ class LLMQueryParser:
             target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
             inputs = self.tokenizer([prompt_text], return_tensors="pt").to(target_device)
             
+            eos_id = self.tokenizer.eos_token_id
+            pad_id = self.tokenizer.pad_token_id or eos_id
+
             with torch.no_grad():
-                outputs = self.model.generate(**inputs, max_new_tokens=512, temperature=0.1)
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=256,
+                    do_sample=True,
+                    temperature=0.1,
+                    eos_token_id=eos_id,
+                    pad_token_id=pad_id
+                )
                 generated_ids = [out[len(inp):] for inp, out in zip(inputs["input_ids"], outputs)]
                 response_text = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
                 
