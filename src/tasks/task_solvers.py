@@ -4,7 +4,7 @@ import json
 import re
 import numpy as np
 import torch
-from transformers import AutoProcessor
+from transformers import AutoProcessor, BitsAndBytesConfig
 try:
     from qwen_vl_utils import process_vision_info
 except ImportError:
@@ -91,6 +91,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
+    Optimized with Qwen2_5_VLForConditionalGeneration and 4-bit quantization on cuda:0.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -98,28 +99,50 @@ class TaskSolvers:
         self.vlm_model_id = vlm_model_id
         self.vlm_model = None
         self.vlm_processor = None
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def load_vlm(self):
-        """Loads Heavy VLM model across available GPUs using FP16 precision optimized for Nvidia T4."""
+        """Loads Qwen2.5-VL-7B model using exact Qwen2_5_VLForConditionalGeneration class on cuda:0."""
         if self.vlm_model is not None:
             return
             
         print(f"[INFO] TaskSolvers: Loading Heavy VLM ({self.vlm_model_id})...")
+        
+        model_cls = None
         try:
-            from transformers import Qwen2VLForConditionalGeneration
-            self.vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
+            from transformers import Qwen2_5_VLForConditionalGeneration
+            model_cls = Qwen2_5_VLForConditionalGeneration
+        except ImportError:
+            try:
+                from transformers import Qwen2VLForConditionalGeneration
+                model_cls = Qwen2VLForConditionalGeneration
+            except ImportError:
+                from transformers import AutoModelForCausalLM
+                model_cls = AutoModelForCausalLM
+
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True
+        )
+
+        try:
+            self.vlm_model = model_cls.from_pretrained(
                 self.vlm_model_id,
+                quantization_config=bnb_config if torch.cuda.is_available() else None,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="auto" if torch.cuda.is_available() else None,
+                device_map="cuda:0" if torch.cuda.is_available() else None,
+                ignore_mismatched_sizes=True,
                 trust_remote_code=True
             )
-        except Exception:
-            from transformers import AutoModelForVision2Seq
-            self.vlm_model = AutoModelForVision2Seq.from_pretrained(
+        except Exception as e:
+            print(f"[WARNING] 4-bit VLM loading failed ({e}). Loading in standard FP16...")
+            self.vlm_model = model_cls.from_pretrained(
                 self.vlm_model_id,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="auto" if torch.cuda.is_available() else None,
+                device_map="cuda:0" if torch.cuda.is_available() else None,
+                ignore_mismatched_sizes=True,
                 trust_remote_code=True
             )
 
@@ -231,17 +254,25 @@ class TaskSolvers:
             else:
                 image_inputs, video_inputs = None, None
 
+            target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
             inputs = self.vlm_processor(
                 text=[text], images=image_inputs, videos=video_inputs, padding=True, return_tensors="pt"
-            ).to(self.vlm_model.device)
+            ).to(target_device)
 
-            with torch.no_grad():
+            with torch.inference_mode():
                 gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=60)
-                gen_trimmed = [out[len(inp):] for inp, out in zip(inputs.input_ids, gen_ids)]
+                gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
-                return out_text.strip()
+                
+            del inputs
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                
+            return out_text.strip()
         except Exception as e:
             print(f"[WARNING] VLM Infer Warning: {e}")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             return "Không rõ"
 
     def _find_keyframe_image(self, video_id, frame_idx, frame_id=""):
