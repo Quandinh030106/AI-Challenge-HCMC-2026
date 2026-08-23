@@ -7,7 +7,7 @@ class LLMQueryParser:
     """
     Dynamic NLP Semantic Parser module powered by LLM.
     Extracts structured golden schema without hardcoded dictionaries or query bias.
-    Optimized with torch.inference_mode() and per-query CUDA cache clearing to prevent VRAM OOM.
+    Optimized with torch.inference_mode(), robust markdown JSON extraction, and clean fallback logic.
     """
     def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct", device=None):
         self.model_id = model_id
@@ -21,7 +21,7 @@ class LLMQueryParser:
         self.fallback_model = None
 
     def load_model(self):
-        """Loads NLP LLM model with fallback handling and optimized memory configuration."""
+        """Loads NLP LLM model on single GPU (cuda:0) with 4-bit NF4 quantization for maximum speed."""
         if self.llm_available:
             return
             
@@ -95,7 +95,7 @@ class LLMQueryParser:
             return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_llm(self, query_vi, task_type="kis", raw_question=""):
-        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct with per-query CUDA cache cleanup."""
+        """Extracts dynamic visual semantic schema using unbiased Qwen2.5-7B-Instruct."""
         system_prompt = (
             "Bạn là chuyên gia phân tích ngữ nghĩa thị giác đa phương thức.\n"
             "Nhiệm vụ: Hãy đọc hiểu câu hỏi Tiếng Việt được cung cấp và trích xuất ra duy nhất một đối tượng JSON chuẩn gồm các trường:\n"
@@ -129,7 +129,7 @@ class LLMQueryParser:
             with torch.inference_mode():
                 outputs = self.model.generate(
                     **inputs,
-                    max_new_tokens=200,
+                    max_new_tokens=512,
                     do_sample=True,
                     temperature=0.1,
                     eos_token_id=eos_id,
@@ -138,12 +138,15 @@ class LLMQueryParser:
                 generated_ids = [out[len(inp):] for inp, out in zip(inputs["input_ids"], outputs)]
                 response_text = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
                 
-            # Clear intermediate CUDA memory allocations after each query
             del inputs, outputs
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            # Clean markdown codeblock markers if present
+            cleaned_response = re.sub(r'```json\s*', '', response_text)
+            cleaned_response = re.sub(r'```\s*', '', cleaned_response).strip()
+
+            json_match = re.search(r'\{.*\}', cleaned_response, re.DOTALL)
             if json_match:
                 parsed_json = json.loads(json_match.group(0))
                 return self._normalize_schema(parsed_json, query_vi)
@@ -155,23 +158,22 @@ class LLMQueryParser:
         return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_fallback(self, query_vi, task_type="kis", raw_question=""):
-        """Open-vocabulary rule-based parsing fallback mechanism."""
+        """Clean open-vocabulary rule-based fallback mechanism (only triggered if primary LLM fails)."""
         translated_en = self._translate_vi_to_en(query_vi)
         query_lower = query_vi.lower()
         
+        explicit_ocr_keywords = ["biển báo", "chữ ghi", "con số", "tên con đèo", "giá dầu", "bảng tên", "đọc chữ"]
         is_ocr = (
-            "?" in query_vi or 
-            task_type == "qa" or 
-            bool(re.search(r'\d+', query_vi)) or
-            any(w in query_lower for w in ["bao nhiêu", "mấy", "gì", "nào", "chữ", "số", "bảng", "tên"])
+            task_type == "qa" and 
+            any(k in query_lower for k in explicit_ocr_keywords)
         )
         intent = "OCR_TEXT" if is_ocr else "VISUAL_SCENE"
         
         raw_words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;\-\"\']+', query_vi) if len(w.strip()) >= 2]
-        generic_stopwords = {"và", "hoặc", "nhưng", "của", "cho", "trong", "trên", "dưới", "các", "những", "một", "này", "đó", "khi", "được", "bởi", "với"}
+        generic_stopwords = {"và", "hoặc", "nhưng", "của", "cho", "trong", "trên", "dưới", "các", "những", "một", "này", "đó", "khi", "được", "bởi", "với", "cảnh", "quay"}
         bm25_kws = [w for w in raw_words if w.lower() not in generic_stopwords][:12]
         
-        clean_en = translated_en.rstrip('.')
+        clean_en = translated_en.rstrip('.') if translated_en else query_vi
         golden_prompts = [
             clean_en,
             f"a photo of {clean_en}",
@@ -180,7 +182,7 @@ class LLMQueryParser:
         ]
         
         en_words = re.findall(r'\b[a-zA-Z]{3,}\b', clean_en)
-        en_stopwords = {"the", "and", "is", "are", "with", "this", "that", "from", "show", "showing", "view", "scene", "photo", "shot"}
+        en_stopwords = {"the", "and", "is", "are", "with", "this", "that", "from", "show", "showing", "view", "scene", "photo", "shot", "video"}
         open_classes = [w.capitalize() for w in en_words if w.lower() not in en_stopwords][:5]
         if not open_classes:
             open_classes = ["Object"]
@@ -200,7 +202,7 @@ class LLMQueryParser:
             "openimages_classes": open_classes,
             "vlm_question": clean_q,
             "query_vi": query_vi,
-            "query_en": translated_en
+            "query_en": clean_en
         }
 
     def _translate_vi_to_en(self, text_vi):

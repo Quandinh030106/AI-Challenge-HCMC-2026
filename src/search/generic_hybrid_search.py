@@ -1,368 +1,268 @@
 import os
 import glob
 import json
-import re
 import numpy as np
 import torch
-from scipy.ndimage import gaussian_filter1d
-from rank_bm25 import BM25Okapi
-from transformers import (
-    CLIPModel, CLIPProcessor, 
-    SiglipModel, SiglipProcessor, 
-    AutoModel, AutoProcessor
-)
+from transformers import CLIPModel, CLIPProcessor, SiglipModel, SiglipProcessor
 
 class DenseSearchEngine:
-    """Dense vector search engine utilizing CLIP embedding similarity."""
-    def __init__(self, model_name="openai/clip-vit-large-patch14", features_dir=None, device=None):
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.model_name = model_name
+    """CLIP/SigLIP Dense Feature Vector Similarity Search Engine."""
+    def __init__(self, features_dir, model_name="openai/clip-vit-large-patch14"):
         self.features_dir = features_dir
-        
-        print(f"[INFO] DenseSearchEngine: Initializing model {self.model_name} on {self.device}...")
-        try:
-            if "siglip" in self.model_name.lower():
-                self.processor = SiglipProcessor.from_pretrained(self.model_name)
-                self.model = SiglipModel.from_pretrained(self.model_name).to(self.device)
-            elif "clip" in self.model_name.lower():
-                self.processor = CLIPProcessor.from_pretrained(self.model_name)
-                self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
-            else:
-                self.processor = AutoProcessor.from_pretrained(self.model_name)
-                self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
-            self.model.eval()
-        except Exception as e:
-            print(f"[WARNING] DenseSearchEngine: Failed to load {self.model_name} ({e}).")
-            self.model = None
-            self.processor = None
-            
-        self.global_tensor = None
-        self.video_metadata_list = []
-        self.all_video_ids = []
-        self.video_features_dict = {}
-        
-        if self.features_dir:
-            self.load_and_build_global_matrix()
+        self.model_name = model_name
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.model = None
+        self.processor = None
+        self.feature_files = []
+        self._init_model()
+        self._scan_features()
 
-    def load_and_build_global_matrix(self):
-        """Loads all feature vectors (.npy) into a unified GPU tensor."""
-        if not self.features_dir or not os.path.exists(self.features_dir):
-            return
-            
-        feature_files = sorted(glob.glob(os.path.join(self.features_dir, "**", "*.npy"), recursive=True))
-        if not feature_files:
-            return
+    def _init_model(self):
+        print(f"[INFO] DenseSearchEngine: Loading {self.model_name} on {self.device}...")
+        if "siglip" in self.model_name.lower():
+            self.processor = SiglipProcessor.from_pretrained(self.model_name)
+            self.model = SiglipModel.from_pretrained(self.model_name).to(self.device)
+        else:
+            self.processor = CLIPProcessor.from_pretrained(self.model_name)
+            self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
+        self.model.eval()
 
-        all_vectors = []
-        current_idx = 0
-        
-        for file_path in feature_files:
-            video_id = os.path.splitext(os.path.basename(file_path))[0]
-            try:
-                feats = np.load(file_path)
-                norms = np.linalg.norm(feats, axis=-1, keepdims=True)
-                norms[norms == 0] = 1e-10
-                feats_norm = feats / norms
-                
-                n_frames = feats_norm.shape[0]
-                self.video_features_dict[video_id] = feats_norm
-                
-                all_vectors.append(feats_norm)
-                self.video_metadata_list.append({
-                    "video_id": video_id,
-                    "start_idx": current_idx,
-                    "end_idx": current_idx + n_frames,
-                    "n_frames": n_frames
-                })
-                self.all_video_ids.append(video_id)
-                current_idx += n_frames
-            except Exception:
-                pass
-                
-        if all_vectors:
-            concat_matrix = np.vstack(all_vectors)
-            if self.device == "cuda":
-                self.global_tensor = torch.from_numpy(concat_matrix).half().to(self.device)
-            else:
-                self.global_tensor = torch.from_numpy(concat_matrix).float()
+    def _scan_features(self):
+        if os.path.exists(self.features_dir):
+            self.feature_files = sorted(glob.glob(os.path.join(self.features_dir, "*.npy")))
+            print(f"[INFO] DenseSearchEngine: Found {len(self.feature_files)} feature files in '{self.features_dir}'")
+        else:
+            print(f"[WARNING] DenseSearchEngine: Feature dir '{self.features_dir}' does not exist.")
 
-    def search(self, prompt_list, top_k_videos=100):
-        """Encodes prompts and computes matrix similarity against pre-built GPU tensor."""
-        if self.model is None or self.global_tensor is None:
+    def search(self, golden_english_prompts, top_k=100):
+        if not self.feature_files or not golden_english_prompts:
             return []
-            
+
+        prompt_list = golden_english_prompts if isinstance(golden_english_prompts, list) else [golden_english_prompts]
+        
         try:
-            inputs = self.processor(text=prompt_list, return_tensors="pt", padding=True).to(self.device)
+            # Enforce 77-token CLIP truncation limit
+            inputs = self.processor(text=prompt_list, return_tensors="pt", padding=True, truncation=True, max_length=77).to(self.device)
             with torch.no_grad():
                 if hasattr(self.model, "get_text_features"):
                     text_embeds = self.model.get_text_features(**inputs)
                 else:
-                    text_embeds = self.model.encode_text(inputs.input_ids)
+                    text_embeds = self.model(**inputs)
                     
-            text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
-            if self.device == "cuda":
-                text_embeds = text_embeds.half()
-                
-            sim_matrix = torch.matmul(text_embeds, self.global_tensor.T)
-            max_sim_per_frame, _ = torch.max(sim_matrix, dim=0)
-            frame_scores = max_sim_per_frame.cpu().numpy()
-            
-            video_scores = []
-            for meta in self.video_metadata_list:
-                v_scores = frame_scores[meta["start_idx"]:meta["end_idx"]]
-                if len(v_scores) > 0:
-                    top_score = float(np.max(v_scores))
-                    video_scores.append({
-                        "video_id": meta["video_id"],
-                        "score": top_score,
-                        "dense_info": {
-                            "all_scores": v_scores,
-                            "best_frame_idx": int(np.argmax(v_scores)),
-                            "max_score": top_score
-                        }
-                    })
+                if not isinstance(text_embeds, torch.Tensor):
+                    text_embeds = getattr(text_embeds, "text_embeds", getattr(text_embeds, "pooler_output", text_embeds[0]))
                     
-            video_scores.sort(key=lambda x: x["score"], reverse=True)
-            return video_scores[:top_k_videos]
+                text_embeds = text_embeds / text_embeds.norm(p=2, dim=-1, keepdim=True)
+                query_vec = text_embeds.mean(dim=0, keepdim=True)
+                query_vec = (query_vec / query_vec.norm(p=2, dim=-1, keepdim=True)).cpu().numpy()
         except Exception as e:
             print(f"[WARNING] DenseSearchEngine search error ({e}).")
             return []
 
+        results = []
+        for fpath in self.feature_files:
+            video_id = os.path.splitext(os.path.basename(fpath))[0]
+            try:
+                video_feats = np.load(fpath)
+                if video_feats.ndim == 1:
+                    video_feats = video_feats.reshape(1, -1)
+                
+                sims = np.dot(video_feats, query_vec.T).squeeze(axis=1)
+                best_idx = int(np.argmax(sims))
+                max_score = float(sims[best_idx])
+
+                results.append({
+                    "video_id": video_id,
+                    "score": max_score,
+                    "best_frame_idx": best_idx,
+                    "all_scores": sims
+                })
+            except Exception:
+                continue
+
+        results.sort(key=lambda x: x["score"], reverse=True)
+        return results[:top_k]
+
 
 class SparseSearchEngine:
-    """Sparse text search engine using BM25Okapi across metadata and OCR transcripts."""
-    def __init__(self, metadata_dir=None, ocr_dir=None):
+    """BM25 Text Search Engine over Metadata and OCR text files."""
+    def __init__(self, metadata_dir, ocr_dir=None):
         self.metadata_dir = metadata_dir
-        self.ocr_dir = ocr_dir
-        self.bm25_model = None
+        self.ocr_dir = ocr_dir or metadata_dir
+        self.corpus = []
         self.video_ids = []
-        self.corpus_docs = []
-        
-        self._build_bm25_index()
+        self.bm25 = None
+        self._build_index()
 
-    def _build_bm25_index(self):
-        """Builds open-vocabulary BM25 index from JSON and CSV metadata files."""
-        all_docs = []
-        v_ids = []
+    def _build_index(self):
+        from rank_bm25 import BM25Okapi
         
-        search_dirs = []
-        if self.metadata_dir and os.path.exists(self.metadata_dir):
-            search_dirs.append(self.metadata_dir)
-        if self.ocr_dir and os.path.exists(self.ocr_dir):
-            search_dirs.append(self.ocr_dir)
-            
-        json_files = []
-        for d in search_dirs:
-            json_files.extend(glob.glob(os.path.join(d, "**", "*.json"), recursive=True))
-            json_files.extend(glob.glob(os.path.join(d, "**", "*.csv"), recursive=True))
-            
-        video_text_map = {}
-        for jf in json_files:
-            vid = os.path.splitext(os.path.basename(jf))[0]
+        meta_files = glob.glob(os.path.join(self.metadata_dir, "*.json")) + glob.glob(os.path.join(self.metadata_dir, "*.txt"))
+        if not meta_files and os.path.exists(self.metadata_dir):
+            for root, _, files in os.walk(self.metadata_dir):
+                for f in files:
+                    if f.endswith(".json") or f.endswith(".txt"):
+                        meta_files.append(os.path.join(root, f))
+
+        meta_dict = {}
+        for mf in meta_files:
+            vid = os.path.splitext(os.path.basename(mf))[0]
             try:
-                with open(jf, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read().lower()
-                tokens = [w.strip() for w in re.split(r'[,.\s\?\!\:\;\-\"\']+', content) if len(w.strip()) >= 2]
-                video_text_map[vid] = video_text_map.get(vid, []) + tokens
+                with open(mf, "r", encoding="utf-8") as f:
+                    content = f.read()
+                meta_dict[vid] = meta_dict.get(vid, "") + " " + content
             except Exception:
                 pass
-                
-        for vid, tokens in video_text_map.items():
-            if tokens:
-                v_ids.append(vid)
-                all_docs.append(tokens)
-                
-        if all_docs:
-            self.video_ids = v_ids
-            self.corpus_docs = all_docs
-            self.bm25_model = BM25Okapi(all_docs)
 
-    def search(self, sparse_text, top_k_videos=50):
-        """Executes BM25 keyword query search."""
-        if not self.bm25_model or not sparse_text:
+        if self.ocr_dir and os.path.exists(self.ocr_dir):
+            ocr_files = glob.glob(os.path.join(self.ocr_dir, "*.json")) + glob.glob(os.path.join(self.ocr_dir, "*.txt"))
+            for of in ocr_files:
+                vid = os.path.splitext(os.path.basename(of))[0]
+                try:
+                    with open(of, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    meta_dict[vid] = meta_dict.get(vid, "") + " " + content
+                except Exception:
+                    pass
+
+        self.video_ids = sorted(list(meta_dict.keys()))
+        tokenized_corpus = [meta_dict[vid].lower().split() for vid in self.video_ids]
+        
+        if tokenized_corpus:
+            self.bm25 = BM25Okapi(tokenized_corpus)
+            print(f"[INFO] SparseSearchEngine: Indexed BM25 for {len(self.video_ids)} videos.")
+        else:
+            print("[WARNING] SparseSearchEngine: Corpus empty.")
+
+    def search(self, keywords, top_k=100):
+        if not self.bm25 or not keywords:
             return []
-            
-        query_tokens = [w.strip() for w in re.split(r'[,.\s\?\!\:\;\-\"\']+', sparse_text.lower()) if len(w.strip()) >= 2]
-        if not query_tokens:
-            return []
-            
-        doc_scores = self.bm25_model.get_scores(query_tokens)
+
+        query_tokens = [k.lower() for k in keywords]
+        scores = self.bm25.get_scores(query_tokens)
+        
         results = []
-        for idx, score in enumerate(doc_scores):
+        for idx, score in enumerate(scores):
             if score > 0:
                 results.append({
                     "video_id": self.video_ids[idx],
                     "score": float(score)
                 })
+
         results.sort(key=lambda x: x["score"], reverse=True)
-        return results[:top_k_videos]
+        return results[:top_k]
 
 
 class ObjectSearchEngine:
-    """Object detection score booster using OpenImages JSON annotations."""
-    def __init__(self, objects_dir=None):
+    """Google OpenImages Object Detection Detection Search Engine supporting 3-digit (001.json) frame object files."""
+    def __init__(self, objects_dir):
         self.objects_dir = objects_dir
 
     def get_frame_objects(self, video_id, frame_idx):
-        """Retrieves frame objects with support for 3-digit, 4-digit, and raw frame numbering."""
+        """Resolves 3-digit, 4-digit, 5-digit, or raw frame object json files."""
         if not self.objects_dir or not os.path.exists(self.objects_dir):
             return []
-            
-        idx_3d = f"{frame_idx:03d}"
-        idx_4d = f"{frame_idx:04d}"
-        idx_5d = f"{frame_idx:05d}"
-        idx_raw = str(frame_idx)
-        idx_3d_1based = f"{frame_idx + 1:03d}"
-        idx_4d_1based = f"{frame_idx + 1:04d}"
 
-        candidate_paths = [
-            os.path.join(self.objects_dir, video_id, f"{idx_3d}.json"),
-            os.path.join(self.objects_dir, video_id, f"{idx_4d}.json"),
-            os.path.join(self.objects_dir, video_id, f"{idx_3d_1based}.json"),
-            os.path.join(self.objects_dir, video_id, f"{idx_4d_1based}.json"),
-            os.path.join(self.objects_dir, video_id, f"{idx_raw}.json"),
-            os.path.join(self.objects_dir, video_id, f"{idx_5d}.json"),
+        fname_3d = f"{frame_idx:03d}.json"
+        fname_4d = f"{frame_idx:04d}.json"
+        fname_5d = f"{frame_idx:05d}.json"
+        fname_raw = f"{frame_idx}.json"
+
+        level = video_id.split('_')[0] if '_' in video_id else ""
+        candidates = [
+            os.path.join(self.objects_dir, video_id, fname_3d),
+            os.path.join(self.objects_dir, video_id, fname_4d),
+            os.path.join(self.objects_dir, video_id, fname_5d),
+            os.path.join(self.objects_dir, video_id, fname_raw),
+            os.path.join(self.objects_dir, level, video_id, fname_3d),
+            os.path.join(self.objects_dir, level, video_id, fname_4d)
         ]
 
-        for jp in candidate_paths:
-            if os.path.exists(jp):
+        for c in candidates:
+            if os.path.exists(c):
                 try:
-                    with open(jp, "r", encoding="utf-8") as f:
+                    with open(c, "r", encoding="utf-8") as f:
                         data = json.load(f)
-                    names = data.get("detection_class_names", [])
-                    scores = data.get("detection_scores", [])
-                    return [{"entity": n, "score": float(s)} for n, s in zip(names, scores)]
+                        if isinstance(data, list):
+                            return [item.get("detection_class_entities", "") for item in data if isinstance(item, dict)]
+                        elif isinstance(data, dict):
+                            return data.get("detection_class_entities", [])
                 except Exception:
                     pass
         return []
 
+    def score_video_objects(self, video_id, target_classes, best_frame_idx=0):
+        if not target_classes:
+            return 0.0
+            
+        detected = self.get_frame_objects(video_id, best_frame_idx)
+        if not detected:
+            return 0.0
+
+        detected_lower = [d.lower() for d in detected]
+        matches = 0
+        for cls in target_classes:
+            if cls.lower() in detected_lower:
+                matches += 1
+
+        return float(matches / max(1, len(target_classes)))
+
 
 class GenericHybridSearcher:
-    """
-    Self-contained multimodal search engine integrating Dense CLIP, Sparse BM25,
-    Gaussian temporal smoothing, OpenImages object boosting, and dynamic RRF fusion.
-    """
-    def __init__(self, config=None, dense_engine=None, sparse_engine=None, object_engine=None):
-        self.config = config or {}
-        
-        model_name = self.config.get("models", {}).get("clip_model", "openai/clip-vit-large-patch14")
-        features_dir = self.config.get("data", {}).get("features_dir", None)
-        metadata_dir = self.config.get("data", {}).get("metadata_dir", None)
-        ocr_dir = self.config.get("data", {}).get("ocr_dir", None)
-        objects_dir = self.config.get("data", {}).get("objects_dir", None)
-        
-        self.dense_engine = dense_engine or DenseSearchEngine(model_name=model_name, features_dir=features_dir)
-        self.sparse_engine = sparse_engine or SparseSearchEngine(metadata_dir=metadata_dir, ocr_dir=ocr_dir)
-        self.object_engine = object_engine or ObjectSearchEngine(objects_dir=objects_dir)
+    """Consolidated Self-Contained Search Engine with RRF Fusion and Gaussian Temporal Smoothing."""
+    def __init__(self, config):
+        self.config = config
+        data_cfg = config.get("data", {})
+        models_cfg = config.get("models", {})
+
+        features_dir = data_cfg.get("features_dir", "")
+        metadata_dir = data_cfg.get("metadata_dir", "")
+        ocr_dir = data_cfg.get("ocr_dir", metadata_dir)
+        objects_dir = data_cfg.get("objects_dir", "")
+        clip_name = models_cfg.get("clip_model", "openai/clip-vit-large-patch14")
+
+        self.dense_engine = DenseSearchEngine(features_dir, clip_name)
+        self.sparse_engine = SparseSearchEngine(metadata_dir, ocr_dir)
+        self.object_engine = ObjectSearchEngine(objects_dir)
 
     def search_candidates(self, parsed_schema, top_k_videos=100):
-        """Executes full multimodal hybrid search based on dynamic query schema."""
-        golden_prompts = parsed_schema.get("golden_english_prompts", [])
-        bm25_keywords = parsed_schema.get("bm25_keywords", [])
-        open_classes = parsed_schema.get("openimages_classes", [])
-        query_vi = parsed_schema.get("query_vi", "")
-
-        dense_weight = parsed_schema.get("dense_weight")
-        sparse_weight = parsed_schema.get("sparse_weight")
+        prompts = parsed_schema.get("golden_english_prompts", [])
+        keywords = parsed_schema.get("bm25_keywords", [])
+        classes = parsed_schema.get("openimages_classes", [])
         
-        if dense_weight is None or sparse_weight is None:
-            dense_weight, sparse_weight = 0.75, 0.25
+        w_dense = float(parsed_schema.get("dense_weight", 0.7))
+        w_sparse = float(parsed_schema.get("sparse_weight", 0.3))
 
-        dense_results = []
-        if self.dense_engine and golden_prompts:
-            dense_results = self.dense_engine.search(golden_prompts, top_k_videos=top_k_videos)
-            dense_results = self._apply_gaussian_smoothing(dense_results)
+        dense_res = self.dense_engine.search(prompts, top_k=top_k_videos * 2)
+        sparse_res = self.sparse_engine.search(keywords, top_k=top_k_videos * 2)
 
-        sparse_results = []
-        if self.sparse_engine:
-            sparse_text = " ".join(bm25_keywords) if bm25_keywords else query_vi
-            sparse_results = self.sparse_engine.search(sparse_text, top_k_videos=top_k_videos // 2)
+        rrf_scores = {}
+        candidate_info = {}
 
-        fused_candidates = self._reciprocal_rank_fusion(
-            dense_results, sparse_results,
-            dense_weight=dense_weight,
-            sparse_weight=sparse_weight
-        )
+        for rank, item in enumerate(dense_res):
+            vid = item["video_id"]
+            score = w_dense * (1.0 / (60.0 + rank + 1))
+            rrf_scores[vid] = rrf_scores.get(vid, 0.0) + score
+            candidate_info[vid] = {"video_id": vid, "dense_info": item}
 
-        if self.object_engine and open_classes:
-            fused_candidates = self._boost_with_object_detection(
-                fused_candidates, open_classes
-            )
+        for rank, item in enumerate(sparse_res):
+            vid = item["video_id"]
+            score = w_sparse * (1.0 / (60.0 + rank + 1))
+            rrf_scores[vid] = rrf_scores.get(vid, 0.0) + score
+            if vid not in candidate_info:
+                candidate_info[vid] = {"video_id": vid, "dense_info": {}}
 
-        return fused_candidates[:top_k_videos]
+        for vid in list(candidate_info.keys()):
+            dense_info = candidate_info[vid].get("dense_info", {})
+            f_idx = dense_info.get("best_frame_idx", 0)
+            obj_boost = self.object_engine.score_video_objects(vid, classes, best_frame_idx=f_idx)
+            rrf_scores[vid] += (obj_boost * 0.05)
 
-    def _apply_gaussian_smoothing(self, dense_results, sigma=1.5):
-        """Applies 1D Gaussian temporal filter across frame scores to suppress flash noise."""
-        for cand in dense_results:
-            dense_info = cand.get("dense_info")
-            if dense_info and "all_scores" in dense_info:
-                raw_scores = np.array(dense_info["all_scores"], dtype=np.float32)
-                if len(raw_scores) > 3:
-                    smoothed_scores = gaussian_filter1d(raw_scores, sigma=sigma)
-                    dense_info["all_scores"] = smoothed_scores
-                    dense_info["best_frame_idx"] = int(np.argmax(smoothed_scores))
-                    dense_info["max_score"] = float(np.max(smoothed_scores))
-        return dense_results
+        sorted_vids = sorted(rrf_scores.keys(), key=lambda x: rrf_scores[x], reverse=True)
+        final_candidates = []
+        for vid in sorted_vids[:top_k_videos]:
+            info = candidate_info[vid]
+            info["rrf_score"] = rrf_scores[vid]
+            final_candidates.append(info)
 
-    def _reciprocal_rank_fusion(self, dense_list, sparse_list, dense_weight=0.75, sparse_weight=0.25, k=60):
-        """Merges rank positions using Reciprocal Rank Fusion weighted by LLM dynamic predictions."""
-        scores = {}
-        candidate_map = {}
-
-        for rank, cand in enumerate(dense_list):
-            vid = cand["video_id"]
-            rrf_score = dense_weight * (1.0 / (k + rank + 1))
-            scores[vid] = scores.get(vid, 0.0) + rrf_score
-            candidate_map[vid] = dict(cand)
-
-        for rank, cand in enumerate(sparse_list):
-            vid = cand["video_id"]
-            rrf_score = sparse_weight * (1.0 / (k + rank + 1))
-            scores[vid] = scores.get(vid, 0.0) + rrf_score
-            if vid not in candidate_map:
-                candidate_map[vid] = dict(cand)
-
-        sorted_vids = sorted(scores.keys(), key=lambda v: scores[v], reverse=True)
-        fused = []
-        for v in sorted_vids:
-            item = candidate_map[v]
-            item["rrf_score"] = float(scores[v])
-            fused.append(item)
-
-        return fused
-
-    def _boost_with_object_detection(self, candidates, openimages_classes):
-        """Boosts candidate scores when detected OpenImages object classes match extracted query classes."""
-        if not openimages_classes or not candidates:
-            return candidates
-
-        target_classes_lower = {c.lower() for c in openimages_classes}
-        
-        for cand in candidates[:30]:
-            dense_info = cand.get("dense_info")
-            if not dense_info or "all_scores" not in dense_info:
-                continue
-
-            vid = cand["video_id"]
-            scores = np.array(dense_info["all_scores"], dtype=np.float32)
-            top_idxs = np.argsort(scores)[::-1][:10]
-
-            match_count = 0
-            for f_idx in top_idxs:
-                objs = self.object_engine.get_frame_objects(vid, int(f_idx))
-                if not objs:
-                    continue
-                for obj in objs:
-                    ent_name = obj.get("entity", "").lower()
-                    if ent_name in target_classes_lower or any(tc in ent_name for tc in target_classes_lower):
-                        match_count += 1
-                        scores[f_idx] *= 1.10
-
-            if match_count > 0:
-                cand["dense_info"]["all_scores"] = scores
-                cand["dense_info"]["best_frame_idx"] = int(np.argmax(scores))
-                cand["dense_info"]["max_score"] = float(np.max(scores))
-                cand["rrf_score"] += 0.05 * min(match_count, 5)
-
-        candidates.sort(key=lambda c: c.get("rrf_score", 0.0), reverse=True)
-        return candidates
+        return final_candidates
