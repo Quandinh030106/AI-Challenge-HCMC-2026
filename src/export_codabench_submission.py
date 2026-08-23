@@ -42,11 +42,11 @@ def load_config(config_path="configs/default.yaml"):
                 "vlm_model": "Qwen/Qwen2.5-VL-7B-Instruct"
             },
             "data": {
-                "features_dir": "/kaggle/input/clip-features-32-aic25-b1",
-                "metadata_dir": "/kaggle/input/ai-challenge-hcmc-2026-metadata/metadata",
-                "ocr_dir": "/kaggle/input/ai-challenge-hcmc-2026-metadata/ocr",
-                "objects_dir": "/kaggle/input/ai-challenge-hcmc-2026-objects/objects",
-                "keyframes_dir": "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
+                "features_dir": "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-features/clip-features-32",
+                "metadata_dir": "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata",
+                "ocr_dir": "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata",
+                "objects_dir": "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-objects/objects",
+                "keyframes_dir": "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-keyframes"
             }
         }
 
@@ -118,8 +118,16 @@ def parse_raw_query_file(file_path):
 
 
 def format_vqa_answer_for_csv(ans_text):
-    """Formats VQA answer string adhering to Codabench CSV quote escaping rules."""
+    """
+    Formats VQA answer string adhering strictly to competition CSV escaping rules.
+    - Max length: 100 characters.
+    - Always safely quotes answer with double quotes and escapes internal quotes with double-quotes (" -> "").
+    """
     cleaned = clean_vlm_answer(ans_text)
+    if not cleaned:
+        cleaned = "Không rõ"
+    if len(cleaned) > 100:
+        cleaned = cleaned[:100].strip()
     escaped = cleaned.replace('"', '""')
     return f'"{escaped}"'
 
@@ -216,9 +224,9 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
 
         if task_type == "kis":
             preds = task_solvers.solve_kis(candidates, total_preds=100)
-            with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
+            with open(csv_filepath, "w", encoding="utf-8", newline="\n") as f_out:
                 for p in preds:
-                    f_out.write(f"{p['video_id']}, {p['frame_id']}\n")
+                    f_out.write(f"{p['video_id']},{p['frame_id']}\n")
 
         elif task_type == "qa":
             vqa_res = task_solvers.solve_vqa(schema, candidates)
@@ -230,17 +238,17 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
             vlm_ans_formatted = format_vqa_answer_for_csv(vqa_res["answer"])
             preds = task_solvers.solve_kis(candidates, total_preds=100)
 
-            with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
+            with open(csv_filepath, "w", encoding="utf-8", newline="\n") as f_out:
                 for p in preds:
-                    f_out.write(f"{p['video_id']}, {p['frame_id']}, {vlm_ans_formatted}\n")
+                    f_out.write(f"{p['video_id']},{p['frame_id']},{vlm_ans_formatted}\n")
 
         elif task_type == "trake":
             aligned = task_solvers.solve_trake(schema, candidates, dense_engine=getattr(searcher, "dense_engine", None), total_preds=100)
-            with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
+            with open(csv_filepath, "w", encoding="utf-8", newline="\n") as f_out:
                 for item in aligned:
                     vid = item["video_id"]
-                    fids = ", ".join([str(f) for f in item["frame_ids"]])
-                    f_out.write(f"{vid}, {fids}\n")
+                    fids = ",".join([str(f) for f in item["frame_ids"]])
+                    f_out.write(f"{vid},{fids}\n")
 
     task_solvers.unload_vlm()
 
@@ -251,6 +259,8 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
                 file_path = os.path.join(root, file)
                 arcname = os.path.join("submission", file)
                 zipf.write(file_path, arcname=arcname)
+                # Save a copy directly at zip root for maximum Codabench platform compatibility
+                zipf.write(file_path, arcname=file)
 
     elapsed = time.time() - start_time
     print("================================================================================")
