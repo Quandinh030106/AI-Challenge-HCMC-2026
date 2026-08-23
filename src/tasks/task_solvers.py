@@ -15,8 +15,8 @@ except ImportError:
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
     """
-    Resolves physical keyframe filename from 0-based frame index.
-    Supports 3-digit (002.jpg), 4-digit (0002.jpg), 5-digit, and map-keyframes CSV lookup.
+    Resolves physical frame ID from video frame index.
+    Checks map-keyframes CSV tables first to get exact video frame IDs.
     """
     if metadata_dir and os.path.exists(metadata_dir):
         level = video_id.split('_')[0] if '_' in video_id else ""
@@ -45,10 +45,9 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
 
     level = video_id.split('_')[0] if '_' in video_id else ""
     idx_3d = f"{frame_idx:03d}"
-    idx_4d = f"{frame_idx:04d}"
-    idx_5d = f"{frame_idx:05d}"
-    idx_raw = str(frame_idx)
     idx_3d_1based = f"{frame_idx + 1:03d}"
+    idx_4d = f"{frame_idx:04d}"
+    idx_raw = str(frame_idx)
     idx_4d_1based = f"{frame_idx + 1:04d}"
 
     candidate_img_paths = [
@@ -60,8 +59,7 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
         os.path.join(keyframes_dir, "keyframes", video_id, f"{idx_3d}.jpg"),
         os.path.join(keyframes_dir, video_id, f"{idx_3d}.jpg"),
         os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_raw}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_4d_1based}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_5d}.jpg")
+        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_4d_1based}.jpg")
     ]
 
     for p in candidate_img_paths:
@@ -123,7 +121,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
-    Supports 3-digit frame resolution (002.jpg) matching exact Kaggle dataset paths.
+    Supports multi-frame video sequence reasoning over consecutive keyframes.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -202,7 +200,7 @@ class TaskSolvers:
         print("[INFO] TaskSolvers: Unloaded Heavy VLM from VRAM.")
 
     def solve_kis(self, fused_candidates, total_preds=100):
-        """Solves Textual KIS task: outputs top 100 diverse candidate frame predictions."""
+        """Solves Textual KIS task: outputs top 100 candidate frame predictions mapped to exact video frame IDs."""
         predictions = []
         for rank, cand in enumerate(fused_candidates[:total_preds]):
             vid = cand["video_id"]
@@ -222,7 +220,7 @@ class TaskSolvers:
         return predictions
 
     def solve_vqa(self, parsed_schema, fused_candidates):
-        """Solves Visual Q&A task using Qwen2.5-VL-7B over top keyframe candidates."""
+        """Solves Visual Q&A task using multi-frame video sequence reasoning over top keyframe candidates."""
         if not fused_candidates:
             return {"video_id": "none", "frame_id": "000", "answer": "Không rõ", "promoted_idx": 0}
 
@@ -241,12 +239,22 @@ class TaskSolvers:
             f_idx = dense_info.get("best_frame_idx", 0)
             fid = get_frame_id_from_idx(self.keyframes_dir, vid, f_idx, metadata_dir=self.metadata_dir)
 
-            img_path = self._find_keyframe_image(vid, f_idx, fid)
-            if not img_path:
-                print(f"[WARNING] Keyframe image not found for video {vid}, frame_idx {f_idx}")
-                continue
+            # Collect a multi-frame video clip sequence (3-4 consecutive keyframes around f_idx)
+            frame_indices = [max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
+            image_paths = []
+            for fi in frame_indices:
+                p = self._find_keyframe_image(vid, fi, f"{fi:03d}")
+                if p and p not in image_paths:
+                    image_paths.append(p)
 
-            raw_ans = self._infer_vlm_single_image(img_path, vlm_question)
+            if not image_paths:
+                img_path = self._find_keyframe_image(vid, f_idx, fid)
+                if img_path:
+                    image_paths = [img_path]
+                else:
+                    continue
+
+            raw_ans = self._infer_vlm_multi_frame_video(image_paths, vlm_question)
             cleaned_ans = clean_vlm_answer(raw_ans, question=vlm_question)
             
             confidence_score = 10.0 - (rank_idx * 1.5)
@@ -267,20 +275,26 @@ class TaskSolvers:
             "best_frame_id": best_frame_id
         }
 
-    def _infer_vlm_single_image(self, image_path, question_text):
-        """Runs single-frame visual reasoning using Qwen2.5-VL-7B with PIL image and qwen_vl_utils support."""
+    def _infer_vlm_multi_frame_video(self, image_paths, question_text):
+        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over consecutive keyframe sequence."""
         prompt_text = (
-            f"Nhiệm vụ: Quan sát kỹ bức ảnh này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
+            f"Nhiệm vụ: Quan sát kỹ chuỗi khung ảnh chuỗi video theo thời gian này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
             f"Yêu cầu: Trả lời ngắn gọn, trực tiếp con số / tên riêng / từ cần tìm. Không thêm lời dẫn rườm rà."
         )
-        messages = [{
-            "role": "user",
-            "content": [
-                {"type": "image", "image": image_path},
-                {"type": "text", "text": prompt_text}
-            ]
-        }]
+        
+        content_items = []
+        pil_images = []
+        for p in image_paths:
+            content_items.append({"type": "image", "image": p})
+            try:
+                pil_images.append(Image.open(p).convert("RGB"))
+            except Exception:
+                pass
+        content_items.append({"type": "text", "text": prompt_text})
+        
+        messages = [{"role": "user", "content": content_items}]
+        
         try:
             target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -292,14 +306,12 @@ class TaskSolvers:
                         text=[text], images=image_inputs, videos=video_inputs, padding=True, return_tensors="pt"
                     ).to(target_device)
                 except Exception:
-                    raw_image = Image.open(image_path).convert("RGB")
                     inputs = self.vlm_processor(
-                        text=[text], images=[raw_image], padding=True, return_tensors="pt"
+                        text=[text], images=pil_images, padding=True, return_tensors="pt"
                     ).to(target_device)
             else:
-                raw_image = Image.open(image_path).convert("RGB")
                 inputs = self.vlm_processor(
-                    text=[text], images=[raw_image], padding=True, return_tensors="pt"
+                    text=[text], images=pil_images, padding=True, return_tensors="pt"
                 ).to(target_device)
 
             with torch.inference_mode():
@@ -307,13 +319,13 @@ class TaskSolvers:
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
                 
-            del inputs
+            del inputs, pil_images
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 
             return out_text.strip()
         except Exception as e:
-            print(f"[WARNING] VLM Infer Warning: {e}")
+            print(f"[WARNING] VLM Multi-Frame Infer Warning: {e}")
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             return "Không rõ"
