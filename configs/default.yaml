@@ -1,4 +1,4 @@
-# FILE 5: CAU HINH HE THONG KAGGLE CHUAN CHO SƠ TUYỂN 2 (100% ZERO-BIAS)
+# CAU HINH HE THONG KAGGLE THUC TE DAD NGUYEN SAN SANG CHO SO TUYEN 2
 
 models:
   nlp_llm: "Qwen/Qwen2.5-7B-Instruct"
@@ -6,8 +6,9 @@ models:
   vlm_model: "Qwen/Qwen2.5-VL-7B-Instruct"
 
 data:
-  features_dir: "/kaggle/input/clip-features-32-aic25-b1"
-  metadata_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata/metadata"
-  ocr_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata/ocr"
-  objects_dir: "/kaggle/input/ai-challenge-hcmc-2026-objects/objects"
-  keyframes_dir: "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
+  features_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-features/clip-features-32"
+  metadata_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata"
+  ocr_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata"
+  objects_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-objects/objects"
+  keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-keyframes"
+  videos_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-videos"

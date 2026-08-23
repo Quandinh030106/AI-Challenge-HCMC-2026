@@ -154,12 +154,13 @@ class SparseSearchEngine:
         json_files = []
         for d in search_dirs:
             json_files.extend(glob.glob(os.path.join(d, "**", "*.json"), recursive=True))
+            json_files.extend(glob.glob(os.path.join(d, "**", "*.csv"), recursive=True))
             
         video_text_map = {}
         for jf in json_files:
             vid = os.path.splitext(os.path.basename(jf))[0]
             try:
-                with open(jf, "r", encoding="utf-8") as f:
+                with open(jf, "r", encoding="utf-8", errors="ignore") as f:
                     content = f.read().lower()
                 tokens = [w.strip() for w in re.split(r'[,.\s\?\!\:\;\-\"\']+', content) if len(w.strip()) >= 2]
                 video_text_map[vid] = video_text_map.get(vid, []) + tokens
@@ -198,28 +199,41 @@ class SparseSearchEngine:
 
 
 class ObjectSearchEngine:
-    """Sub-module Đọc & Thưởng điểm Vật thể từ OpenImages JSON."""
+    """Sub-module Đọc & Thưởng điểm Vật thể từ OpenImages JSON (Hỗ trợ 001.json, 0001.json, 1.json)."""
     def __init__(self, objects_dir=None):
         self.objects_dir = objects_dir
 
     def get_frame_objects(self, video_id, frame_idx):
-        """Đọc file JSON object của 1 frame."""
+        """Đọc file JSON object của 1 frame hỗ trợ cả 001.json (3-digit) và 0001.json (4-digit)."""
         if not self.objects_dir or not os.path.exists(self.objects_dir):
             return []
             
-        json_path = os.path.join(self.objects_dir, video_id, f"{frame_idx:04d}.json")
-        if not os.path.exists(json_path):
-            json_path = os.path.join(self.objects_dir, video_id, f"{frame_idx}.json")
-            
-        if os.path.exists(json_path):
-            try:
-                with open(json_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                names = data.get("detection_class_names", [])
-                scores = data.get("detection_scores", [])
-                return [{"entity": n, "score": float(s)} for n, s in zip(names, scores)]
-            except Exception:
-                pass
+        idx_3d = f"{frame_idx:03d}"
+        idx_4d = f"{frame_idx:04d}"
+        idx_5d = f"{frame_idx:05d}"
+        idx_raw = str(frame_idx)
+        idx_3d_1based = f"{frame_idx + 1:03d}"
+        idx_4d_1based = f"{frame_idx + 1:04d}"
+
+        candidate_paths = [
+            os.path.join(self.objects_dir, video_id, f"{idx_3d}.json"),
+            os.path.join(self.objects_dir, video_id, f"{idx_4d}.json"),
+            os.path.join(self.objects_dir, video_id, f"{idx_3d_1based}.json"),
+            os.path.join(self.objects_dir, video_id, f"{idx_4d_1based}.json"),
+            os.path.join(self.objects_dir, video_id, f"{idx_raw}.json"),
+            os.path.join(self.objects_dir, video_id, f"{idx_5d}.json"),
+        ]
+
+        for jp in candidate_paths:
+            if os.path.exists(jp):
+                try:
+                    with open(jp, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    names = data.get("detection_class_names", [])
+                    scores = data.get("detection_scores", [])
+                    return [{"entity": n, "score": float(s)} for n, s in zip(names, scores)]
+                except Exception:
+                    pass
         return []
 
 
@@ -231,7 +245,6 @@ class GenericHybridSearcher:
     def __init__(self, config=None, dense_engine=None, sparse_engine=None, object_engine=None):
         self.config = config or {}
         
-        # Tự khởi tạo các sub-engine nếu chưa được truyền vào
         model_name = self.config.get("models", {}).get("clip_model", "openai/clip-vit-large-patch14")
         features_dir = self.config.get("data", {}).get("features_dir", None)
         metadata_dir = self.config.get("data", {}).get("metadata_dir", None)
@@ -251,34 +264,28 @@ class GenericHybridSearcher:
         open_classes = parsed_schema.get("openimages_classes", [])
         query_vi = parsed_schema.get("query_vi", "")
 
-        # 1. LẤY TRỌNG SỐ ĐỘNG DO NLP LLM TỰ DỰ ĐOÁN (KHÔNG FIX CỨNG HỆ SỐ)
         dense_weight = parsed_schema.get("dense_weight")
         sparse_weight = parsed_schema.get("sparse_weight")
         
-        # Giá trị phòng vệ an toàn nếu JSON bị thiếu key (không bao giờ gán cứng)
         if dense_weight is None or sparse_weight is None:
             dense_weight, sparse_weight = 0.75, 0.25
 
-        # 2. DENSE CLIP SEARCH
         dense_results = []
         if self.dense_engine and golden_prompts:
             dense_results = self.dense_engine.search(golden_prompts, top_k_videos=top_k_videos)
             dense_results = self._apply_gaussian_smoothing(dense_results)
 
-        # 3. SPARSE BM25 SEARCH
         sparse_results = []
         if self.sparse_engine:
             sparse_text = " ".join(bm25_keywords) if bm25_keywords else query_vi
             sparse_results = self.sparse_engine.search(sparse_text, top_k_videos=top_k_videos // 2)
 
-        # 4. DYNAMIC RRF FUSION
         fused_candidates = self._reciprocal_rank_fusion(
             dense_results, sparse_results,
             dense_weight=dense_weight,
             sparse_weight=sparse_weight
         )
 
-        # 5. OPENIMAGES OBJECT BOOSTING
         if self.object_engine and open_classes:
             fused_candidates = self._boost_with_object_detection(
                 fused_candidates, open_classes
