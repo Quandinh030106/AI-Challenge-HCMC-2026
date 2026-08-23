@@ -121,7 +121,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
-    Supports multi-frame video sequence reasoning over consecutive keyframes.
+    Supports timeline-wide video context sampling and automatic path discovery for all videos.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -220,7 +220,10 @@ class TaskSolvers:
         return predictions
 
     def solve_vqa(self, parsed_schema, fused_candidates):
-        """Solves Visual Q&A task using multi-frame video sequence reasoning over top keyframe candidates."""
+        """
+        Solves Visual Q&A task using timeline-wide video sequence reasoning across start, middle, and end keyframes.
+        Supports automatic path discovery for any video in the dataset.
+        """
         if not fused_candidates:
             return {"video_id": "none", "frame_id": "000", "answer": "Không rõ", "promoted_idx": 0}
 
@@ -239,13 +242,26 @@ class TaskSolvers:
             f_idx = dense_info.get("best_frame_idx", 0)
             fid = get_frame_id_from_idx(self.keyframes_dir, vid, f_idx, metadata_dir=self.metadata_dir)
 
-            # Collect a multi-frame video clip sequence (3-4 consecutive keyframes around f_idx)
-            frame_indices = [max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
-            image_paths = []
-            for fi in frame_indices:
-                p = self._find_keyframe_image(vid, fi, f"{fi:03d}")
-                if p and p not in image_paths:
-                    image_paths.append(p)
+            # Sample 5 uniform keyframes spanning the ENTIRE video timeline (Start, 25%, 50%, 75%, End)
+            all_video_imgs = self._get_all_video_keyframe_paths(vid)
+            if all_video_imgs:
+                n_total = len(all_video_imgs)
+                sampled_indices = sorted(list(set([
+                    0,
+                    int(n_total * 0.25),
+                    int(n_total * 0.50),
+                    int(n_total * 0.75),
+                    max(0, n_total - 1),
+                    min(max(0, f_idx), n_total - 1)
+                ])))
+                image_paths = [all_video_imgs[i] for i in sampled_indices]
+            else:
+                frame_indices = [max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
+                image_paths = []
+                for fi in frame_indices:
+                    p = self._find_keyframe_image(vid, fi, f"{fi:03d}")
+                    if p and p not in image_paths:
+                        image_paths.append(p)
 
             if not image_paths:
                 img_path = self._find_keyframe_image(vid, f_idx, fid)
@@ -275,10 +291,36 @@ class TaskSolvers:
             "best_frame_id": best_frame_id
         }
 
+    def _get_all_video_keyframe_paths(self, video_id):
+        """Automatically discovers and returns all keyframe image paths for any target video_id."""
+        if not self.keyframes_dir or not os.path.exists(self.keyframes_dir):
+            return []
+
+        level = video_id.split('_')[0] if '_' in video_id else ""
+        folder_candidates = [
+            os.path.join(self.keyframes_dir, f"Keyframes_{level}", "keyframes", video_id),
+            os.path.join(self.keyframes_dir, f"Keyframes_{level}", video_id),
+            os.path.join(self.keyframes_dir, level, "keyframes", video_id),
+            os.path.join(self.keyframes_dir, "keyframes", video_id),
+            os.path.join(self.keyframes_dir, video_id)
+        ]
+        for fc in folder_candidates:
+            if os.path.exists(fc):
+                imgs = sorted(glob.glob(os.path.join(fc, "*.jpg")) + glob.glob(os.path.join(fc, "*.jpeg")) + glob.glob(os.path.join(fc, "*.png")))
+                if imgs:
+                    return imgs
+
+        for root, _, files in os.walk(self.keyframes_dir):
+            if os.path.basename(root) == video_id:
+                imgs = sorted([os.path.join(root, f) for f in files if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+                if imgs:
+                    return imgs
+        return []
+
     def _infer_vlm_multi_frame_video(self, image_paths, question_text):
-        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over consecutive keyframe sequence."""
+        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over timeline-wide keyframes."""
         prompt_text = (
-            f"Nhiệm vụ: Quan sát kỹ chuỗi khung ảnh chuỗi video theo thời gian này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
+            f"Nhiệm vụ: Quan sát kỹ các khung ảnh trải dài theo thời gian của video này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
             f"Yêu cầu: Trả lời ngắn gọn, trực tiếp con số / tên riêng / từ cần tìm. Không thêm lời dẫn rườm rà."
         )
