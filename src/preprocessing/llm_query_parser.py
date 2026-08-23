@@ -7,7 +7,7 @@ class LLMQueryParser:
     """
     Dynamic NLP Semantic Parser module powered by LLM.
     Extracts structured golden schema without hardcoded dictionaries or query bias.
-    Optimized with 4-bit NF4 quantization on cuda:0 to prevent Kaggle multi-GPU P2P deadlocks.
+    Optimized with torch.inference_mode() and per-query CUDA cache clearing to prevent VRAM OOM.
     """
     def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct", device=None):
         self.model_id = model_id
@@ -21,7 +21,7 @@ class LLMQueryParser:
         self.fallback_model = None
 
     def load_model(self):
-        """Loads NLP LLM on a single GPU (cuda:0) with 4-bit NF4 quantization for maximum speed and zero P2P locks."""
+        """Loads NLP LLM model with fallback handling and optimized memory configuration."""
         if self.llm_available:
             return
             
@@ -31,26 +31,24 @@ class LLMQueryParser:
             if self.tokenizer.pad_token_id is None:
                 self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
 
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_compute_dtype=torch.float16,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_use_double_quant=True
-            )
-            
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.model_id,
-                quantization_config=bnb_config if torch.cuda.is_available() else None,
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="cuda:0" if torch.cuda.is_available() else None,
-                trust_remote_code=True
-            )
-            self.model.eval()
-            self.llm_available = True
-            print("[INFO] LLMQueryParser: Loaded NLP LLM successfully in 4-bit NF4 mode on cuda:0.")
-        except Exception as e:
-            print(f"[WARNING] 4-bit quantization loading failed ({e}). Retrying with standard FP16 on cuda:0...")
             try:
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=torch.float16,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_use_double_quant=True
+                )
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_id,
+                    quantization_config=bnb_config if torch.cuda.is_available() else None,
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    device_map="cuda:0" if torch.cuda.is_available() else None,
+                    trust_remote_code=True
+                )
+                self.model.eval()
+                self.llm_available = True
+                print("[INFO] LLMQueryParser: Loaded NLP LLM in 4-bit NF4 mode on cuda:0.")
+            except Exception:
                 self.model = AutoModelForCausalLM.from_pretrained(
                     self.model_id,
                     torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
@@ -59,11 +57,11 @@ class LLMQueryParser:
                 )
                 self.model.eval()
                 self.llm_available = True
-                print("[INFO] LLMQueryParser: Loaded NLP LLM in standard FP16 mode on cuda:0.")
-            except Exception as e2:
-                print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e2}). Switching to fallback.")
-                self.llm_available = False
-                self._init_fallback_translator()
+                print("[INFO] LLMQueryParser: Loaded NLP LLM in FP16 mode on cuda:0.")
+        except Exception as e:
+            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Switching to fallback.")
+            self.llm_available = False
+            self._init_fallback_translator()
 
     def _init_fallback_translator(self):
         """Initializes fallback NLLB translation model if primary LLM is unavailable."""
@@ -97,7 +95,7 @@ class LLMQueryParser:
             return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_llm(self, query_vi, task_type="kis", raw_question=""):
-        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct with optimized generation parameters."""
+        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct with per-query CUDA cache cleanup."""
         system_prompt = (
             "Bạn là chuyên gia phân tích ngữ nghĩa thị giác đa phương thức.\n"
             "Nhiệm vụ: Hãy đọc hiểu câu hỏi Tiếng Việt được cung cấp và trích xuất ra duy nhất một đối tượng JSON chuẩn gồm các trường:\n"
@@ -128,10 +126,10 @@ class LLMQueryParser:
             eos_id = self.tokenizer.eos_token_id
             pad_id = self.tokenizer.pad_token_id or eos_id
 
-            with torch.no_grad():
+            with torch.inference_mode():
                 outputs = self.model.generate(
                     **inputs,
-                    max_new_tokens=256,
+                    max_new_tokens=200,
                     do_sample=True,
                     temperature=0.1,
                     eos_token_id=eos_id,
@@ -140,12 +138,19 @@ class LLMQueryParser:
                 generated_ids = [out[len(inp):] for inp, out in zip(inputs["input_ids"], outputs)]
                 response_text = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
                 
+            # Clear intermediate CUDA memory allocations after each query
+            del inputs, outputs
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             if json_match:
                 parsed_json = json.loads(json_match.group(0))
                 return self._normalize_schema(parsed_json, query_vi)
         except Exception as e:
             print(f"[WARNING] LLMQueryParser: Failed to generate JSON with LLM ({e}). Switching to fallback.")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             
         return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
