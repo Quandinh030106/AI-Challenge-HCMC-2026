@@ -1,35 +1,13 @@
-# Configuration for HCMC AI Challenge 2026 on Kaggle
-data:
-  # Thu muc cha chua toan bo cac video tu L21 den Lxx
-  raw_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-videos"
-  
-  # Thu muc cha chua toan bo cac thu muc Keyframes_L21, Keyframes_L22, ..., Keyframes_Lxx
-  keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-keyframes"
-  
-  # Thu muc chua toan bo cac file vector dac trung .npy
-  features_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-features/clip-features-32"
-  
-  # Thu muc chua cac file JSON thong tin YouTube (Media-info)
-  metadata_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/media-info-aic25-b1/media-info"
-  
-  # Thu muc chua cac file CSV mapping khung hinh
-  map_keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes"
-  
-  # Thu muc chua cac file JSON phat hien vat the (Objects)
-  objects_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/objects-aic25-b1/objects"
-  
-  output_dir: "/kaggle/working/output"
-
+# FILE 5: CAU HINH HE THONG KAGGLE CHUAN CHO SƠ TUYỂN 2 (100% ZERO-BIAS)
 
 models:
-  clip_model: "openai/clip-vit-base-patch32"
-  vlm_model: "Qwen/Qwen2-VL-2B-Instruct"
+  nlp_llm: "Qwen/Qwen2.5-7B-Instruct"
+  clip_model: "openai/clip-vit-large-patch14"
+  vlm_model: "Qwen/Qwen2.5-VL-7B-Instruct"
 
-
-
-
-
-
-search:
-  top_k_videos: 10
-  top_k_frames: 100
+data:
+  features_dir: "/kaggle/input/clip-features-32-aic25-b1"
+  metadata_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata/metadata"
+  ocr_dir: "/kaggle/input/ai-challenge-hcmc-2026-metadata/ocr"
+  objects_dir: "/kaggle/input/ai-challenge-hcmc-2026-objects/objects"
+  keyframes_dir: "/kaggle/input/ai-challenge-hcmc-2026-keyframes"

@@ -1,12 +1,5 @@
 import os
 import sys
-
-# Dam bao thu muc goc cua du an luon nam trong sys.path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.abspath(os.path.join(current_dir, ".."))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
 import glob
 import json
 import zipfile
@@ -15,245 +8,141 @@ import argparse
 import time
 import re
 
-import numpy as np
+# Đảm bảo thư mục gốc dự án nằm trong sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import yaml
 from tqdm import tqdm
 
-from src.preprocessing.query_processor import QueryProcessor
-
-from src.search.dense_search import DenseSearcher
-from src.search.sparse_search import SparseSearcher
-from src.search.fusion import reciprocal_rank_fusion
-from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
-from src.tasks.task2_vqa import solve_task2, clean_vlm_answer
-from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
-from src.search.object_search import ObjectSearcher
-from src.search.visual_reranker import VisualReRanker
+from src.preprocessing.llm_query_parser import LLMQueryParser
+from src.search.generic_hybrid_search import GenericHybridSearcher
+from src.tasks.task_solvers import TaskSolvers, clean_vlm_answer
 
 def load_config(config_path="configs/default.yaml"):
-    """Doc file cau hinh he thong."""
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-def extract_trake_events(raw_lines):
-    """Boc tach cac su kien TRAKE: Loai bo dong dan nhap co dau 2 cham hoac tu khoa dan nhap, giu lai 100% cac dong su kien thuc te."""
-    prefix_pattern = r'^(e\d+|sự kiện|su kien|event|bước|buoc|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*'
-    intro_keywords = [
-        "tìm các sự kiện", "gồm các khoảnh khắc", "các sự kiện sau", "khoảnh khắc sơ chế", "tìm sự kiện", "gồm các sự kiện", "các sự kiện:"
-    ]
-    
-    events = []
-    for l in raw_lines:
-        l_strip = l.strip()
-        if not l_strip:
-            continue
-        l_lower = l_strip.lower()
-        
-        # Mot dong chi la dong dan nhap/tieude neu no KET THUC BANG DAU 2 CHAM (:) HOAC CHUA TU KHOA DAN NHAP
-        is_intro_header = l_lower.endswith(":") or any(kw in l_lower for kw in intro_keywords)
-        if is_intro_header and not any(l_lower.startswith(p) for p in ["e1", "e2", "e3", "e4", "e5", "sự kiện 1", "bước 1", "event 1"]):
-            continue
+    """
+    Đọc cấu hình hệ thống một cách linh hoạt:
+    - Hỗ trợ truyền thẳng Config Dictionary trực tiếp từ Kaggle Notebook cell.
+    - Hỗ trợ đọc từ file YAML.
+    - Tự động phát hiện (Auto-Discovery) đường dẫn trên Kaggle nếu đường dẫn bị sai.
+    """
+    config = None
+    if isinstance(config_path, dict):
+        config = config_path
+    elif isinstance(config_path, str) and os.path.exists(config_path):
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
             
-        cleaned = re.sub(prefix_pattern, '', l_strip, flags=re.IGNORECASE).strip()
-        if cleaned:
-            events.append(cleaned)
-            
-    if not events:
-        events = [re.sub(prefix_pattern, '', l, flags=re.IGNORECASE).strip() for l in raw_lines if l.strip()]
+    if not config:
+        config = {
+            "models": {
+                "nlp_llm": "Qwen/Qwen2.5-7B-Instruct",
+                "clip_model": "openai/clip-vit-large-patch14",
+                "vlm_model": "Qwen/Qwen2.5-VL-7B-Instruct"
+            },
+            "data": {
+                "features_dir": "/kaggle/input/clip-features-32-aic25-b1",
+                "metadata_dir": "/kaggle/input/ai-challenge-hcmc-2026-metadata/metadata",
+                "ocr_dir": "/kaggle/input/ai-challenge-hcmc-2026-metadata/ocr",
+                "objects_dir": "/kaggle/input/ai-challenge-hcmc-2026-objects/objects",
+                "keyframes_dir": "/kaggle/input/ai-challenge-hcmc-2026-keyframes"
+            }
+        }
+
+    # TỰ ĐỘNG PHÁT HIỆN ĐƯỜNG DẪN TRÊN KAGGLE (AUTO-DISCOVERY FALLBACK)
+    if os.path.exists("/kaggle/input"):
+        data_cfg = config.get("data", {})
         
-    return events
+        # 1. Quét đường dẫn features_dir (.npy)
+        if not data_cfg.get("features_dir") or not os.path.exists(data_cfg.get("features_dir", "")):
+            for root, _, files in os.walk("/kaggle/input"):
+                if any(f.endswith(".npy") for f in files):
+                    data_cfg["features_dir"] = root
+                    print(f"Auto-Discovery: Đã tự phát hiện features_dir tại '{root}'")
+                    break
+
+        # 2. Quét đường dẫn keyframes_dir
+        if not data_cfg.get("keyframes_dir") or not os.path.exists(data_cfg.get("keyframes_dir", "")):
+            for root, dirs, _ in os.walk("/kaggle/input"):
+                if "keyframe" in root.lower() or "keyframes" in root.lower():
+                    data_cfg["keyframes_dir"] = root
+                    print(f"Auto-Discovery: Đã tự phát hiện keyframes_dir tại '{root}'")
+                    break
+
+    return config
 
 
-
-def parse_query_file(file_path):
-    """Phan tich noi dung file cau hoi (.txt) uu tien tuyet doi theo ten duoi file."""
+def parse_raw_query_file(file_path):
+    """
+    Phân tích định dạng file câu hỏi .txt của BTC hoàn toàn tổng quát (Zero-Bias).
+    Phận loại loại bài toán (KIS, QA, TRAKE) dựa trên cấu trúc tên file hoặc nội dung.
+    """
     filename = os.path.basename(file_path)
     query_id = os.path.splitext(filename)[0]
     q_id_lower = query_id.lower()
-    
+
     with open(file_path, "r", encoding="utf-8") as f:
         raw_lines = [line.strip() for line in f.readlines() if line.strip()]
-        
+
     full_content = "\n".join(raw_lines)
     full_content_lower = full_content.lower()
-    
-    # 1. UU TIEN SO 1: NHAN DIEN THEO TEN DUOI FILE (-kis, -qa, -trake)
-    is_explicit_kis = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["kis", "-kis", "_kis"])
-    is_explicit_qa = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["qa", "-qa", "_qa", "vqa", "-vqa", "_vqa"])
-    is_explicit_trake = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["trake", "-trake", "_trake", "event", "-event", "_event"])
-    
-    if is_explicit_kis:
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 1 (Textual KIS)")
-        return {
-            "query_id": query_id,
-            "task_type": "kis",
-            "query": " ".join(raw_lines).strip()
-        }
-        
-    if is_explicit_qa:
-        visual_lines = []
-        question_lines = []
-        is_q = False
-        for line in raw_lines:
-            line_l = line.lower()
-            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
-                is_q = True
-                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-                if cleaned:
-                    question_lines.append(cleaned)
-            elif is_q:
-                question_lines.append(line)
-            else:
-                visual_lines.append(line)
-                
-        # Phan tach ro rang phan mo ta boi canh va cau hoi cu the
+
+    is_kis = any(k in q_id_lower for k in ["kis", "-kis", "_kis"])
+    is_qa = any(k in q_id_lower for k in ["qa", "-qa", "_qa", "vqa", "-vqa", "_vqa"])
+    is_trake = any(k in q_id_lower for k in ["trake", "-trake", "_trake", "event", "-event", "_event"])
+
+    if is_kis:
+        return {"query_id": query_id, "task_type": "kis", "query_vi": full_content, "raw_question": ""}
+
+    if is_qa:
         visual_parts = []
         question_parts = []
         for line in raw_lines:
-            # Tach cac cau trong dong
-            sents = re.split(r'(?<=[.!?])\s+', line)
-            for s in sents:
-                s_strip = s.strip()
-                if not s_strip:
-                    continue
-                if "?" in s_strip or re.search(r'^(câu hỏi|hỏi|cho biết|tìm xem)\b', s_strip, re.IGNORECASE):
-                    cleaned_q = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', s_strip, flags=re.IGNORECASE).strip()
-                    if cleaned_q:
-                        question_parts.append(cleaned_q)
-                else:
-                    visual_parts.append(s_strip)
-                    
+            if "?" in line or any(k in line.lower() for k in ["câu hỏi", "question", "hỏi:"]):
+                cleaned_q = re.sub(r'^(câu hỏi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
+                if cleaned_q:
+                    question_parts.append(cleaned_q)
+            else:
+                visual_parts.append(line)
         query = " ".join(visual_parts).strip() or full_content
         question = " ".join(question_parts).strip() or full_content
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 2 (Visual Q&A) | Visual: '{query[:60]}...' | Question: '{question}'")
-        return {
-            "query_id": query_id,
-            "task_type": "qa",
-            "query": query,
-            "question": question
-        }
+        return {"query_id": query_id, "task_type": "qa", "query_vi": query, "raw_question": question}
 
-        
-    if is_explicit_trake:
-        events = extract_trake_events(raw_lines)
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 3 (TRAKE) | {len(events)} su kien")
-        return {
-            "query_id": query_id,
-            "task_type": "trake",
-            "events": events,
-            "query": " ".join(events)
-        }
+    if is_trake:
+        prefix_pattern = r'^(e\d+|sự kiện|event|bước|\d+[\.\:\)])\s*[:\.]?\s*'
+        events = [re.sub(prefix_pattern, '', l, flags=re.IGNORECASE).strip() for l in raw_lines if l.strip()]
+        return {"query_id": query_id, "task_type": "trake", "query_vi": " ".join(events), "raw_question": "", "events": events}
 
-    # 2. FALLBACK KHI TEN FILE KHONG CO HAU TO: PHAN TICH THEO NOI DUNG
-    qa_indicators = [
-        "?", "câu hỏi", "cau hoi", "question", "q&a", "hỏi:", "là gì", "ở đâu", 
-        "thế nào", "màu gì", "bao nhiêu", "tên của", "ai là", "mấy câu thơ", "tiêu đề"
-    ]
-    if any(k in full_content_lower for k in qa_indicators):
-        visual_lines = []
-        question_lines = []
-        is_q = False
-        for line in raw_lines:
-            line_l = line.lower()
-            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
-                is_q = True
-                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-                if cleaned:
-                    question_lines.append(cleaned)
-            elif is_q:
-                question_lines.append(line)
-            else:
-                visual_lines.append(line)
-        query = " ".join(visual_lines).strip() or full_content
-        question = " ".join(question_lines).strip() or full_content
-        print(f"[{query_id}] -> Nhan dien: TASK 2 (Visual Q&A) | Question: '{question}'")
-        return {"query_id": query_id, "task_type": "qa", "query": query, "question": question}
-        
-    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
-    if has_trake_flag and len(raw_lines) >= 3:
-        events = extract_trake_events(raw_lines)
-        print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
-        return {"query_id": query_id, "task_type": "trake", "events": events, "query": " ".join(events)}
+    if "?" in full_content_lower or "câu hỏi" in full_content_lower:
+        return {"query_id": query_id, "task_type": "qa", "query_vi": full_content, "raw_question": full_content}
 
-    print(f"[{query_id}] -> Nhan dien: TASK 1 (Textual KIS)")
-    return {"query_id": query_id, "task_type": "kis", "query": full_content}
+    return {"query_id": query_id, "task_type": "kis", "query_vi": full_content, "raw_question": ""}
 
 
-def format_answer_for_csv(ans_text):
-    """Format cau tra loi VQA cho file CSV tuan thu dung quy dinh toi da 100 ky tu cua BTC."""
-    if not ans_text or str(ans_text).strip() in ["", '""', "''", "None"]:
-        ans_text = "Không rõ"
-    ans_cleaned = clean_vlm_answer(str(ans_text))
-    ans_cleaned = ans_cleaned.strip().strip('"').strip("'").replace("\n", " ").strip()
-    # Quy dinh cua BTC: Answer (Q&A) co do dai toi da 100 ky tu
-    if len(ans_cleaned) > 100:
-        ans_cleaned = ans_cleaned[:100].strip()
-    if not ans_cleaned:
-        ans_cleaned = "Không rõ"
-    ans_escaped = ans_cleaned.replace('"', '""')
-    return f'"{ans_escaped}"'
+def format_vqa_answer_for_csv(ans_text):
+    """Format đáp án VQA cho file CSV tuân thủ chuẩn bọc ngoặc kép cho cả văn bản nhiều dòng."""
+    cleaned = clean_vlm_answer(ans_text)
+    escaped = cleaned.replace('"', '""')
+    return f'"{escaped}"'
 
 
-
-
-def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip", query_filter=None):
-    """Chay pipeline tren bo de thi (hoac 1 cau hoi cu the neu co query_filter)."""
+def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip", query_filter=None):
+    """
+    PIPELINE ĐIỀU KHIỂN VÒNG ĐỜI NỐI TIẾP NGUYÊN KHỐI (100% ZERO-BIAS):
+    BƯỚC 1: NLP LLM (Qwen2.5-7B) Đọc hiểu đề thi -> Sinh JSON Cấu trúc Ngữ nghĩa -> Giải phóng khỏi VRAM.
+    BƯỚC 2: Generic Hybrid Search (CLIP + BM25 + OpenImages) -> Tìm kiếm Top 100 Ứng viên.
+    BƯỚC 3: Heavy VLM (Qwen2.5-VL-7B trên 2 GPU) -> Giải quyết KIS, VQA & TRAKE DP Alignment -> Đóng gói submission.zip.
+    """
     start_time = time.time()
     config = load_config(config_path)
-    
-    submission_dir = "submission"
+
+    submission_dir = "/kaggle/working/submission" if os.path.exists("/kaggle/working") else "scratch/submission"
     if os.path.exists(submission_dir):
         shutil.rmtree(submission_dir)
     os.makedirs(submission_dir, exist_ok=True)
 
-    
-    print("=====================================================")
-    print("KHOI CHAY HE THONG TAO SUBMISSION AIC 2026")
-    print(f"Thu muc de thi : {input_dir}")
-    if query_filter:
-        print(f"Bo loc cau hoi : CHI CHAY CAU TRUY VAN MANG TUKHOA '{query_filter}'")
-    print(f"File zip xuat  : {output_zip}")
-    print("=====================================================")
-    
-    dense_searcher = DenseSearcher(config)
-    sparse_searcher = SparseSearcher(config)
-    query_processor = QueryProcessor()
-    object_searcher = ObjectSearcher(config)
-    vlm_model_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2-VL-2B-Instruct")
-    visual_reranker = VisualReRanker(vlm_model_name)
-
-    
-    keyframes_dir = config["data"].get("keyframes_dir")
-    map_keyframes_dir = config["data"].get("map_keyframes_dir") or config["data"].get("metadata_dir")
-    
-    # Tu dong xac dinh thu muc map-keyframes tren Kaggle sieu toc (< 0.001s)
-    map_csv_count = 0
-    candidate_map_dirs = [
-        map_keyframes_dir,
-        "/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes",
-        "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes",
-        "/kaggle/input/ai-challenge-hcmc-2026-metadata/map-keyframes",
-        "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes"
-    ]
-    for cmd in candidate_map_dirs:
-        if cmd and os.path.exists(cmd):
-            try:
-                csv_files = [f for f in os.listdir(cmd) if f.lower().endswith(".csv")]
-                if len(csv_files) > 10:
-                    map_keyframes_dir = cmd
-                    map_csv_count = len(csv_files)
-                    break
-            except Exception:
-                pass
-
-            
-    print(f"Map-Keyframes Directory: {map_keyframes_dir} ({map_csv_count} CSV files found)")
-    if map_csv_count == 0:
-        print("Canh bao: Chua tim thay thu muc map-keyframes CSV!")
-    else:
-        print("Ket noi thanh cong thu muc map-keyframes cua BTC.")
-    print("-----------------------------------------------------")
-    
     txt_files = []
     if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
         unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
@@ -261,171 +150,125 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         with zipfile.ZipFile(input_dir, "r") as zf:
             zf.extractall(unzip_tmp)
         input_dir = unzip_tmp
-        
-    if os.path.isdir(input_dir):
-        zips = glob.glob(os.path.join(input_dir, "*.zip")) + glob.glob(os.path.join(input_dir, "**", "*.zip"), recursive=True)
-        for z in zips:
-            try:
-                with zipfile.ZipFile(z, "r") as zf:
-                    zf.extractall(input_dir)
-            except Exception:
-                pass
-                
-    def natural_sort_key(s):
-        return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
-        
-    all_found_txts = []
+
     if os.path.exists(input_dir):
         for root, _, files in os.walk(input_dir):
             for file in files:
                 if file.lower().endswith(".txt"):
-                    all_found_txts.append(os.path.join(root, file))
-                    
-    if not all_found_txts and os.path.exists("/kaggle/input"):
-        for root, _, files in os.walk("/kaggle/input"):
-            if any(k in root.lower() for k in ["thu-nghiem", "bo-de-thi", "query", "queries"]):
-                for file in files:
-                    if file.lower().endswith(".txt"):
-                        all_found_txts.append(os.path.join(root, file))
-                    elif file.lower().endswith(".zip"):
-                        try:
-                            unzip_dir = "/kaggle/working/bo_de_thi_auto"
-                            os.makedirs(unzip_dir, exist_ok=True)
-                            with zipfile.ZipFile(os.path.join(root, file), "r") as zf:
-                                zf.extractall(unzip_dir)
-                            for r_sub, _, f_sub in os.walk(unzip_dir):
-                                for fs in f_sub:
-                                    if fs.lower().endswith(".txt"):
-                                        all_found_txts.append(os.path.join(r_sub, fs))
-                        except Exception:
-                            pass
+                    txt_files.append(os.path.join(root, file))
 
-    txt_files = sorted(list(set(all_found_txts)), key=natural_sort_key)
-    
-    # Loc rieng cau hoi theo query_filter neu nguoi dung yeu cau
+    txt_files = sorted(list(set(txt_files)))
     if query_filter:
         txt_files = [f for f in txt_files if str(query_filter).lower() in os.path.basename(f).lower()]
-        
+
     if not txt_files:
-        print(f"Khong tim thay file .txt nao phu hop voi bo loc '{query_filter}'!")
+        print(f"Không tìm thấy file câu hỏi .txt nào trong '{input_dir}'!")
         return
 
-    print(f"Tim thay {len(txt_files)} file cau hoi duoc chon de chay:")
-    for f in txt_files:
-        print(f"  -> {os.path.basename(f)}")
-    print("-----------------------------------------------------")
-    
-    for file_path in tqdm(txt_files, desc="Xu ly cau hoi"):
+    print("================================================================================")
+    print(f"🚀 BẮT ĐẦU PIPELINE NỐI TIẾP 3 BƯỚC CHO {len(txt_files)} CÂU HỎI THI (100% ZERO-BIAS)")
+    print("================================================================================")
 
-        parsed = parse_query_file(file_path)
-        task_type = parsed["task_type"]
-        query_id = parsed["query_id"]
-        query_text = parsed["query"]
+    # BƯỚC 1: NLP LLM (Qwen2.5-7B) NẠP VÀO VRAM -> ĐỌC HIỂU ĐỀ ĐỘNG -> XUẤT JSON
+    print("\n🔹 BƯỚC 1: Nạp NLP LLM (Qwen2.5-7B-Instruct) đọc hiểu ngữ nghĩa đề thi...")
+    nlp_model_name = config.get("models", {}).get("nlp_llm", "Qwen/Qwen2.5-7B-Instruct")
+    llm_parser = LLMQueryParser(model_id=nlp_model_name)
+    llm_parser.load_model()
 
-        
-        csv_filename = f"{query_id}.csv"
-        csv_filepath = os.path.join(submission_dir, csv_filename)
-        
-        # q_info duoc tao tu query_text (mo ta thi giac sach, khong bi nhiem tu khoa cau hoi)
-        q_info = query_processor.process(query_text)
-        intent = q_info["intent_info"]
-        
-        search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
-        dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
-        sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
-        fused = reciprocal_rank_fusion(
-            dense_res, sparse_res,
-            dense_weight=intent["dense_weight"],
-            sparse_weight=intent["sparse_weight"],
-            dense_dict=getattr(dense_searcher, "last_dense_dict", None)
+    parsed_queries = []
+    for file_path in tqdm(txt_files, desc="BƯỚC 1: NLP LLM Phân tích Động"):
+        raw_info = parse_raw_query_file(file_path)
+        schema = llm_parser.parse_query_dynamically(
+            query_vi=raw_info["query_vi"],
+            task_type=raw_info["task_type"],
+            raw_question=raw_info.get("raw_question", "")
         )
-        
-        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}", query_id=query_id)
+        schema["query_id"] = raw_info["query_id"]
+        schema["task_type"] = raw_info["task_type"]
+        if "events" in raw_info:
+            schema["events"] = raw_info["events"]
+        parsed_queries.append(schema)
 
+    llm_parser.unload_model()
+    print("✅ BƯỚC 1 HOÀN TẤT: Đã giải phóng hoàn toàn NLP LLM khỏi VRAM!\n")
 
-        # TASK 1: TEXTUAL KIS
+    # BƯỚC 2: TÌM KIẾM ĐA PHƯƠNG THỨC HỖN HỢP TỔNG QUÁT (GENERIC HYBRID SEARCH)
+    print("🔹 BƯỚC 2: Khởi tạo Bộ tìm kiếm Hybrid Searcher (CLIP + BM25 + OpenImages)...")
+    searcher = GenericHybridSearcher(config=config)
 
+    retrieved_candidates = {}
+    for schema in tqdm(parsed_queries, desc="BƯỚC 2: Tìm kiếm Candidate"):
+        qid = schema["query_id"]
+        candidates = searcher.search_candidates(schema, top_k_videos=100)
+        retrieved_candidates[qid] = candidates
+
+    print("✅ BƯỚC 2 HOÀN TẤT: Đã tìm kiếm xong Candidate cho tất cả câu hỏi!\n")
+
+    # BƯỚC 3: DỒN 2 GPU NẠP HEAVY VLM (Qwen2.5-VL-7B) -> GIẢI BÀI TOÁN -> XUẤT CSV
+    print("🔹 BƯỚC 3: Dồn 2 GPU nạp Heavy VLM (Qwen2.5-VL-7B) giải VQA, KIS & TRAKE...")
+    vlm_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2.5-VL-7B-Instruct")
+    keyframes_dir = config.get("data", {}).get("keyframes_dir", None)
+    metadata_dir = config.get("data", {}).get("metadata_dir", None)
+
+    task_solvers = TaskSolvers(keyframes_dir=keyframes_dir, metadata_dir=metadata_dir, vlm_model_id=vlm_name)
+
+    for schema in tqdm(parsed_queries, desc="BƯỚC 3: Thực thi Solvers"):
+        qid = schema["query_id"]
+        task_type = schema["task_type"]
+        candidates = retrieved_candidates.get(qid, [])
+        csv_filepath = os.path.join(submission_dir, f"{qid}.csv")
 
         if task_type == "kis":
-
-            top100_preds = generate_diversity_top100_kis(
-                fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
-            )
-            
+            preds = task_solvers.solve_kis(candidates, total_preds=100)
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
-                for pred in top100_preds:
-                    vid = pred["video_id"]
-                    fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
-                    f_out.write(f"{vid}, {fid}\n")
-                    
-        # TASK 2: VISUAL Q&A
+                for p in preds:
+                    f_out.write(f"{p['video_id']}, {p['frame_id']}\n")
+
         elif task_type == "qa":
-            question = parsed["question"]
-            ans_res = solve_task2(
-                query_text, question, fused, keyframes_dir, 
-                model_id=vlm_model_name,
-                metadata_dir=map_keyframes_dir,
-                object_searcher=object_searcher
-            )
-            
-            promoted_idx = ans_res.get("promoted_idx", 0)
-            if promoted_idx > 0 and promoted_idx < len(fused):
-                promoted_cand = fused.pop(promoted_idx)
-                fused.insert(0, promoted_cand)
+            vqa_res = task_solvers.solve_vqa(schema, candidates)
+            promoted_idx = vqa_res.get("promoted_idx", 0)
+            if promoted_idx > 0 and promoted_idx < len(candidates):
+                promoted_cand = candidates.pop(promoted_idx)
+                candidates.insert(0, promoted_cand)
 
-            vlm_answer = format_answer_for_csv(ans_res["answer"])
-            
-            top100_preds = generate_diversity_top100_kis(
-                fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
-            )
-            
+            vlm_ans_formatted = format_vqa_answer_for_csv(vqa_res["answer"])
+            preds = task_solvers.solve_kis(candidates, total_preds=100)
+
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
-                for pred in top100_preds:
-                    vid = pred["video_id"]
-                    fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
-                    f_out.write(f"{vid}, {fid}, {vlm_answer}\n")
+                for p in preds:
+                    f_out.write(f"{p['video_id']}, {p['frame_id']}, {vlm_ans_formatted}\n")
 
-                    
-        # TASK 3: TRAKE
-        # TASK 3: TRAKE
         elif task_type == "trake":
-            events = parsed["events"]
-            from src.tasks.task3_trake import solve_task3_batch
-            all_aligned_preds = solve_task3_batch(
-                events, fused, keyframes_dir, dense_searcher, 
-                metadata_dir=map_keyframes_dir, query_processor=query_processor,
-                total_preds=100
-            )
-            
+            aligned = task_solvers.solve_trake(schema, candidates, dense_engine=getattr(searcher, "dense_engine", None), total_preds=100)
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
-                for item in all_aligned_preds:
+                for item in aligned:
                     vid = item["video_id"]
-                    clean_fids = [str(int(f)) if str(f).isdigit() else str(f) for f in item["frame_ids"]]
-                    f_out.write(f"{vid}, " + ", ".join(clean_fids) + "\n")
+                    fids = ", ".join([str(f) for f in item["frame_ids"]])
+                    f_out.write(f"{vid}, {fids}\n")
 
+    task_solvers.unload_vlm()
 
-    print("-----------------------------------------------------")
-    print("Dong goi thu muc submission vao file zip...")
-
+    print("\n📦 Đóng gói thư mục submission vào file zip...")
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
                 file_path = os.path.join(root, file)
                 arcname = os.path.join("submission", file)
                 zipf.write(file_path, arcname=arcname)
-                
+
     elapsed = time.time() - start_time
-    print(f"Hoan tat: File nop bai tai {os.path.abspath(output_zip)}")
-    print(f"Thoi gian thuc hien: {elapsed:.2f} giay")
-    print("=====================================================")
+    print("================================================================================")
+    print(f"✅ CHÚC MỪNG: THÀNH CÔNG NỘP BÀI! File tại: {os.path.abspath(output_zip)}")
+    print(f"⏱️ Tổng thời gian thực thi: {elapsed:.2f} giây")
+    print("================================================================================")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", required=True, help="Thu muc chua cac file .txt truy van cua BTC")
+    parser.add_argument("--input_dir", required=True, help="Thư mục chứa các file .txt câu hỏi của BTC")
     parser.add_argument("--config", default="configs/default.yaml")
     parser.add_argument("--output_zip", default="submission.zip")
-    parser.add_argument("--query_filter", default=None, help="Chi chay rieng mot cau hoi chua tu khoa nay (vd: 19 hoac p1-19-qa)")
+    parser.add_argument("--query_filter", default=None)
     args = parser.parse_args()
-    
-    run_codabench_pipeline(args.input_dir, args.config, args.output_zip, query_filter=args.query_filter)
 
+    run_sequential_pipeline(args.input_dir, args.config, args.output_zip, query_filter=args.query_filter)
