@@ -8,7 +8,6 @@ import argparse
 import time
 import re
 
-# Đảm bảo thư mục gốc dự án nằm trong sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
@@ -23,10 +22,10 @@ from src.tasks.task_solvers import TaskSolvers, clean_vlm_answer
 
 def load_config(config_path="configs/default.yaml"):
     """
-    Đọc cấu hình hệ thống một cách linh hoạt:
-    - Hỗ trợ truyền thẳng Config Dictionary trực tiếp từ Kaggle Notebook cell.
-    - Hỗ trợ đọc từ file YAML.
-    - Tự động phát hiện (Auto-Discovery) đường dẫn trên Kaggle nếu đường dẫn bị sai.
+    Loads system configuration:
+    - Supports direct Kaggle notebook dictionary.
+    - Supports YAML configuration files.
+    - Performs fallback auto-discovery scan on Kaggle input directory.
     """
     config = None
     if isinstance(config_path, dict):
@@ -51,24 +50,21 @@ def load_config(config_path="configs/default.yaml"):
             }
         }
 
-    # TỰ ĐỘNG PHÁT HIỆN ĐƯỜNG DẪN TRÊN KAGGLE (AUTO-DISCOVERY FALLBACK)
     if os.path.exists("/kaggle/input"):
         data_cfg = config.get("data", {})
         
-        # 1. Quét đường dẫn features_dir (.npy)
         if not data_cfg.get("features_dir") or not os.path.exists(data_cfg.get("features_dir", "")):
             for root, _, files in os.walk("/kaggle/input"):
                 if any(f.endswith(".npy") for f in files):
                     data_cfg["features_dir"] = root
-                    print(f"Auto-Discovery: Đã tự phát hiện features_dir tại '{root}'")
+                    print(f"[INFO] Auto-Discovery: Features directory found at '{root}'")
                     break
 
-        # 2. Quét đường dẫn keyframes_dir
         if not data_cfg.get("keyframes_dir") or not os.path.exists(data_cfg.get("keyframes_dir", "")):
             for root, dirs, _ in os.walk("/kaggle/input"):
                 if "keyframe" in root.lower() or "keyframes" in root.lower():
                     data_cfg["keyframes_dir"] = root
-                    print(f"Auto-Discovery: Đã tự phát hiện keyframes_dir tại '{root}'")
+                    print(f"[INFO] Auto-Discovery: Keyframes directory found at '{root}'")
                     break
 
     return config
@@ -76,8 +72,8 @@ def load_config(config_path="configs/default.yaml"):
 
 def parse_raw_query_file(file_path):
     """
-    Phân tích định dạng file câu hỏi .txt của BTC hoàn toàn tổng quát (Zero-Bias).
-    Phận loại loại bài toán (KIS, QA, TRAKE) dựa trên cấu trúc tên file hoặc nội dung.
+    Parses test query .txt files provided by BTC.
+    Classifies task_type (KIS, QA, TRAKE) based on filename suffixes or text content.
     """
     filename = os.path.basename(file_path)
     query_id = os.path.splitext(filename)[0]
@@ -122,7 +118,7 @@ def parse_raw_query_file(file_path):
 
 
 def format_vqa_answer_for_csv(ans_text):
-    """Format đáp án VQA cho file CSV tuân thủ chuẩn bọc ngoặc kép cho cả văn bản nhiều dòng."""
+    """Formats VQA answer string adhering to Codabench CSV quote escaping rules."""
     cleaned = clean_vlm_answer(ans_text)
     escaped = cleaned.replace('"', '""')
     return f'"{escaped}"'
@@ -130,10 +126,10 @@ def format_vqa_answer_for_csv(ans_text):
 
 def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", output_zip="submission.zip", query_filter=None):
     """
-    PIPELINE ĐIỀU KHIỂN VÒNG ĐỜI NỐI TIẾP NGUYÊN KHỐI (100% ZERO-BIAS):
-    BƯỚC 1: NLP LLM (Qwen2.5-7B) Đọc hiểu đề thi -> Sinh JSON Cấu trúc Ngữ nghĩa -> Giải phóng khỏi VRAM.
-    BƯỚC 2: Generic Hybrid Search (CLIP + BM25 + OpenImages) -> Tìm kiếm Top 100 Ứng viên.
-    BƯỚC 3: Heavy VLM (Qwen2.5-VL-7B trên 2 GPU) -> Giải quyết KIS, VQA & TRAKE DP Alignment -> Đóng gói submission.zip.
+    Sequential Multi-GPU Execution Pipeline:
+    Step 1: NLP LLM (Qwen2.5-7B) parses query -> extracts schema -> unloads from VRAM.
+    Step 2: Generic Hybrid Search (CLIP + BM25 + OpenImages) -> retrieves top candidates.
+    Step 3: Heavy VLM (Qwen2.5-VL-7B) -> resolves KIS, VQA & TRAKE DP alignment -> packages submission.zip.
     """
     start_time = time.time()
     config = load_config(config_path)
@@ -162,21 +158,21 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
         txt_files = [f for f in txt_files if str(query_filter).lower() in os.path.basename(f).lower()]
 
     if not txt_files:
-        print(f"Không tìm thấy file câu hỏi .txt nào trong '{input_dir}'!")
+        print(f"[ERROR] No query text files found in '{input_dir}'")
         return
 
     print("================================================================================")
-    print(f"🚀 BẮT ĐẦU PIPELINE NỐI TIẾP 3 BƯỚC CHO {len(txt_files)} CÂU HỎI THI (100% ZERO-BIAS)")
+    print(f"[INFO] STARTING SEQUENTIAL PIPELINE FOR {len(txt_files)} QUERIES")
     print("================================================================================")
 
-    # BƯỚC 1: NLP LLM (Qwen2.5-7B) NẠP VÀO VRAM -> ĐỌC HIỂU ĐỀ ĐỘNG -> XUẤT JSON
-    print("\n🔹 BƯỚC 1: Nạp NLP LLM (Qwen2.5-7B-Instruct) đọc hiểu ngữ nghĩa đề thi...")
+    # Step 1: NLP LLM Parsing
+    print("\n[INFO] Step 1: Loading NLP LLM (Qwen2.5-7B-Instruct)...")
     nlp_model_name = config.get("models", {}).get("nlp_llm", "Qwen/Qwen2.5-7B-Instruct")
     llm_parser = LLMQueryParser(model_id=nlp_model_name)
     llm_parser.load_model()
 
     parsed_queries = []
-    for file_path in tqdm(txt_files, desc="BƯỚC 1: NLP LLM Phân tích Động"):
+    for file_path in tqdm(txt_files, desc="Step 1: LLM Parsing"):
         raw_info = parse_raw_query_file(file_path)
         schema = llm_parser.parse_query_dynamically(
             query_vi=raw_info["query_vi"],
@@ -190,29 +186,29 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
         parsed_queries.append(schema)
 
     llm_parser.unload_model()
-    print("✅ BƯỚC 1 HOÀN TẤT: Đã giải phóng hoàn toàn NLP LLM khỏi VRAM!\n")
+    print("[INFO] Step 1 completed. NLP LLM unloaded from VRAM.\n")
 
-    # BƯỚC 2: TÌM KIẾM ĐA PHƯƠNG THỨC HỖN HỢP TỔNG QUÁT (GENERIC HYBRID SEARCH)
-    print("🔹 BƯỚC 2: Khởi tạo Bộ tìm kiếm Hybrid Searcher (CLIP + BM25 + OpenImages)...")
+    # Step 2: Hybrid Candidate Retrieval
+    print("[INFO] Step 2: Initializing Hybrid Searcher (CLIP + BM25 + OpenImages)...")
     searcher = GenericHybridSearcher(config=config)
 
     retrieved_candidates = {}
-    for schema in tqdm(parsed_queries, desc="BƯỚC 2: Tìm kiếm Candidate"):
+    for schema in tqdm(parsed_queries, desc="Step 2: Candidate Retrieval"):
         qid = schema["query_id"]
         candidates = searcher.search_candidates(schema, top_k_videos=100)
         retrieved_candidates[qid] = candidates
 
-    print("✅ BƯỚC 2 HOÀN TẤT: Đã tìm kiếm xong Candidate cho tất cả câu hỏi!\n")
+    print("[INFO] Step 2 completed. Retrieval done.\n")
 
-    # BƯỚC 3: DỒN 2 GPU NẠP HEAVY VLM (Qwen2.5-VL-7B) -> GIẢI BÀI TOÁN -> XUẤT CSV
-    print("🔹 BƯỚC 3: Dồn 2 GPU nạp Heavy VLM (Qwen2.5-VL-7B) giải VQA, KIS & TRAKE...")
+    # Step 3: Heavy VLM Task Solving
+    print("[INFO] Step 3: Loading Heavy VLM (Qwen2.5-VL-7B)...")
     vlm_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2.5-VL-7B-Instruct")
     keyframes_dir = config.get("data", {}).get("keyframes_dir", None)
     metadata_dir = config.get("data", {}).get("metadata_dir", None)
 
     task_solvers = TaskSolvers(keyframes_dir=keyframes_dir, metadata_dir=metadata_dir, vlm_model_id=vlm_name)
 
-    for schema in tqdm(parsed_queries, desc="BƯỚC 3: Thực thi Solvers"):
+    for schema in tqdm(parsed_queries, desc="Step 3: Task Solving"):
         qid = schema["query_id"]
         task_type = schema["task_type"]
         candidates = retrieved_candidates.get(qid, [])
@@ -248,7 +244,7 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
 
     task_solvers.unload_vlm()
 
-    print("\n📦 Đóng gói thư mục submission vào file zip...")
+    print("\n[INFO] Packaging submission directory to zip file...")
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
@@ -258,14 +254,14 @@ def run_sequential_pipeline(input_dir, config_path="configs/default.yaml", outpu
 
     elapsed = time.time() - start_time
     print("================================================================================")
-    print(f"✅ CHÚC MỪNG: THÀNH CÔNG NỘP BÀI! File tại: {os.path.abspath(output_zip)}")
-    print(f"⏱️ Tổng thời gian thực thi: {elapsed:.2f} giây")
+    print(f"[INFO] Pipeline completed successfully. Output: {os.path.abspath(output_zip)}")
+    print(f"[INFO] Total execution time: {elapsed:.2f} seconds")
     print("================================================================================")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", required=True, help="Thư mục chứa các file .txt câu hỏi của BTC")
+    parser.add_argument("--input_dir", required=True, help="Path to directory containing query .txt files")
     parser.add_argument("--config", default="configs/default.yaml")
     parser.add_argument("--output_zip", default="submission.zip")
     parser.add_argument("--query_filter", default=None)

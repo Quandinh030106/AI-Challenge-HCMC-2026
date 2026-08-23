@@ -13,13 +13,13 @@ from transformers import (
 )
 
 class DenseSearchEngine:
-    """Sub-module Tìm kiếm Vector Mật độ cao (CLIP / EVA-CLIP Embedding Search)."""
+    """Dense vector search engine utilizing CLIP embedding similarity."""
     def __init__(self, model_name="openai/clip-vit-large-patch14", features_dir=None, device=None):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.model_name = model_name
         self.features_dir = features_dir
         
-        print(f"DenseSearchEngine: Khởi tạo mô hình {self.model_name} trên {self.device}...")
+        print(f"[INFO] DenseSearchEngine: Initializing model {self.model_name} on {self.device}...")
         try:
             if "siglip" in self.model_name.lower():
                 self.processor = SiglipProcessor.from_pretrained(self.model_name)
@@ -32,7 +32,7 @@ class DenseSearchEngine:
                 self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
             self.model.eval()
         except Exception as e:
-            print(f"DenseSearchEngine: Cảnh báo không nạp được {self.model_name} ({e}).")
+            print(f"[WARNING] DenseSearchEngine: Failed to load {self.model_name} ({e}).")
             self.model = None
             self.processor = None
             
@@ -45,7 +45,7 @@ class DenseSearchEngine:
             self.load_and_build_global_matrix()
 
     def load_and_build_global_matrix(self):
-        """Nạp toàn bộ vector đặc trưng .npy vào GPU thành ma trận duy nhất."""
+        """Loads all feature vectors (.npy) into a unified GPU tensor."""
         if not self.features_dir or not os.path.exists(self.features_dir):
             return
             
@@ -87,7 +87,7 @@ class DenseSearchEngine:
                 self.global_tensor = torch.from_numpy(concat_matrix).float()
 
     def search(self, prompt_list, top_k_videos=100):
-        """Mã hóa danh sách Prompt Tiếng Anh và tìm kiếm tương đồng trên ma trận GPU."""
+        """Encodes prompts and computes matrix similarity against pre-built GPU tensor."""
         if self.model is None or self.global_tensor is None:
             return []
             
@@ -125,12 +125,12 @@ class DenseSearchEngine:
             video_scores.sort(key=lambda x: x["score"], reverse=True)
             return video_scores[:top_k_videos]
         except Exception as e:
-            print(f"DenseSearchEngine Lỗi ({e}).")
+            print(f"[WARNING] DenseSearchEngine search error ({e}).")
             return []
 
 
 class SparseSearchEngine:
-    """Sub-module Tìm kiếm Từ khóa BM25 Mở trên Metadata & OCR Transcripts."""
+    """Sparse text search engine using BM25Okapi across metadata and OCR transcripts."""
     def __init__(self, metadata_dir=None, ocr_dir=None):
         self.metadata_dir = metadata_dir
         self.ocr_dir = ocr_dir
@@ -141,7 +141,7 @@ class SparseSearchEngine:
         self._build_bm25_index()
 
     def _build_bm25_index(self):
-        """Xây dựng chỉ mục BM25 mở từ file Metadata / OCR."""
+        """Builds open-vocabulary BM25 index from JSON and CSV metadata files."""
         all_docs = []
         v_ids = []
         
@@ -178,7 +178,7 @@ class SparseSearchEngine:
             self.bm25_model = BM25Okapi(all_docs)
 
     def search(self, sparse_text, top_k_videos=50):
-        """Tìm kiếm từ khóa BM25."""
+        """Executes BM25 keyword query search."""
         if not self.bm25_model or not sparse_text:
             return []
             
@@ -199,12 +199,12 @@ class SparseSearchEngine:
 
 
 class ObjectSearchEngine:
-    """Sub-module Đọc & Thưởng điểm Vật thể từ OpenImages JSON (Hỗ trợ 001.json, 0001.json, 1.json)."""
+    """Object detection score booster using OpenImages JSON annotations."""
     def __init__(self, objects_dir=None):
         self.objects_dir = objects_dir
 
     def get_frame_objects(self, video_id, frame_idx):
-        """Đọc file JSON object của 1 frame hỗ trợ cả 001.json (3-digit) và 0001.json (4-digit)."""
+        """Retrieves frame objects with support for 3-digit, 4-digit, and raw frame numbering."""
         if not self.objects_dir or not os.path.exists(self.objects_dir):
             return []
             
@@ -239,8 +239,8 @@ class ObjectSearchEngine:
 
 class GenericHybridSearcher:
     """
-    MÔ-ĐUN TÌM KIẾM ĐA PHƯƠNG THỨC NGUYÊN KHỐI TỔNG QUÁT (TỰ CHỨA - SELF CONTAINED).
-    Bao gồm Dense CLIP + Sparse BM25 + OpenImages Boosting + Dynamic RRF Fusion (100% Zero-Bias).
+    Self-contained multimodal search engine integrating Dense CLIP, Sparse BM25,
+    Gaussian temporal smoothing, OpenImages object boosting, and dynamic RRF fusion.
     """
     def __init__(self, config=None, dense_engine=None, sparse_engine=None, object_engine=None):
         self.config = config or {}
@@ -256,9 +256,7 @@ class GenericHybridSearcher:
         self.object_engine = object_engine or ObjectSearchEngine(objects_dir=objects_dir)
 
     def search_candidates(self, parsed_schema, top_k_videos=100):
-        """
-        Thực thi tìm kiếm đa phương thức hoàn toàn dựa trên JSON Cấu trúc Ngữ nghĩa Động từ File 1.
-        """
+        """Executes full multimodal hybrid search based on dynamic query schema."""
         golden_prompts = parsed_schema.get("golden_english_prompts", [])
         bm25_keywords = parsed_schema.get("bm25_keywords", [])
         open_classes = parsed_schema.get("openimages_classes", [])
@@ -294,7 +292,7 @@ class GenericHybridSearcher:
         return fused_candidates[:top_k_videos]
 
     def _apply_gaussian_smoothing(self, dense_results, sigma=1.5):
-        """Làm mượt chuỗi điểm tương đồng theo thời gian để khử nhiễu đơn frame."""
+        """Applies 1D Gaussian temporal filter across frame scores to suppress flash noise."""
         for cand in dense_results:
             dense_info = cand.get("dense_info")
             if dense_info and "all_scores" in dense_info:
@@ -307,7 +305,7 @@ class GenericHybridSearcher:
         return dense_results
 
     def _reciprocal_rank_fusion(self, dense_list, sparse_list, dense_weight=0.75, sparse_weight=0.25, k=60):
-        """Hòa trộn thứ hạng RRF với trọng số động từ LLM."""
+        """Merges rank positions using Reciprocal Rank Fusion weighted by LLM dynamic predictions."""
         scores = {}
         candidate_map = {}
 
@@ -334,7 +332,7 @@ class GenericHybridSearcher:
         return fused
 
     def _boost_with_object_detection(self, candidates, openimages_classes):
-        """Thưởng điểm tự động theo các lớp OpenImages mở mà LLM trích xuất."""
+        """Boosts candidate scores when detected OpenImages object classes match extracted query classes."""
         if not openimages_classes or not candidates:
             return candidates
 

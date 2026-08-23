@@ -11,10 +11,7 @@ except ImportError:
     process_vision_info = None
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
-    """
-    Xác định Frame ID vật thể từ số chỉ số frame (0-based frame index).
-    Hỗ trợ 0001.jpg, 00001.jpg, 1.jpg và file mapping CSV của BTC.
-    """
+    """Resolves physical keyframe filename from 0-based frame index."""
     if not keyframes_dir or not os.path.exists(keyframes_dir):
         return f"{frame_idx:04d}"
 
@@ -60,35 +57,30 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
 
 def clean_vlm_answer(raw_answer, question=""):
     """
-    Làm sạch đáp án VLM
-    Cắt sạch câu dẫn rườm rà, ép về đáp án cốt lõi ngắn gọn dưới 100 ký tự.
+    Cleans raw VLM answer strings using abstract linguistic regex patterns.
+    Strips conversational prefixes, quotes, and limits output to 100 characters.
     """
     if not raw_answer or str(raw_answer).strip().lower() in ["none", "null", "chưa rõ", "không rõ", ""]:
         return "Không rõ"
 
     ans = str(raw_answer).strip().replace("\n", " ").strip()
 
-    # Pattern 1: Xóa các tiền tố tuyên bố chung (Dựa vào..., Qua hình ảnh..., Đáp án là...)
     generic_declarative_pattern = r'^(dựa vào|theo|qua|quan sát|dựa trên|trong|trên)\s+[^\s,.:;]+\s*,?\s*'
     ans = re.sub(generic_declarative_pattern, '', ans, flags=re.IGNORECASE).strip()
 
-    # Pattern 2: Xóa các cụm từ kết quả chung (Đáp án là, Kết quả là, Thông tin là...)
     generic_result_pattern = r'^(kết quả|đáp án|câu trả lời|trả lời|thông tin|nội dung|giá trị|chi tiết)\s*[^\s,.:;]*\s*(là|được ghi|hiển thị|thấy được)?\s*[:\-\"]*\s*'
     ans = re.sub(generic_result_pattern, '', ans, flags=re.IGNORECASE).strip()
 
-    # Pattern 3: Xóa sự lặp lại câu hỏi tự động (Loại bỏ vế lặp từ câu hỏi nếu VLM nhắc lại)
     if question:
         clean_q_words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', question) if len(w.strip()) >= 3]
         for q_w in clean_q_words[:3]:
             repeat_pat = r'^' + re.escape(q_w) + r'\s+.*?\s+(là|được ghi là|thể hiện là)\s*[:\-\"]*\s*'
             ans = re.sub(repeat_pat, '', ans, flags=re.IGNORECASE).strip()
 
-    # Pattern 4: Xóa các thông điệp từ chối/không xác định chung
     refusal_pattern = r'^(không thể|chưa thể|không thấy|khó|không có|chưa có|không xác định)\s+.*$'
     if re.search(refusal_pattern, ans, re.IGNORECASE):
         return "Không rõ"
 
-    # Chuẩn hóa trích xuất ký tự & làm sạch trích dẫn
     ans = ans.strip().strip('"').strip("'").strip('`').rstrip('.!?;:')
     if len(ans) > 100:
         ans = ans[:100].strip()
@@ -97,7 +89,8 @@ def clean_vlm_answer(raw_answer, question=""):
 
 class TaskSolvers:
     """
-    Bao gồm KIS Solver, VQA Heavy VLM Solver (Qwen2.5-VL-7B), và TRAKE Dynamic Programming Solver.
+    Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
+    and Dynamic Programming (Viterbi) TRAKE temporal alignment.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -108,10 +101,11 @@ class TaskSolvers:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def load_vlm(self):
+        """Loads Heavy VLM model across available GPUs using device_map='auto'."""
         if self.vlm_model is not None:
             return
             
-        print(f"TaskSolvers: Đang nạp mô hình VLM ({self.vlm_model_id}) trên 2 GPU...")
+        print(f"[INFO] TaskSolvers: Loading Heavy VLM ({self.vlm_model_id})...")
         try:
             from transformers import Qwen2VLForConditionalGeneration
             self.vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
@@ -137,10 +131,10 @@ class TaskSolvers:
             self.vlm_processor = AutoProcessor.from_pretrained(self.vlm_model_id, trust_remote_code=True)
 
         self.vlm_model.eval()
-        print("TaskSolvers: Nạp thành công Heavy VLM!")
+        print("[INFO] TaskSolvers: Loaded Heavy VLM successfully.")
 
     def unload_vlm(self):
-        """Giải phóng VLM khỏi VRAM."""
+        """Unloads Heavy VLM from VRAM."""
         if self.vlm_model is not None:
             del self.vlm_model
             self.vlm_model = None
@@ -149,13 +143,10 @@ class TaskSolvers:
             self.vlm_processor = None
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        print("TaskSolvers: Đã giải phóng Heavy VLM khỏi VRAM!")
+        print("[INFO] TaskSolvers: Unloaded Heavy VLM from VRAM.")
 
-    # -------------------------------------------------------------------------
-    # TASK 1: TEXTUAL KIS SOLVER
-    # -------------------------------------------------------------------------
     def solve_kis(self, fused_candidates, total_preds=100):
-        """Giải bài toán Textual KIS: Xuất danh sách 100 dự đoán đa dạng không dính frame 0."""
+        """Solves Textual KIS task: outputs top 100 diverse candidate frame predictions."""
         predictions = []
         for rank, cand in enumerate(fused_candidates[:total_preds]):
             vid = cand["video_id"]
@@ -174,14 +165,8 @@ class TaskSolvers:
             
         return predictions
 
-    # -------------------------------------------------------------------------
-    # TASK 2: VISUAL Q&A SOLVER (Qwen2.5-VL-7B Heavy VLM)
-    # -------------------------------------------------------------------------
     def solve_vqa(self, parsed_schema, fused_candidates):
-        """
-        Giải bài toán Visual Q&A bằng Heavy VLM Qwen2.5-VL-7B.
-        Nhận vlm_question từ File 1, soi Top keyframes ứng viên và làm sạch đáp án.
-        """
+        """Solves Visual Q&A task using Qwen2.5-VL-7B over top keyframe candidates."""
         if not fused_candidates:
             return {"video_id": "none", "frame_id": "0000", "answer": "Không rõ", "promoted_idx": 0}
 
@@ -226,7 +211,7 @@ class TaskSolvers:
         }
 
     def _infer_vlm_single_image(self, image_path, question_text):
-        """Suy luận trực tiếp bằng Qwen2.5-VL-7B trên 1 ảnh keyframe."""
+        """Runs single-frame visual reasoning using Qwen2.5-VL-7B."""
         prompt_text = (
             f"Nhiệm vụ: Quan sát kỹ bức ảnh này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
@@ -256,11 +241,11 @@ class TaskSolvers:
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
                 return out_text.strip()
         except Exception as e:
-            print(f"VLM Infer Warning: {e}")
+            print(f"[WARNING] VLM Infer Warning: {e}")
             return "Không rõ"
 
     def _find_keyframe_image(self, video_id, frame_idx, frame_id=""):
-        """Tìm file ảnh vật lý trên ổ đĩa."""
+        """Locates physical keyframe image path on disk."""
         if not self.keyframes_dir or not os.path.exists(self.keyframes_dir):
             return None
 
@@ -278,14 +263,8 @@ class TaskSolvers:
                 return c
         return None
 
-    # -------------------------------------------------------------------------
-    # TASK 3: TRAKE EVENT ALIGNMENT SOLVER (Dynamic Programming / Viterbi Alignment)
-    # -------------------------------------------------------------------------
     def solve_trake(self, parsed_schema, fused_candidates, dense_engine=None, total_preds=100):
-        """
-        Giải bài toán TRAKE bằng Quy hoạch động (Dynamic Programming Viterbi Alignment).
-        Đảm bảo thứ tự thời gian t_1 < t_2 < ... < t_N tăng dần tuyệt đối và xuất ĐỦ N frame IDs per row.
-        """
+        """Solves TRAKE task using Viterbi Dynamic Programming alignment for monotonically increasing frame IDs."""
         events = parsed_schema.get("bm25_keywords", [])
         if not events:
             events = [parsed_schema.get("query_vi", "")]
@@ -317,7 +296,7 @@ class TaskSolvers:
         return aligned_results
 
     def _align_events_dp(self, events, frame_scores, dense_engine):
-        """Quy hoạch động Viterbi Alignment tìm chuỗi frame t_1 < t_2 < ... < t_N tối ưu nhất."""
+        """Dynamic Programming Viterbi alignment algorithm finding optimal sequence t_1 < t_2 < ... < t_N."""
         n_frames = len(frame_scores)
         n_events = len(events)
 

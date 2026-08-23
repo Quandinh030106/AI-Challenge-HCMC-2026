@@ -5,9 +5,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2Se
 
 class LLMQueryParser:
     """
-    Module Đọc hiểu & Phân tích Ngữ nghĩa Động bằng NLP LLM (Dynamic Semantic Parser).
-    Mục tiêu: Đọc câu hỏi Tiếng Việt bất kỳ của BTC, hiểu sâu sắc bối cảnh thị giác,
-    và tự động xuất ra JSON Cấu trúc Ngữ nghĩa Vàng (Dynamic Golden Schema) mà KHÔNG HARDCODE.
+    Dynamic NLP Semantic Parser module powered by LLM.
+    Extracts structured golden schema (intent, prompts, keywords, object classes, VLM questions, weights)
+    without hardcoded dictionaries or query bias.
     """
     def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct", device=None):
         self.model_id = model_id
@@ -16,17 +16,16 @@ class LLMQueryParser:
         self.tokenizer = None
         self.model = None
         
-        # Mô hình dịch Fallback nhẹ nhàng khi chạy thử nghiệm CPU
         self.fallback_translator_id = "facebook/nllb-200-distilled-600M"
         self.fallback_tokenizer = None
         self.fallback_model = None
 
     def load_model(self):
-        """Khởi tạo mô hình NLP LLM vào VRAM (Hỗ trợ 2 GPU trên Kaggle qua device_map='auto')."""
+        """Loads NLP LLM model into VRAM using device_map='auto' for multi-GPU support."""
         if self.llm_available:
             return
             
-        print(f"LLMQueryParser: Đang nạp mô hình NLP LLM ({self.model_id})...")
+        print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id})...")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -37,14 +36,14 @@ class LLMQueryParser:
             )
             self.model.eval()
             self.llm_available = True
-            print("LLMQueryParser: Nạp thành công NLP LLM vào VRAM!")
+            print("[INFO] LLMQueryParser: Loaded NLP LLM successfully.")
         except Exception as e:
-            print(f"LLMQueryParser: Cảnh báo không nạp được {self.model_id} ({e}). Chuyển sang chế độ Fallback Parser trừu tượng.")
+            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Falling back to NLLB parser.")
             self.llm_available = False
             self._init_fallback_translator()
 
     def _init_fallback_translator(self):
-        """Khởi tạo bộ dịch Fallback nhẹ NLLB nếu LLM lớn không khả dụng."""
+        """Initializes fallback NLLB translation model if primary LLM is unavailable."""
         if self.fallback_model is not None:
             return
         try:
@@ -52,10 +51,10 @@ class LLMQueryParser:
             self.fallback_model = AutoModelForSeq2SeqLM.from_pretrained(self.fallback_translator_id).to(self.device)
             self.fallback_model.eval()
         except Exception as e:
-            print(f"LLMQueryParser: Fallback translator warning ({e}).")
+            print(f"[WARNING] LLMQueryParser: Fallback translator warning ({e}).")
 
     def unload_model(self):
-        """Giải phóng hoàn toàn mô hình NLP LLM khỏi VRAM để nhường 32GB VRAM cho VLM."""
+        """Unloads NLP LLM from VRAM to release memory for downstream VLM tasks."""
         if self.model is not None:
             del self.model
             self.model = None
@@ -65,19 +64,17 @@ class LLMQueryParser:
         self.llm_available = False
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        print("LLMQueryParser: Đã giải phóng hoàn toàn NLP LLM khỏi VRAM!")
+        print("[INFO] LLMQueryParser: Unloaded NLP LLM from VRAM.")
 
     def parse_query_dynamically(self, query_vi, task_type="kis", raw_question=""):
-        """
-        Đọc hiểu sâu câu hỏi Tiếng Việt và xuất ra JSON Ngữ nghĩa Động
-        """
+        """Parses query using LLM if available, otherwise uses open-vocabulary rule fallback."""
         if self.llm_available and self.model is not None:
             return self._parse_with_llm(query_vi, task_type=task_type, raw_question=raw_question)
         else:
             return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_llm(self, query_vi, task_type="kis", raw_question=""):
-        """Sử dụng Qwen2.5-7B-Instruct để phân tích cú pháp ngữ nghĩa điện ảnh trừu tượng."""
+        """Extracts dynamic visual semantic schema using Qwen2.5-7B-Instruct."""
         system_prompt = (
             "Bạn là chuyên gia phân tích ngữ nghĩa thị giác đa phương thức.\n"
             "Nhiệm vụ: Hãy đọc hiểu câu hỏi Tiếng Việt được cung cấp và trích xuất ra duy nhất một đối tượng JSON chuẩn gồm các trường:\n"
@@ -114,15 +111,12 @@ class LLMQueryParser:
                 parsed_json = json.loads(json_match.group(0))
                 return self._normalize_schema(parsed_json, query_vi)
         except Exception as e:
-            print(f"LLMQueryParser: Lỗi khi LLM sinh JSON ({e}). Chuyển sang Fallback trừu tượng.")
+            print(f"[WARNING] LLMQueryParser: Failed to generate JSON with LLM ({e}). Switching to fallback.")
             
         return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
 
     def _parse_with_fallback(self, query_vi, task_type="kis", raw_question=""):
-        """
-        Phương án Fallback thuần túy thuật toán NLP mở (Open-Vocabulary Rule Parsing).
-        100% Không chứa danh sách từ gán cứng.
-        """
+        """Open-vocabulary rule-based parsing fallback mechanism."""
         translated_en = self._translate_vi_to_en(query_vi)
         query_lower = query_vi.lower()
         
@@ -155,7 +149,6 @@ class LLMQueryParser:
         clean_q = raw_question if raw_question else query_vi
         clean_q = re.sub(r'^(câu hỏi|hỏi|cho biết)\s*[:\.]?\s*', '', clean_q, flags=re.IGNORECASE).strip()
         
-        # Tự động tính hệ số linh hoạt theo intent
         d_weight = 0.35 if intent == "OCR_TEXT" else 0.75
         s_weight = 0.65 if intent == "OCR_TEXT" else 0.25
         
@@ -172,7 +165,7 @@ class LLMQueryParser:
         }
 
     def _translate_vi_to_en(self, text_vi):
-        """Dịch Tiếng Việt sang Tiếng Anh bằng NLLB nếu fallback."""
+        """Translates Vietnamese query to English using NLLB fallback model."""
         if not text_vi:
             return ""
         if self.fallback_model is not None and self.fallback_tokenizer is not None:
@@ -187,10 +180,9 @@ class LLMQueryParser:
         return text_vi
 
     def _normalize_schema(self, parsed_json, query_vi):
-        """Chuẩn hóa dữ liệu JSON sinh ra từ LLM bảo đảm đầy đủ các trường bắt buộc và tổng trọng số = 1.0."""
+        """Normalizes extracted LLM JSON object and validates fusion weight constraint (dense + sparse = 1.0)."""
         intent = parsed_json.get("intent", "VISUAL_SCENE")
         
-        # Lấy trọng số động từ LLM dự đoán
         d_w = parsed_json.get("dense_weight")
         s_w = parsed_json.get("sparse_weight")
         

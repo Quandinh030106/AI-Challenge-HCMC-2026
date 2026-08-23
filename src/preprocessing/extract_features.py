@@ -8,7 +8,7 @@ from transformers import CLIPModel, CLIPProcessor, SiglipModel, SiglipProcessor,
 from src.utils import load_config
 
 def extract_all_features(config_path="configs/default.yaml", batch_size=32):
-    """Trich xuat vector dac trung anh theo batch tren GPU."""
+    """Batched image feature vector extraction on GPU."""
     config = load_config(config_path)
     keyframes_dir = config["data"]["keyframes_dir"]
     features_dir = config["data"]["features_dir"]
@@ -16,7 +16,7 @@ def extract_all_features(config_path="configs/default.yaml", batch_size=32):
     
     os.makedirs(features_dir, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Khoi tao model: {model_name} tren {device}...")
+    print(f"[INFO] Initializing model: {model_name} on {device}...")
     
     if "siglip" in model_name.lower():
         processor = SiglipProcessor.from_pretrained(model_name)
@@ -30,9 +30,9 @@ def extract_all_features(config_path="configs/default.yaml", batch_size=32):
         
     model.eval()
     video_dirs = [d for d in glob.glob(os.path.join(keyframes_dir, "*")) if os.path.isdir(d)]
-    print(f"Tim thay {len(video_dirs)} thu muc keyframe can xu ly.")
+    print(f"[INFO] Found {len(video_dirs)} keyframe directories to process.")
     
-    for video_dir in tqdm(video_dirs, desc="Trich xuat dac trung"):
+    for video_dir in tqdm(video_dirs, desc="Feature extraction"):
         video_id = os.path.basename(video_dir)
         output_path = os.path.join(features_dir, f"{video_id}.npy")
         
@@ -68,7 +68,7 @@ def extract_all_features(config_path="configs/default.yaml", batch_size=32):
         if video_features:
             np.save(output_path, np.concatenate(video_features, axis=0))
             
-    print("Hoan thanh trich xuat dac trung.")
+    print("[INFO] Feature extraction completed.")
 
 if __name__ == "__main__":
     extract_all_features()
