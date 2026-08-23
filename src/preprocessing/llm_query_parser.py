@@ -21,7 +21,7 @@ class LLMQueryParser:
         self.fallback_model = None
 
     def load_model(self):
-        """Loads NLP LLM model into VRAM using device_map='auto' for multi-GPU support."""
+        """Loads NLP LLM model into VRAM using FP16 precision optimized for Nvidia T4 GPUs."""
         if self.llm_available:
             return
             
@@ -30,7 +30,7 @@ class LLMQueryParser:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
-                torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map="auto" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
@@ -38,7 +38,7 @@ class LLMQueryParser:
             self.llm_available = True
             print("[INFO] LLMQueryParser: Loaded NLP LLM successfully.")
         except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Falling back to NLLB parser.")
+            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Switching to fallback.")
             self.llm_available = False
             self._init_fallback_translator()
 
@@ -180,7 +180,7 @@ class LLMQueryParser:
         return text_vi
 
     def _normalize_schema(self, parsed_json, query_vi):
-        """Normalizes extracted LLM JSON object and validates fusion weight constraint (dense + sparse = 1.0)."""
+        """Normalizes extracted LLM JSON object and validates fusion weight constraint."""
         intent = parsed_json.get("intent", "VISUAL_SCENE")
         
         d_w = parsed_json.get("dense_weight")

@@ -101,7 +101,7 @@ class TaskSolvers:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def load_vlm(self):
-        """Loads Heavy VLM model across available GPUs using device_map='auto'."""
+        """Loads Heavy VLM model across available GPUs using FP16 precision optimized for Nvidia T4."""
         if self.vlm_model is not None:
             return
             
@@ -110,7 +110,7 @@ class TaskSolvers:
             from transformers import Qwen2VLForConditionalGeneration
             self.vlm_model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.vlm_model_id,
-                torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map="auto" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
@@ -118,7 +118,7 @@ class TaskSolvers:
             from transformers import AutoModelForVision2Seq
             self.vlm_model = AutoModelForVision2Seq.from_pretrained(
                 self.vlm_model_id,
-                torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map="auto" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
