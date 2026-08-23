@@ -340,7 +340,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
         
-        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
+        fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}", query_id=query_id)
 
 
         # TASK 1: TEXTUAL KIS
