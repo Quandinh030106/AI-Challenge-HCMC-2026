@@ -4,11 +4,8 @@ import json
 import re
 import numpy as np
 import torch
+from PIL import Image
 from transformers import AutoProcessor, BitsAndBytesConfig
-try:
-    from qwen_vl_utils import process_vision_info
-except ImportError:
-    process_vision_info = None
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
     """Resolves physical keyframe filename from 0-based frame index."""
@@ -91,7 +88,7 @@ class TaskSolvers:
     """
     Universal task solver suite for Textual KIS, Qwen2.5-VL-7B VQA,
     and Dynamic Programming (Viterbi) TRAKE temporal alignment.
-    Optimized with Qwen2_5_VLForConditionalGeneration and 4-bit quantization on cuda:0.
+    Optimized with direct PIL image feeding and robust keyframe path resolution.
     """
     def __init__(self, keyframes_dir=None, metadata_dir=None, vlm_model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
         self.keyframes_dir = keyframes_dir
@@ -100,6 +97,7 @@ class TaskSolvers:
         self.vlm_model = None
         self.vlm_processor = None
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self._keyframe_cache = {}
 
     def load_vlm(self):
         """Loads Qwen2.5-VL-7B model using exact Qwen2_5_VLForConditionalGeneration class on cuda:0."""
@@ -210,6 +208,7 @@ class TaskSolvers:
 
             img_path = self._find_keyframe_image(vid, f_idx, fid)
             if not img_path:
+                print(f"[WARNING] Keyframe image not found for video {vid}, frame_idx {f_idx}")
                 continue
 
             raw_ans = self._infer_vlm_single_image(img_path, vlm_question)
@@ -234,7 +233,7 @@ class TaskSolvers:
         }
 
     def _infer_vlm_single_image(self, image_path, question_text):
-        """Runs single-frame visual reasoning using Qwen2.5-VL-7B."""
+        """Runs single-frame visual reasoning using Qwen2.5-VL-7B with direct PIL image feeding."""
         prompt_text = (
             f"Nhiệm vụ: Quan sát kỹ bức ảnh này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
@@ -248,15 +247,12 @@ class TaskSolvers:
             ]
         }]
         try:
+            raw_image = Image.open(image_path).convert("RGB")
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            if process_vision_info:
-                image_inputs, video_inputs = process_vision_info(messages)
-            else:
-                image_inputs, video_inputs = None, None
-
             target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
+            
             inputs = self.vlm_processor(
-                text=[text], images=image_inputs, videos=video_inputs, padding=True, return_tensors="pt"
+                text=[text], images=[raw_image], padding=True, return_tensors="pt"
             ).to(target_device)
 
             with torch.inference_mode():
@@ -264,7 +260,7 @@ class TaskSolvers:
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
                 
-            del inputs
+            del inputs, raw_image
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 
@@ -276,22 +272,52 @@ class TaskSolvers:
             return "Không rõ"
 
     def _find_keyframe_image(self, video_id, frame_idx, frame_id=""):
-        """Locates physical keyframe image path on disk."""
+        """Locates physical keyframe image path on disk using robust candidate search and auto-discovery."""
+        cache_key = f"{video_id}_{frame_idx}_{frame_id}"
+        if cache_key in self._keyframe_cache:
+            return self._keyframe_cache[cache_key]
+
         if not self.keyframes_dir or not os.path.exists(self.keyframes_dir):
             return None
 
         level = video_id.split('_')[0] if '_' in video_id else ""
         idx_4d = f"{frame_idx:04d}"
+        idx_5d = f"{frame_idx:05d}"
+        idx_raw = str(frame_idx)
+        idx_1based = f"{frame_idx + 1:04d}"
         
-        candidates = [
-            os.path.join(self.keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{idx_4d}.jpg"),
-            os.path.join(self.keyframes_dir, "keyframes", video_id, f"{idx_4d}.jpg"),
-            os.path.join(self.keyframes_dir, video_id, f"{idx_4d}.jpg"),
-            os.path.join(self.keyframes_dir, video_id, f"{frame_id}.jpg")
-        ]
-        for c in candidates:
-            if os.path.exists(c):
-                return c
+        fnames = [idx_4d, frame_id, idx_5d, idx_raw, idx_1based]
+        fnames = [f for f in fnames if f]
+
+        for fn in fnames:
+            candidates = [
+                os.path.join(self.keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{fn}.jpg"),
+                os.path.join(self.keyframes_dir, f"Keyframes_{level}", video_id, f"{fn}.jpg"),
+                os.path.join(self.keyframes_dir, level, "keyframes", video_id, f"{fn}.jpg"),
+                os.path.join(self.keyframes_dir, "keyframes", video_id, f"{fn}.jpg"),
+                os.path.join(self.keyframes_dir, video_id, f"{fn}.jpg"),
+                os.path.join(self.keyframes_dir, level, video_id, f"{fn}.jpg")
+            ]
+            for c in candidates:
+                if os.path.exists(c):
+                    self._keyframe_cache[cache_key] = c
+                    return c
+
+        for root, _, files in os.walk(self.keyframes_dir):
+            if os.path.basename(root) == video_id:
+                for fn in fnames:
+                    target_file = f"{fn}.jpg"
+                    if target_file in files:
+                        res = os.path.join(root, target_file)
+                        self._keyframe_cache[cache_key] = res
+                        return res
+                jpg_files = sorted([f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
+                if jpg_files:
+                    target_idx = min(max(0, frame_idx), len(jpg_files) - 1)
+                    res = os.path.join(root, jpg_files[target_idx])
+                    self._keyframe_cache[cache_key] = res
+                    return res
+
         return None
 
     def solve_trake(self, parsed_schema, fused_candidates, dense_engine=None, total_preds=100):
