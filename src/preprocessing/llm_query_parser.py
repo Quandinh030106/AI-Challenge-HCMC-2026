@@ -9,7 +9,7 @@ class LLMQueryParser:
     """
     NLP Query Parsing Engine powered by Qwen2.5-7B-Instruct.
     Dynamically extracts search schemas (intent, CLIP prompts, BM25 keywords, OpenImages classes, VQA question).
-    Enforces strict Vietnamese BM25 keywords, physical OpenImages objects, and OCR weight boosting.
+    Enforces 100% Vietnamese BM25 keyword purity, physical OpenImages object filtering, and OCR weight boosting.
     """
     def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct"):
         self.model_id = model_id
@@ -80,7 +80,7 @@ class LLMQueryParser:
             "2. 'dense_weight': Trọng số tìm kiếm hình ảnh CLIP (từ 0.1 đến 0.9).\n"
             "3. 'sparse_weight': Trọng số tìm kiếm văn bản BM25 (từ 0.1 đến 0.9). Tổng dense_weight + sparse_weight = 1.0.\n"
             "4. 'golden_english_prompts': Mảng từ 2 đến 4 câu mô tả bối cảnh điện ảnh ngắn gọn bằng Tiếng Anh (Mỗi câu không quá 25 từ, miêu tả trực diện hình ảnh).\n"
-            "5. 'bm25_keywords': Mảng các từ khóa Tiếng Việt cốt lõi trích xuất từ câu hỏi gốc (BẮT BỘC BẰNG TIẾNG VIỆT, không tự dịch sang Tiếng Anh, loại bỏ từ nối rác).\n"
+            "5. 'bm25_keywords': Mảng các từ khóa Tiếng Việt cốt lõi trích xuất từ câu hỏi gốc (BẮT BỘC BẰNG TIẾNG VIỆT, KHÔNG tự dịch sang Tiếng Anh, loại bỏ từ nối rác).\n"
             "6. 'openimages_classes': Mảng danh từ Tiếng Anh đại diện cho VẬT THỂ THỂ LÝ nhìn thấy được (ví dụ: 'person', 'car', 'dog', 'table', 'sign'...). KHÔNG đưa các từ phi vật thể như 'slow motion', 'time', 'action'.\n"
             "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để VLM đọc ảnh trả lời (BẮT BỘC GIỮ BẰNG TIẾNG VIỆT, ngắn gọn).\n\n"
             "YÊU CẦU ĐẦU RA: CHỈ NÊU MỘT KHỐI JSON HỢP LỆ VÀ NẰM TRONG CẶP THẺ ```json ... ```. KHÔNG THÊM BẤT KỲ LỜI DẪN NÀO."
@@ -133,21 +133,21 @@ class LLMQueryParser:
         raise ValueError("Failed to locate JSON object in LLM output.")
 
     def _normalize_schema(self, schema, query_vi, task_type):
-        """Enforces field type validity, Vietnamese BM25 keyword purity, and OCR weight boosting."""
+        """Enforces field type validity, 100% Vietnamese BM25 keyword purity, and OCR weight boosting."""
         intent = str(schema.get("intent", "VISUAL_SCENE")).upper()
         if intent not in ["VISUAL_SCENE", "OCR_TEXT"]:
             intent = "VISUAL_SCENE"
 
         # Check if query text asks for numbers/text to auto-detect OCR_TEXT intent
-        if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu"]):
+        if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu", "hiển thị"]):
             intent = "OCR_TEXT"
 
         dense_w = float(schema.get("dense_weight", 0.6))
         sparse_w = float(schema.get("sparse_weight", 0.4))
         
-        # Systemic Boost: For OCR_TEXT intent, boost sparse_weight >= 0.6 for superior OCR retrieval
+        # Systemic Boost: For OCR_TEXT intent, boost sparse_weight >= 0.65 for superior OCR retrieval
         if intent == "OCR_TEXT":
-            sparse_w = max(0.6, sparse_w)
+            sparse_w = max(0.65, sparse_w)
             dense_w = round(1.0 - sparse_w, 2)
 
         total_w = dense_w + sparse_w
@@ -163,12 +163,16 @@ class LLMQueryParser:
         if not isinstance(keywords, list) or not keywords:
             keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
         
-        # Filter out English leakage from BM25 keywords to keep 100% Vietnamese purity
+        # Strictly filter out pure English ASCII tokens to guarantee 100% Vietnamese BM25 keyword purity
         clean_vi_keywords = []
         for kw in keywords:
             kw_str = str(kw).strip()
-            if kw_str and not re.search(r'^[a-zA-Z\s\-_]+$', kw_str):
+            # If word contains pure ASCII letters and doesn't appear in Vietnamese query_vi, strip it out
+            if kw_str and re.search(r'^[a-zA-Z0-9\s\-_]+$', kw_str) and kw_str.lower() not in query_vi.lower():
+                continue
+            if kw_str:
                 clean_vi_keywords.append(kw_str)
+                
         if not clean_vi_keywords:
             clean_vi_keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
 
@@ -177,7 +181,7 @@ class LLMQueryParser:
             classes = []
             
         # Filter out non-physical abstract concepts from OpenImages classes
-        abstract_concepts = ["slow motion", "slow_motion", "lecture", "action", "time", "camera", "arrangement"]
+        abstract_concepts = ["slow motion", "slow_motion", "lecture", "action", "time", "camera", "arrangement", "center", "layer"]
         classes = [c.strip().lower() for c in classes if str(c).strip().lower() not in abstract_concepts]
 
         vlm_q = str(schema.get("vlm_question", query_vi)).strip()
@@ -197,10 +201,10 @@ class LLMQueryParser:
     def _fallback_parse(self, query_vi, task_type):
         """Fallback parser if LLM fails or is disabled."""
         words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
-        intent = "OCR_TEXT" if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu"]) else "VISUAL_SCENE"
+        intent = "OCR_TEXT" if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu", "hiển thị"]) else "VISUAL_SCENE"
         
-        sparse_w = 0.6 if intent == "OCR_TEXT" else 0.4
-        dense_w = 0.4 if intent == "OCR_TEXT" else 0.6
+        sparse_w = 0.65 if intent == "OCR_TEXT" else 0.4
+        dense_w = 0.35 if intent == "OCR_TEXT" else 0.6
 
         return {
             "intent": intent,
