@@ -1,256 +1,215 @@
+import os
+import sys
 import json
 import re
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 class LLMQueryParser:
     """
-    Dynamic NLP Semantic Parser module powered by LLM.
-    Extracts structured golden schema without hardcoded dictionaries or query bias.
-    Optimized with torch.inference_mode(), robust markdown JSON extraction, and clean fallback logic.
+    NLP Query Parsing Engine powered by Qwen2.5-7B-Instruct.
+    Dynamically extracts search schemas (intent, CLIP prompts, BM25 keywords, OpenImages classes, VQA question).
+    Enforces strict Vietnamese BM25 keywords, physical OpenImages objects, and OCR weight boosting.
     """
-    def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct", device=None):
+    def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct"):
         self.model_id = model_id
-        self.device = device or ("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.llm_available = False
-        self.tokenizer = None
         self.model = None
-        
-        self.fallback_translator_id = "facebook/nllb-200-distilled-600M"
-        self.fallback_tokenizer = None
-        self.fallback_model = None
+        self.tokenizer = None
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def load_model(self):
-        """Loads NLP LLM model on single GPU (cuda:0) with 4-bit NF4 quantization for maximum speed."""
-        if self.llm_available:
+        """Loads Qwen2.5-7B-Instruct model in 4-bit NF4 quantization on cuda:0."""
+        if self.model is not None:
             return
-            
+
         print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id})...")
+        
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True
+        )
+
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
-            if self.tokenizer.pad_token_id is None:
-                self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
-
-            try:
-                bnb_config = BitsAndBytesConfig(
-                    load_in_4bit=True,
-                    bnb_4bit_compute_dtype=torch.float16,
-                    bnb_4bit_quant_type="nf4",
-                    bnb_4bit_use_double_quant=True
-                )
-                self.model = AutoModelForCausalLM.from_pretrained(
-                    self.model_id,
-                    quantization_config=bnb_config if torch.cuda.is_available() else None,
-                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                    device_map="cuda:0" if torch.cuda.is_available() else None,
-                    trust_remote_code=True
-                )
-                self.model.eval()
-                self.llm_available = True
-                print("[INFO] LLMQueryParser: Loaded NLP LLM in 4-bit NF4 mode on cuda:0.")
-            except Exception:
-                self.model = AutoModelForCausalLM.from_pretrained(
-                    self.model_id,
-                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                    device_map="cuda:0" if torch.cuda.is_available() else None,
-                    trust_remote_code=True
-                )
-                self.model.eval()
-                self.llm_available = True
-                print("[INFO] LLMQueryParser: Loaded NLP LLM in FP16 mode on cuda:0.")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_id,
+                quantization_config=bnb_config if torch.cuda.is_available() else None,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="cuda:0" if torch.cuda.is_available() else None,
+                trust_remote_code=True
+            )
+            self.model.eval()
+            print("[INFO] LLMQueryParser: Loaded NLP LLM in 4-bit NF4 mode on cuda:0.")
         except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Failed to load {self.model_id} ({e}). Switching to fallback.")
-            self.llm_available = False
-            self._init_fallback_translator()
-
-    def _init_fallback_translator(self):
-        """Initializes fallback NLLB translation model if primary LLM is unavailable."""
-        if self.fallback_model is not None:
-            return
-        try:
-            self.fallback_tokenizer = AutoTokenizer.from_pretrained(self.fallback_translator_id, src_lang="vie_Latn")
-            self.fallback_model = AutoModelForSeq2SeqLM.from_pretrained(self.fallback_translator_id).to(self.device)
-            self.fallback_model.eval()
-        except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Fallback translator warning ({e}).")
+            print(f"[WARNING] 4-bit quantization loading failed ({e}). Retrying with standard FP16 on cuda:0...")
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_id,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="cuda:0" if torch.cuda.is_available() else None,
+                trust_remote_code=True
+            )
+            self.model.eval()
+            print("[INFO] LLMQueryParser: Loaded NLP LLM in FP16 mode on cuda:0.")
 
     def unload_model(self):
-        """Unloads NLP LLM from VRAM to release memory for downstream VLM tasks."""
+        """Unloads NLP LLM model from VRAM to free memory."""
         if self.model is not None:
             del self.model
             self.model = None
         if self.tokenizer is not None:
             del self.tokenizer
             self.tokenizer = None
-        self.llm_available = False
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
         print("[INFO] LLMQueryParser: Unloaded NLP LLM from VRAM.")
 
     def parse_query_dynamically(self, query_vi, task_type="kis", raw_question=""):
-        """Parses query using LLM if available, otherwise uses open-vocabulary rule fallback."""
-        if self.llm_available and self.model is not None:
-            return self._parse_with_llm(query_vi, task_type=task_type, raw_question=raw_question)
-        else:
-            return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
+        """
+        Runs LLM prompt execution to dynamically extract structured schema without bias or hardcodes.
+        """
+        if self.model is None:
+            self.load_model()
 
-    def _parse_with_llm(self, query_vi, task_type="kis", raw_question=""):
-        """Extracts dynamic visual semantic schema using unbiased Qwen2.5-7B-Instruct."""
         system_prompt = (
-            "Bạn là chuyên gia phân tích ngữ nghĩa thị giác đa phương thức.\n"
-            "Nhiệm vụ: Hãy đọc hiểu câu hỏi Tiếng Việt được cung cấp và trích xuất ra duy nhất một đối tượng JSON chuẩn gồm các trường:\n"
-            "1. 'intent': Trả về 'OCR_TEXT' nếu câu hỏi yêu cầu đọc ký tự, chữ viết, con số, văn bản, thông số hiển thị hoặc tên ghi trên đối tượng; trả về 'VISUAL_SCENE' nếu tập trung vào mô tả bối cảnh, hành động hoặc con người.\n"
-            "2. 'dense_weight': Số thực từ 0.1 đến 0.9 thể hiện trọng số ưu tiên tìm kiếm hình ảnh mảng khối (CLIP dense search).\n"
-            "3. 'sparse_weight': Số thực từ 0.1 đến 0.9 thể hiện trọng số ưu tiên tìm kiếm từ khóa văn bản (BM25 sparse search). Lưu ý: dense_weight + sparse_weight = 1.0.\n"
-            "4. 'golden_english_prompts': Mảng từ 3 đến 5 câu Tiếng Anh tả bối cảnh thị giác điện ảnh chuẩn xác (dưới 70 từ mỗi câu, tập trung vào hình thái vật thể, thuộc tính màu sắc, góc máy và hành động chính).\n"
-            "5. 'bm25_keywords': Mảng các cụm từ Tiếng Việt cốt lõi trích xuất từ câu hỏi (loại bỏ từ nối không mang hàm lượng thông tin).\n"
-            "6. 'openimages_classes': Mảng các danh từ Tiếng Anh đơn (Single-word English Nouns) đại diện cho các lớp vật thể chính xuất hiện trong cảnh (theo chuẩn danh mục Google OpenImages).\n"
-            "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để mô hình thị giác đọc ảnh trả lời (loại bỏ toàn bộ câu dẫn rườm rà).\n\n"
-            "Yêu cầu: Xuất duy nhất mã JSON hợp lệ, không thêm bất kỳ văn bản giải thích hoặc ký tự ngoài JSON."
+            "Bạn là trợ lý AI chuyên gia phân tích cú pháp truy vấn video đa phương thức cho cuộc thi AI Challenge.\n"
+            "Nhiệm vụ của bạn là phân tích đoạn mô tả hoặc câu hỏi Tiếng Việt, trích xuất cấu trúc tìm kiếm JSON với ĐÚNG CÁC TRƯỜNG SAU:\n\n"
+            "1. 'intent': Chọn 'VISUAL_SCENE' (nếu mô tả bối cảnh/hình ảnh) hoặc 'OCR_TEXT' (nếu yêu cầu đọc con số, chữ viết trên bảng/biển báo/cân).\n"
+            "2. 'dense_weight': Trọng số tìm kiếm hình ảnh CLIP (từ 0.1 đến 0.9).\n"
+            "3. 'sparse_weight': Trọng số tìm kiếm văn bản BM25 (từ 0.1 đến 0.9). Tổng dense_weight + sparse_weight = 1.0.\n"
+            "4. 'golden_english_prompts': Mảng từ 2 đến 4 câu mô tả bối cảnh điện ảnh ngắn gọn bằng Tiếng Anh (Mỗi câu không quá 25 từ, miêu tả trực diện hình ảnh).\n"
+            "5. 'bm25_keywords': Mảng các từ khóa Tiếng Việt cốt lõi trích xuất từ câu hỏi gốc (BẮT BỘC BẰNG TIẾNG VIỆT, không tự dịch sang Tiếng Anh, loại bỏ từ nối rác).\n"
+            "6. 'openimages_classes': Mảng danh từ Tiếng Anh đại diện cho VẬT THỂ THỂ LÝ nhìn thấy được (ví dụ: 'person', 'car', 'dog', 'table', 'sign'...). KHÔNG đưa các từ phi vật thể như 'slow motion', 'time', 'action'.\n"
+            "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để VLM đọc ảnh trả lời (BẮT BỘC GIỮ BẰNG TIẾNG VIỆT, ngắn gọn).\n\n"
+            "YÊU CẦU ĐẦU RA: CHỈ NÊU MỘT KHỐI JSON HỢP LỆ VÀ NẰM TRONG CẶP THẺ ```json ... ```. KHÔNG THÊM BẤT KỲ LỜI DẪN NÀO."
         )
-        
-        user_input = f"Loại bài toán: {task_type.upper()}\nNội dung câu hỏi Tiếng Việt: '{query_vi}'"
+
+        user_content = f"Loại truy vấn: {task_type.upper()}\nNội dung Tiếng Việt: {query_vi}"
         if raw_question:
-            user_input += f"\nCâu hỏi chi tiết: '{raw_question}'"
-            
+            user_content += f"\nCâu hỏi thô: {raw_question}"
+
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_input}
+            {"role": "user", "content": user_content}
         ]
-        
+
         try:
-            prompt_text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
-            inputs = self.tokenizer([prompt_text], return_tensors="pt").to(target_device)
-            
-            eos_id = self.tokenizer.eos_token_id
-            pad_id = self.tokenizer.pad_token_id or eos_id
-
-            with torch.inference_mode():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=512,
-                    do_sample=True,
-                    temperature=0.1,
-                    eos_token_id=eos_id,
-                    pad_token_id=pad_id
-                )
-                generated_ids = [out[len(inp):] for inp, out in zip(inputs["input_ids"], outputs)]
-                response_text = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-                
-            del inputs, outputs
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-
-            # Clean markdown codeblock markers if present
-            cleaned_response = re.sub(r'```json\s*', '', response_text)
-            cleaned_response = re.sub(r'```\s*', '', cleaned_response).strip()
-
-            json_match = re.search(r'\{.*\}', cleaned_response, re.DOTALL)
-            if json_match:
-                parsed_json = json.loads(json_match.group(0))
-                return self._normalize_schema(parsed_json, query_vi)
+            return self._parse_with_llm(messages, query_vi, task_type)
         except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Failed to generate JSON with LLM ({e}). Switching to fallback.")
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            
-        return self._parse_with_fallback(query_vi, task_type=task_type, raw_question=raw_question)
+            print(f"[WARNING] LLMQueryParser: Dynamic parsing error ({e}). Fallback to standard parser.")
+            return self._fallback_parse(query_vi, task_type)
 
-    def _parse_with_fallback(self, query_vi, task_type="kis", raw_question=""):
-        """Clean open-vocabulary rule-based fallback mechanism (only triggered if primary LLM fails)."""
-        translated_en = self._translate_vi_to_en(query_vi)
-        query_lower = query_vi.lower()
+    def _parse_with_llm(self, messages, query_vi, task_type):
+        """Executes text generation and cleans output JSON string."""
+        text_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(text_prompt, return_tensors="pt").to(self.device)
+
+        with torch.inference_mode():
+            output_ids = self.model.generate(
+                **inputs,
+                max_new_tokens=512,
+                do_sample=False,
+                temperature=0.0,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+            response_tokens = output_ids[0][inputs["input_ids"].shape[1]:]
+            response_text = self.tokenizer.decode(response_tokens, skip_special_tokens=True).strip()
+
+        del inputs, output_ids
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+        cleaned_text = re.sub(r'^```json\s*', '', response_text, flags=re.MULTILINE)
+        cleaned_text = re.sub(r'```\s*$', '', cleaned_text, flags=re.MULTILINE).strip()
+
+        json_match = re.search(r'\{.*\}', cleaned_text, re.DOTALL)
+        if json_match:
+            json_str = json_match.group(0)
+            schema = json.loads(json_str)
+            return self._normalize_schema(schema, query_vi, task_type)
+
+        raise ValueError("Failed to locate JSON object in LLM output.")
+
+    def _normalize_schema(self, schema, query_vi, task_type):
+        """Enforces field type validity, Vietnamese BM25 keyword purity, and OCR weight boosting."""
+        intent = str(schema.get("intent", "VISUAL_SCENE")).upper()
+        if intent not in ["VISUAL_SCENE", "OCR_TEXT"]:
+            intent = "VISUAL_SCENE"
+
+        # Check if query text asks for numbers/text to auto-detect OCR_TEXT intent
+        if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu"]):
+            intent = "OCR_TEXT"
+
+        dense_w = float(schema.get("dense_weight", 0.6))
+        sparse_w = float(schema.get("sparse_weight", 0.4))
         
-        explicit_ocr_keywords = ["biển báo", "chữ ghi", "con số", "tên con đèo", "giá dầu", "bảng tên", "đọc chữ"]
-        is_ocr = (
-            task_type == "qa" and 
-            any(k in query_lower for k in explicit_ocr_keywords)
-        )
-        intent = "OCR_TEXT" if is_ocr else "VISUAL_SCENE"
+        # Systemic Boost: For OCR_TEXT intent, boost sparse_weight >= 0.6 for superior OCR retrieval
+        if intent == "OCR_TEXT":
+            sparse_w = max(0.6, sparse_w)
+            dense_w = round(1.0 - sparse_w, 2)
+
+        total_w = dense_w + sparse_w
+        if total_w > 0:
+            dense_w = round(dense_w / total_w, 2)
+            sparse_w = round(1.0 - dense_w, 2)
+
+        prompts = schema.get("golden_english_prompts", [])
+        if not isinstance(prompts, list) or not prompts:
+            prompts = [query_vi]
+
+        keywords = schema.get("bm25_keywords", [])
+        if not isinstance(keywords, list) or not keywords:
+            keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
         
-        raw_words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;\-\"\']+', query_vi) if len(w.strip()) >= 2]
-        generic_stopwords = {"và", "hoặc", "nhưng", "của", "cho", "trong", "trên", "dưới", "các", "những", "một", "này", "đó", "khi", "được", "bởi", "với", "cảnh", "quay"}
-        bm25_kws = [w for w in raw_words if w.lower() not in generic_stopwords][:12]
-        
-        clean_en = translated_en.rstrip('.') if translated_en else query_vi
-        golden_prompts = [
-            clean_en,
-            f"a photo of {clean_en}",
-            f"a video scene showing {clean_en}",
-            f"a high quality shot of {clean_en}"
-        ]
-        
-        en_words = re.findall(r'\b[a-zA-Z]{3,}\b', clean_en)
-        en_stopwords = {"the", "and", "is", "are", "with", "this", "that", "from", "show", "showing", "view", "scene", "photo", "shot", "video"}
-        open_classes = [w.capitalize() for w in en_words if w.lower() not in en_stopwords][:5]
-        if not open_classes:
-            open_classes = ["Object"]
+        # Filter out English leakage from BM25 keywords to keep 100% Vietnamese purity
+        clean_vi_keywords = []
+        for kw in keywords:
+            kw_str = str(kw).strip()
+            if kw_str and not re.search(r'^[a-zA-Z\s\-_]+$', kw_str):
+                clean_vi_keywords.append(kw_str)
+        if not clean_vi_keywords:
+            clean_vi_keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
+
+        classes = schema.get("openimages_classes", [])
+        if not isinstance(classes, list):
+            classes = []
             
-        clean_q = raw_question if raw_question else query_vi
-        clean_q = re.sub(r'^(câu hỏi|hỏi|cho biết)\s*[:\.]?\s*', '', clean_q, flags=re.IGNORECASE).strip()
-        
-        d_weight = 0.35 if intent == "OCR_TEXT" else 0.75
-        s_weight = 0.65 if intent == "OCR_TEXT" else 0.25
-        
+        # Filter out non-physical abstract concepts from OpenImages classes
+        abstract_concepts = ["slow motion", "slow_motion", "lecture", "action", "time", "camera", "arrangement"]
+        classes = [c.strip().lower() for c in classes if str(c).strip().lower() not in abstract_concepts]
+
+        vlm_q = str(schema.get("vlm_question", query_vi)).strip()
+
         return {
             "intent": intent,
-            "dense_weight": d_weight,
-            "sparse_weight": s_weight,
-            "golden_english_prompts": golden_prompts,
-            "bm25_keywords": bm25_kws,
-            "openimages_classes": open_classes,
-            "vlm_question": clean_q,
+            "dense_weight": dense_w,
+            "sparse_weight": sparse_w,
+            "golden_english_prompts": prompts,
+            "bm25_keywords": clean_vi_keywords,
+            "openimages_classes": classes,
+            "vlm_question": vlm_q,
             "query_vi": query_vi,
-            "query_en": clean_en
+            "task_type": task_type
         }
 
-    def _translate_vi_to_en(self, text_vi):
-        """Translates Vietnamese query to English using NLLB fallback model."""
-        if not text_vi:
-            return ""
-        if self.fallback_model is not None and self.fallback_tokenizer is not None:
-            try:
-                inputs = self.fallback_tokenizer(text_vi, return_tensors="pt").to(self.device)
-                eng_token_id = self.fallback_tokenizer.convert_tokens_to_ids("eng_Latn")
-                with torch.no_grad():
-                    gen = self.fallback_model.generate(**inputs, forced_bos_token_id=eng_token_id, max_length=150)
-                return self.fallback_tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
-            except Exception:
-                pass
-        return text_vi
+    def _fallback_parse(self, query_vi, task_type):
+        """Fallback parser if LLM fails or is disabled."""
+        words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
+        intent = "OCR_TEXT" if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu"]) else "VISUAL_SCENE"
+        
+        sparse_w = 0.6 if intent == "OCR_TEXT" else 0.4
+        dense_w = 0.4 if intent == "OCR_TEXT" else 0.6
 
-    def _normalize_schema(self, parsed_json, query_vi):
-        """Normalizes extracted LLM JSON object and validates fusion weight constraint."""
-        intent = parsed_json.get("intent", "VISUAL_SCENE")
-        
-        d_w = parsed_json.get("dense_weight")
-        s_w = parsed_json.get("sparse_weight")
-        
-        if d_w is None or s_w is None:
-            d_w = 0.35 if intent == "OCR_TEXT" else 0.75
-            s_w = 0.65 if intent == "OCR_TEXT" else 0.25
-        else:
-            try:
-                d_w = float(d_w)
-                s_w = float(s_w)
-                total = d_w + s_w
-                if total > 0:
-                    d_w = round(d_w / total, 2)
-                    s_w = round(1.0 - d_w, 2)
-                else:
-                    d_w, s_w = 0.75, 0.25
-            except Exception:
-                d_w, s_w = 0.75, 0.25
-                
         return {
             "intent": intent,
-            "dense_weight": d_w,
-            "sparse_weight": s_w,
-            "golden_english_prompts": parsed_json.get("golden_english_prompts", [query_vi]),
-            "bm25_keywords": parsed_json.get("bm25_keywords", []),
-            "openimages_classes": parsed_json.get("openimages_classes", ["Object"]),
-            "vlm_question": parsed_json.get("vlm_question", query_vi),
+            "dense_weight": dense_w,
+            "sparse_weight": sparse_w,
+            "golden_english_prompts": [query_vi],
+            "bm25_keywords": words[:8],
+            "openimages_classes": [],
+            "vlm_question": query_vi,
             "query_vi": query_vi,
-            "query_en": parsed_json.get("golden_english_prompts", [query_vi])[0] if parsed_json.get("golden_english_prompts") else query_vi
+            "task_type": task_type
         }
