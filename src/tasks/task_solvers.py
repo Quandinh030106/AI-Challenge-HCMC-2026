@@ -156,11 +156,13 @@ class TaskSolvers:
         return path
 
     def load_vlm(self):
-        """Loads Qwen2.5-VL-7B model using exact Qwen2_5_VLForConditionalGeneration class on cuda:0."""
+        """Loads Qwen2.5-VL-7B model in 4-bit with optimized device mapping and token budget."""
         if self.vlm_model is not None:
             return
             
-        print(f"[INFO] TaskSolvers: Loading Heavy VLM ({self.vlm_model_id})...")
+        target_device = "cuda:1" if torch.cuda.device_count() > 1 else ("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = target_device
+        print(f"[INFO] TaskSolvers: Loading Heavy VLM ({self.vlm_model_id}) on {self.device}...")
         
         model_cls = None
         try:
@@ -186,7 +188,7 @@ class TaskSolvers:
                 self.vlm_model_id,
                 quantization_config=bnb_config if torch.cuda.is_available() else None,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="cuda:0" if torch.cuda.is_available() else None,
+                device_map=self.device if torch.cuda.is_available() else None,
                 ignore_mismatched_sizes=True,
                 trust_remote_code=True
             )
@@ -195,20 +197,20 @@ class TaskSolvers:
             self.vlm_model = model_cls.from_pretrained(
                 self.vlm_model_id,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="cuda:0" if torch.cuda.is_available() else None,
+                device_map=self.device if torch.cuda.is_available() else None,
                 ignore_mismatched_sizes=True,
                 trust_remote_code=True
             )
 
-        min_pixels = 256 * 28 * 28
-        max_pixels = 1280 * 28 * 28
+        min_pixels = 128 * 28 * 28
+        max_pixels = 384 * 28 * 28
         try:
             self.vlm_processor = AutoProcessor.from_pretrained(self.vlm_model_id, min_pixels=min_pixels, max_pixels=max_pixels, trust_remote_code=True)
         except Exception:
             self.vlm_processor = AutoProcessor.from_pretrained(self.vlm_model_id, trust_remote_code=True)
 
         self.vlm_model.eval()
-        print("[INFO] TaskSolvers: Loaded Heavy VLM successfully.")
+        print(f"[INFO] TaskSolvers: Loaded Heavy VLM successfully on {self.device}.")
 
     def unload_vlm(self):
         """Unloads Heavy VLM from VRAM."""
@@ -247,8 +249,8 @@ class TaskSolvers:
 
     def solve_vqa(self, parsed_schema, fused_candidates):
         """
-        Solves Visual Q&A task using Dense-Anchored Local Temporal Window Sampling around the target event frame.
-        Guarantees exact event capture regardless of video duration (1 min vs 1 hour).
+        Solves Visual Q&A task using Focused 3-Frame Local Temporal Window Sampling around target event frame.
+        Guarantees high-precision VLM visual question answering without CUDA OOM.
         """
         if not fused_candidates:
             return {"video_id": "none", "frame_id": "000", "answer": "Không rõ", "promoted_idx": 0}
@@ -268,27 +270,19 @@ class TaskSolvers:
             f_idx = dense_info.get("best_frame_idx", 0)
             fid = get_frame_id_from_idx(self.keyframes_dir, vid, f_idx, metadata_dir=self.metadata_dir)
 
-            # Strategy: Dense-Anchored Local Temporal Window around f_idx + start & end anchors
+            # Strategy: Focused 3-frame local temporal window around f_idx (best event frame from CLIP)
             all_video_imgs = self._get_all_video_keyframe_paths(vid)
             if all_video_imgs:
                 n_total = len(all_video_imgs)
                 f_idx_clamped = min(max(0, f_idx), n_total - 1)
-                
-                # High-density local window around f_idx (best event frame from CLIP)
-                local_window = [
-                    max(0, f_idx_clamped - 3),
+                sampled_indices = sorted(list(set([
                     max(0, f_idx_clamped - 1),
                     f_idx_clamped,
-                    min(n_total - 1, f_idx_clamped + 1),
-                    min(n_total - 1, f_idx_clamped + 3)
-                ]
-                # Global boundary anchors
-                global_anchors = [0, max(0, n_total - 1)]
-                
-                sampled_indices = sorted(list(set(local_window + global_anchors)))
+                    min(n_total - 1, f_idx_clamped + 1)
+                ])))
                 image_paths = [all_video_imgs[i] for i in sampled_indices]
             else:
-                frame_indices = [max(0, f_idx - 2), max(0, f_idx - 1), f_idx, f_idx + 1, f_idx + 2]
+                frame_indices = [max(0, f_idx - 1), f_idx, f_idx + 1]
                 image_paths = []
                 for fi in frame_indices:
                     p = self._find_keyframe_image(vid, fi, f"{fi:03d}")
@@ -350,7 +344,7 @@ class TaskSolvers:
         return []
 
     def _infer_vlm_multi_frame_video(self, image_paths, question_text):
-        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B over dense-anchored local keyframes."""
+        """Runs multi-frame video sequence reasoning using Qwen2.5-VL-7B with memory-safe downscaled frames."""
         prompt_text = (
             f"Nhiệm vụ: Quan sát kỹ các khung ảnh trải dài theo thời gian của video này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
             f"'{question_text}'\n"
@@ -360,17 +354,22 @@ class TaskSolvers:
         content_items = []
         pil_images = []
         for p in image_paths:
-            content_items.append({"type": "image", "image": p})
             try:
-                pil_images.append(Image.open(p).convert("RGB"))
+                img = Image.open(p).convert("RGB")
+                img.thumbnail((448, 448))
+                pil_images.append(img)
+                content_items.append({"type": "image", "image": img})
             except Exception:
                 pass
+
+        if not pil_images:
+            return "Không rõ"
+
         content_items.append({"type": "text", "text": prompt_text})
-        
         messages = [{"role": "user", "content": content_items}]
         
         try:
-            target_device = "cuda:0" if torch.cuda.is_available() else "cpu"
+            target_device = self.device
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             
             if process_vision_info:

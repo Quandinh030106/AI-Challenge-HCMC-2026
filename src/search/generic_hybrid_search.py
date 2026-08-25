@@ -49,6 +49,18 @@ class DenseSearchEngine:
         else:
             print(f"[WARNING] DenseSearchEngine: Feature dir '{self.features_dir}' does not exist.")
 
+    def unload(self):
+        """Unloads CLIP model and processor from VRAM."""
+        if self.model is not None:
+            del self.model
+            self.model = None
+        if self.processor is not None:
+            del self.processor
+            self.processor = None
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        print("[INFO] DenseSearchEngine: Unloaded CLIP model from VRAM.")
+
     def search(self, golden_english_prompts, top_k=100):
         if not self.feature_files or not golden_english_prompts:
             return []
@@ -328,3 +340,10 @@ class GenericHybridSearcher:
                 })
 
         return final_candidates
+
+    def unload(self):
+        """Unloads dense engine and cleans VRAM."""
+        if hasattr(self, "dense_engine") and self.dense_engine is not None:
+            self.dense_engine.unload()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
