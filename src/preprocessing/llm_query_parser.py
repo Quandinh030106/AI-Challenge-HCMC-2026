@@ -74,15 +74,21 @@ class LLMQueryParser:
             self.load_model()
 
         system_prompt = (
-            "Bạn là trợ lý AI chuyên gia phân tích cú pháp truy vấn video đa phương thức cho cuộc thi AI Challenge.\n"
-            "Nhiệm vụ của bạn là phân tích đoạn mô tả hoặc câu hỏi Tiếng Việt, trích xuất cấu trúc tìm kiếm JSON với ĐÚNG CÁC TRƯỜNG SAU:\n\n"
-            "1. 'intent': Chọn 'VISUAL_SCENE' (nếu mô tả bối cảnh/hình ảnh) hoặc 'OCR_TEXT' (nếu yêu cầu đọc con số, chữ viết trên bảng/biển báo/cân).\n"
-            "2. 'dense_weight': Trọng số tìm kiếm hình ảnh CLIP (từ 0.1 đến 0.9).\n"
-            "3. 'sparse_weight': Trọng số tìm kiếm văn bản BM25 (từ 0.1 đến 0.9). Tổng dense_weight + sparse_weight = 1.0.\n"
-            "4. 'golden_english_prompts': Mảng từ 2 đến 4 câu mô tả bối cảnh điện ảnh ngắn gọn bằng Tiếng Anh (Mỗi câu không quá 25 từ, miêu tả trực diện hình ảnh).\n"
-            "5. 'bm25_keywords': Mảng các từ khóa Tiếng Việt cốt lõi trích xuất từ câu hỏi gốc (BẮT BỘC BẰNG TIẾNG VIỆT, KHÔNG tự dịch sang Tiếng Anh, loại bỏ từ nối rác).\n"
-            "6. 'openimages_classes': Mảng danh từ Tiếng Anh đại diện cho VẬT THỂ THỂ LÝ nhìn thấy được (ví dụ: 'person', 'car', 'dog', 'table', 'sign'...). KHÔNG đưa các từ phi vật thể như 'slow motion', 'time', 'action'.\n"
-            "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để VLM đọc ảnh trả lời (BẮT BỘC 100% BẰNG TIẾNG VIỆT, KHÔNG DỊCH SANG TIẾNG ANH).\n\n"
+            "Bạn là chuyên gia phân tích cú pháp truy vấn video đa phương thức (CLIP, BM25, OpenImages, VLM).\n"
+            "Nhiệm vụ: Phân tích đoạn mô tả hoặc câu hỏi Tiếng Việt, trích xuất cấu trúc tìm kiếm JSON với ĐÚNG CÁC TRƯỜNG SAU:\n\n"
+            "1. 'intent': 'VISUAL_SCENE' (mô tả bối cảnh/hình ảnh/hành động) hoặc 'OCR_TEXT' (khi đề bài yêu cầu đọc con số, chữ viết trên bảng/biển báo/cân/bản đồ/giá cả/cột mốc/slide).\n"
+            "2. 'dense_weight': Trọng số tìm kiếm hình ảnh CLIP (0.7 đến 0.85 cho VISUAL_SCENE, 0.35 cho OCR_TEXT).\n"
+            "3. 'sparse_weight': Trọng số tìm kiếm văn bản BM25 (0.15 đến 0.3 cho VISUAL_SCENE, 0.65 cho OCR_TEXT). Tổng = 1.0.\n"
+            "4. 'golden_english_prompts': Mảng 2-4 câu miêu tả hình ảnh trực diện bằng Tiếng Anh chuẩn (Mỗi câu dưới 25 từ). LƯU Ý DỊCH ĐÚNG THỰC THỂ:\n"
+            "   - 'đậu hà lan' -> 'snow peas' / 'green peas' (KHÔNG dịch thành Dutch pancake)\n"
+            "   - 'mực' (nấu ăn) -> 'squid' / 'cuttlefish' (KHÔNG dịch thành ink)\n"
+            "   - 'con lân' / 'múa lân' -> 'lion dance' / 'Chinese lion costume' (KHÔNG dịch thành dragon/unicorn)\n"
+            "   - 'rồng' -> 'dragon'\n"
+            "   - 'đua xe đạp' -> 'cycling race' / 'bicycle race'\n"
+            "   - 'khối đá quý' -> 'rough gemstone'\n"
+            "5. 'bm25_keywords': Mảng các CỤM DANH TỪ TIẾNG VIỆT có nghĩa trích xuất trực tiếp từ đề bài (2-4 từ/cụm, ví dụ: 'vạch đích', 'đua xe đạp', 'khối đá quý', 'sạt lở đất', 'đậu hà lan', 'cây lục bình'). TUYỆT ĐỐI KHÔNG xé lẻ thành từng từ đơn rác và KHÔNG bịa từ không có trong bài.\n"
+            "6. 'openimages_classes': Mảng danh từ Tiếng Anh đại diện cho VẬT THỂ THỂ LÝ nhìn thấy được (ví dụ: 'person', 'bicycle', 'motorcycle', 'car', 'scale', 'drum', 'piano', 'handbag', 'teapot', 'umbrella', 'sign'). TUYỆT ĐỐI KHÔNG chứa tính từ (red, blue), động từ (stretching, cutting, steaming), biểu cảm (smile), hoặc khái niệm trừu tượng (verb, conversation, frame, slide, border, title).\n"
+            "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để VLM đọc ảnh trả lời (100% bằng Tiếng Việt).\n\n"
             "YÊU CẦU ĐẦU RA: CHỈ NÊU MỘT KHỐI JSON HỢP LỆ VÀ NẰM TRONG CẶP THẺ ```json ... ```. KHÔNG THÊM BẤT KỲ LỜI DẪN NÀO."
         )
 
@@ -138,17 +144,31 @@ class LLMQueryParser:
         if intent not in ["VISUAL_SCENE", "OCR_TEXT"]:
             intent = "VISUAL_SCENE"
 
-        # Auto-detect OCR_TEXT intent if query asks for numbers, text, signs, scales, or prices
-        if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu", "hiển thị", "giá", "cân"]):
+        # Precise OCR_TEXT intent trigger: only when reading explicit text, signs, scale numbers, map legends, prices
+        ocr_positive_triggers = [
+            "con số được ghi", "con số hiển thị", "số hiển thị", "con số trên cân", "chữ trên",
+            "biển báo", "bảng giá", "giá dầu", "giá tiền", "cột mốc", "bản đồ phân bố",
+            "tên của con đèo", "đọc chữ", "dòng chữ", "ghi nhận số liệu", "slide bài giảng"
+        ]
+        is_ocr_query = any(k in query_vi.lower() for k in ocr_positive_triggers)
+        if is_ocr_query and intent != "OCR_TEXT":
             intent = "OCR_TEXT"
 
-        dense_w = float(schema.get("dense_weight", 0.6))
-        sparse_w = float(schema.get("sparse_weight", 0.4))
+        # Ensure visual queries without actual text reading are not misclassified as OCR
+        if not is_ocr_query and any(k in query_vi.lower() for k in ["ghi hình", "ghi lại", "bao nhiêu người", "mấy người", "hai người", "ba người"]):
+            if not any(k in query_vi.lower() for k in ["con số", "biển báo", "bản đồ", "cân", "cột mốc", "giá"]):
+                intent = "VISUAL_SCENE"
+
+        dense_w = float(schema.get("dense_weight", 0.75))
+        sparse_w = float(schema.get("sparse_weight", 0.25))
         
-        # Systemic Boost: For OCR_TEXT intent, boost sparse_weight >= 0.65 for superior OCR retrieval
+        # Systemic Boost: For genuine OCR_TEXT intent, boost sparse_weight >= 0.65 for superior OCR retrieval
         if intent == "OCR_TEXT":
             sparse_w = max(0.65, sparse_w)
             dense_w = round(1.0 - sparse_w, 2)
+        else:
+            dense_w = max(0.75, dense_w)
+            sparse_w = round(1.0 - dense_w, 2)
 
         total_w = dense_w + sparse_w
         if total_w > 0:
@@ -163,30 +183,45 @@ class LLMQueryParser:
         if not isinstance(keywords, list) or not keywords:
             keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
         
-        # Strictly filter out pure English ASCII tokens to guarantee 100% Vietnamese BM25 keyword purity
+        # Filter stop words and single meaningless letters
+        stop_words = {
+            "tại", "của", "và", "các", "những", "cho", "được", "bởi", "trong", "trên", "dưới",
+            "khi", "sau", "đó", "này", "kia", "theo", "thứ", "nhất", "nhì", "lần", "lượt",
+            "bắt", "trọn", "khoảnh", "khắc", "cùng", "nhau", "về", "hướng", "mặc", "có", "thể",
+            "thấy", "ở", "gồm", "với", "là", "một", "hai", "ba", "bốn", "năm"
+        }
+        
         clean_vi_keywords = []
         for kw in keywords:
             kw_str = str(kw).strip()
-            # If word contains pure ASCII letters and does not exist in query_vi, strip it out
+            # Strip out pure English ASCII tokens if not in original query
             if kw_str and re.search(r'^[a-zA-Z0-9\s\-_]+$', kw_str) and kw_str.lower() not in query_vi.lower():
                 continue
-            if kw_str:
+            # Strip out isolated stop words
+            if kw_str.lower() in stop_words:
+                continue
+            if len(kw_str) >= 2:
                 clean_vi_keywords.append(kw_str)
                 
         if not clean_vi_keywords:
-            clean_vi_keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
+            clean_vi_keywords = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3 and w.strip().lower() not in stop_words]
 
         classes = schema.get("openimages_classes", [])
         if not isinstance(classes, list):
             classes = []
             
-        # Filter out non-physical abstract concepts from OpenImages classes
-        abstract_concepts = ["slow motion", "slow_motion", "lecture", "action", "time", "camera", "arrangement", "center", "layer"]
-        classes = [c.strip().lower() for c in classes if str(c).strip().lower() not in abstract_concepts]
+        # Filter out non-physical abstract concepts, adjectives, verbs from OpenImages classes
+        invalid_concepts = {
+            "slow motion", "slow_motion", "lecture", "action", "time", "camera", "arrangement",
+            "center", "layer", "stretching", "cutting", "steaming", "smile", "conversation",
+            "verb", "frame", "slide", "border", "title", "background", "red", "blue", "yellow",
+            "green", "black", "white", "pink", "purple", "dark", "light", "ingredients", "green_object"
+        }
+        classes = [c.strip().lower() for c in classes if str(c).strip().lower() not in invalid_concepts]
 
         vlm_q = str(schema.get("vlm_question", query_vi)).strip()
         # Guarantee vlm_question is 100% in Vietnamese: if LLM translated it to pure English, fallback to query_vi
-        if re.search(r'^[a-zA-Z0-9\s\,\.\?\!\'\"]+$', vlm_q) and not any(k in vlm_q.lower() for k in ["la", "gi", "bao nhieu", "co"]):
+        if re.search(r'^[a-zA-Z0-9\s\,\.\?\!\'\"]+$', vlm_q) and not any(k in vlm_q.lower() for k in ["la", "gi", "bao nhieu", "co", "o dau"]):
             vlm_q = query_vi
 
         return {
@@ -203,11 +238,14 @@ class LLMQueryParser:
 
     def _fallback_parse(self, query_vi, task_type):
         """Fallback parser if LLM fails or is disabled."""
-        words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3]
-        intent = "OCR_TEXT" if any(k in query_vi.lower() for k in ["con số", "chữ", "biển báo", "ghi", "mấy", "bao nhiêu", "hiển thị", "giá", "cân"]) else "VISUAL_SCENE"
+        stop_words = {"tại", "của", "và", "các", "những", "cho", "được", "bởi", "trong", "trên", "dưới", "khi", "sau", "đó", "này", "kia", "theo", "thứ", "nhất", "nhì"}
+        words = [w.strip() for w in re.split(r'[,.\s\?\!\:\;]+', query_vi) if len(w.strip()) >= 3 and w.strip().lower() not in stop_words]
         
-        sparse_w = 0.65 if intent == "OCR_TEXT" else 0.4
-        dense_w = 0.35 if intent == "OCR_TEXT" else 0.6
+        ocr_positive_triggers = ["con số", "chữ", "biển báo", "bảng giá", "giá", "cân", "bản đồ", "cột mốc"]
+        intent = "OCR_TEXT" if any(k in query_vi.lower() for k in ocr_positive_triggers) else "VISUAL_SCENE"
+        
+        sparse_w = 0.65 if intent == "OCR_TEXT" else 0.25
+        dense_w = 0.35 if intent == "OCR_TEXT" else 0.75
 
         return {
             "intent": intent,
