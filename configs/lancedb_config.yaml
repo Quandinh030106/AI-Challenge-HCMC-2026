@@ -1,0 +1,37 @@
+# ==============================================================================
+# AIC 2026 - LANCEDB HYBRID MULTIMODAL RETRIEVAL CONFIGURATION
+# ==============================================================================
+
+# 1. Cấu hình các mô hình AI
+models:
+  nlp_llm: "Qwen/Qwen2.5-7B-Instruct"           # Chạy trên GPU 0 (Bước 1: Phân tích đa góc nhìn)
+  clip_model: "openai/clip-vit-large-patch14"   # Chạy trên GPU 0 (Bước 2: Trích xuất vector 768-dim)
+  vlm_model: "Qwen/Qwen2.5-VL-7B-Instruct"       # Chạy trên GPU 1 (Bước 3: Thẩm định thị giác sâu)
+
+# 2. Cấu hình đường dẫn dữ liệu (Tương thích máy ảo Kaggle và Local PC)
+data:
+  features_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-features/clip-features-32"
+  keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-keyframes/Keyframes_L21/keyframes"
+  map_keyframes_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/map-keyframes-aic25-b1/map-keyframes"
+  media_info_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-metadata/media-info-aic25-b1/media-info"
+  objects_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-objects/objects"
+  videos_dir: "/kaggle/input/datasets/quninhphmanh/ai-challenge-hcmc-2026-videos/Videos_L21_a/video"
+  queries_dir: "/kaggle/input/datasets/quninhphmanh/aic-hcmc-2026-sotuyen1"
+  lancedb_uri: "/kaggle/working/aic_lancedb"    # Thư mục lưu trữ LanceDB
+
+# 3. Trọng số tìm kiếm kết hợp đa phương thức (Hybrid Retrieval Weights)
+search_weights:
+  dense_weight: 0.70                            # Trọng số Vector Dense (CLIP)
+  sparse_weight: 0.30                           # Trọng số BM25 Tantivy (Text/OCR)
+  object_boost_weight: 0.15                     # Trọng số tăng cường khi khớp nhãn OpenImages
+  gaussian_sigma: 1.5                           # Độ lệch chuẩn cho bộ lọc cộng hưởng thời gian 1D Gauss
+  top_k_candidates: 100                         # Số lượng ứng viên xuất file CSV nộp bài
+
+# 4. Cấu hình thẩm định thị giác sâu (Deep Visual Verification)
+vlm_verification:
+  enabled: true                                 # Bật chế độ VLM thẩm định lại Top ứng viên
+  top_k_verify: 5                               # Số lượng video ứng viên hàng đầu được VLM kiểm tra
+  thumbnail_max_size: 448                       # Độ phân giải ảnh thumbnail nạp vào VLM (448x448)
+  min_pixels: 100352                            # 128 * 28 * 28
+  max_pixels: 301056                            # 384 * 28 * 28
+  top1_promotion_threshold: 35.0                # Điểm tự tin tối thiểu để thăng hạng video lên TOP 1

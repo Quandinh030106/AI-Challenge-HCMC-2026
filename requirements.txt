@@ -4,6 +4,11 @@ transformers
 sentence-transformers
 rank-bm25
 faiss-cpu
+lancedb
+pyarrow
+tantivy
+fastapi
+uvicorn
 numpy
 pandas
 pyyaml
@@ -12,4 +17,5 @@ tqdm
 qwen-vl-utils
 accelerate
 pillow
-easyocr
+scipy
+bitsandbytes
