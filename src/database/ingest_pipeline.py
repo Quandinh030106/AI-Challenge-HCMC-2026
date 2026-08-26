@@ -274,7 +274,14 @@ class MultimodalIngestPipeline:
             # 2. Populate Keyframe-Level Records
             n_frames = feats_normalized.shape[0]
             for f_idx in range(n_frames):
-                vec = feats_normalized[f_idx].tolist()
+                row_vec = feats_normalized[f_idx]
+                if len(row_vec) != detected_dim:
+                    if len(row_vec) > detected_dim:
+                        row_vec = row_vec[:detected_dim]
+                    else:
+                        row_vec = np.pad(row_vec, (0, detected_dim - len(row_vec)), mode='constant')
+                
+                vec = row_vec.tolist()
                 
                 frame_map_info = map_data.get(f_idx, {"frame_id": f_idx, "pts_time": 0.0})
                 real_frame_id = int(frame_map_info.get("frame_id", f_idx))
