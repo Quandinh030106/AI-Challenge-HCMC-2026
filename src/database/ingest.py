@@ -98,3 +98,4 @@ def _insert_keyframes_batch(cur, rows):
     ON CONFLICT (frame_id) DO NOTHING;
     """
     execute_values(cur, sql, rows)
+    #fix
