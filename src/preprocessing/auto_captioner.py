@@ -30,15 +30,20 @@ class QwenKeyframeCaptioner:
             except ImportError:
                 from transformers import AutoModelForCausalLM as VLMClass
 
-            bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4")
+            bnb_config = None
+            try:
+                import bitsandbytes
+                bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4")
+            except Exception:
+                print("[WARNING] bitsandbytes not available. Loading Qwen2.5-VL in FP16 mode...")
+
             self.model = VLMClass.from_pretrained(
                 self.model_id,
-                quantization_config=bnb_config if torch.cuda.is_available() else None,
+                quantization_config=bnb_config if (bnb_config and torch.cuda.is_available()) else None,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map=self.device if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
-            # Resolution bounds for high accuracy
             self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=100352, max_pixels=401408, trust_remote_code=True)
             self.model.eval()
             print("[INFO] QwenKeyframeCaptioner: Loaded successfully.")
