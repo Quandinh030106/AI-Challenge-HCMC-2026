@@ -19,15 +19,13 @@ def run_indexing(config_path="configs/default.yaml"):
 
     data_conf = config.get("data", {})
     raw_dir = data_conf.get("raw_dir", "")            # Dataset video
-    keyframes_dir = data_conf.get("keyframes_dir", "")  # Dataset keyframes (L21, L22,...)
+    keyframes_dir = data_conf.get("keyframes_dir", "")  # Dataset keyframes
     metadata_dir = data_conf.get("metadata_dir", "")   # Dataset metadata media-info
-    map_kf_dir = data_conf.get("map_keyframes_dir", "") # Map keyframes
-    objects_dir = data_conf.get("objects_dir", "")     # Visual features/objects
 
     # ==========================================
-    # 1. NẠP DỮ LIỆU BẢNG 1: VIDEOS
+    # 1. NẠP DỮ LIỆU BẢNG 1: VIDEOS (Từ Metadata & Files)
     # ==========================================
-    video_rows = []
+    video_rows = {}
     print("📦 Quét dữ liệu video & metadata...")
 
     if metadata_dir and os.path.exists(metadata_dir):
@@ -38,24 +36,37 @@ def run_indexing(config_path="configs/default.yaml"):
                     try:
                         with open(file_path, "r", encoding="utf-8") as jf:
                             meta = json.load(jf)
-                            vid = meta.get("video_id", os.path.splitext(file)[0])
+                            vid = str(meta.get("video_id", os.path.splitext(file)[0]))
                             title = meta.get("title", f"Video {vid}")
                             desc = meta.get("description", "")
                             cat = meta.get("category", "tin_tuc")
                             keywords = json.dumps(meta.get("keywords", []))
                             vpath = os.path.join(raw_dir, f"{vid}.mp4")
-                            video_rows.append((vid, title, desc, cat, keywords, vpath))
+                            video_rows[vid] = (vid, title, desc, cat, keywords, vpath)
                     except Exception:
                         continue
 
-    # Dự phòng nếu metadata trống: tự động quét ID từ folder videos
-    if not video_rows and raw_dir and os.path.exists(raw_dir):
+    if raw_dir and os.path.exists(raw_dir):
         for root, _, files in os.walk(raw_dir):
             for file in files:
                 if file.endswith((".mp4", ".mkv", ".avi")):
-                    vid = os.path.splitext(file)[0]
-                    vpath = os.path.join(root, file)
-                    video_rows.append((vid, f"Video {vid}", "No description", "tin_tuc", "[]", vpath))
+                    vid = str(os.path.splitext(file)[0])
+                    if vid not in video_rows:
+                        vpath = os.path.join(root, file)
+                        video_rows[vid] = (vid, f"Video {vid}", "No description", "tin_tuc", "[]", vpath)
+
+    # Quét trước một lượt Folder Keyframes để bổ sung các video_id còn thiếu vào bảng videos
+    if keyframes_dir and os.path.exists(keyframes_dir):
+        for root, _, files in os.walk(keyframes_dir):
+            for file in files:
+                if file.endswith((".jpg", ".png", ".webp")):
+                    frame_name = os.path.splitext(file)[0]
+                    parts = frame_name.split("_")
+                    vid = "_".join(parts[:-1]) if len(parts) >= 2 else parts[0]
+                    vid = str(vid)
+                    if vid not in video_rows:
+                        vpath = os.path.join(raw_dir, f"{vid}.mp4")
+                        video_rows[vid] = (vid, f"Video {vid}", "Auto-created from keyframe", "tin_tuc", "[]", vpath)
 
     if video_rows:
         insert_vid_sql = """
@@ -68,7 +79,7 @@ def run_indexing(config_path="configs/default.yaml"):
             main_keywords = EXCLUDED.main_keywords,
             video_path = EXCLUDED.video_path;
         """
-        execute_values(cur, insert_vid_sql, video_rows)
+        execute_values(cur, insert_vid_sql, list(video_rows.values()))
         conn.commit()
         print(f"✅ Đã nạp {len(video_rows)} video vào bảng 'videos'!")
 
@@ -76,13 +87,12 @@ def run_indexing(config_path="configs/default.yaml"):
     # 2. NẠP DỮ LIỆU BẢNG 2: KEYFRAMES
     # ==========================================
     keyframe_rows = []
-    print("📦 Quét danh mục Keyframes (L21, L22,...)...")
+    print("📦 Quét và nạp dữ liệu Keyframes...")
 
     if keyframes_dir and os.path.exists(keyframes_dir):
         for root, _, files in os.walk(keyframes_dir):
             for file in files:
                 if file.endswith((".jpg", ".png", ".webp")):
-                    # File format mẫu: L21_V001_001.jpg -> vid: L21_V001, frame_idx: 1
                     frame_name = os.path.splitext(file)[0]
                     parts = frame_name.split("_")
                     if len(parts) >= 2:
@@ -95,7 +105,6 @@ def run_indexing(config_path="configs/default.yaml"):
                         vid = parts[0]
                         f_idx = 0
 
-                    # Tạo vector ngẫu nhiên 512-dim làm giả định nếu chưa có file npy feature
                     dummy_vec = str(np.zeros(512).tolist())
                     frame_prompt = f"Keyframe {frame_name} of video {vid}"
                     objs_t1 = json.dumps([])
@@ -104,11 +113,10 @@ def run_indexing(config_path="configs/default.yaml"):
                     ocr = ""
 
                     keyframe_rows.append((
-                        frame_name, vid, f_idx, dummy_vec, 
+                        frame_name, str(vid), f_idx, dummy_vec, 
                         frame_prompt, objs_t1, objs_t2, objs_t3, ocr
                     ))
 
-                    # Insert theo từng batch 10,000 frames để tránh tràn RAM
                     if len(keyframe_rows) >= 10000:
                         _insert_keyframes_batch(cur, keyframe_rows)
                         conn.commit()
