@@ -4,6 +4,7 @@
 import os
 import gc
 import re
+import glob
 import yaml
 import shutil
 import zipfile
@@ -137,10 +138,17 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
 
     searcher = LanceDBHybridSearcher(config=config)
     retrieved_candidates = {}
+    trake_precomputed_preds = {}
+
     for schema in tqdm(parsed_schemas, desc="Phase 2: Hybrid Retrieval"):
         qid = schema["query_id"]
         cands = searcher.search_candidates(schema, top_k_videos=100)
         retrieved_candidates[qid] = cands
+
+        # If TRAKE query, pre-compute Viterbi DP alignment while CLIP is active
+        if schema.get("task_type") == "trake":
+            trake_phase2 = TRAKESolver(db_manager=db_manager, clip_encoder=searcher)
+            trake_precomputed_preds[qid] = trake_phase2.solve(schema, cands, total_preds=100)
 
     # Unload CLIP from GPU 0
     searcher.unload()
@@ -213,7 +221,9 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
                     f_out.write(f"{p['video_id']},{p['frame_id']},{p['answer']}\n")
 
         elif task_type == "trake":
-            preds = trake_solver.solve(schema, cands, total_preds=100)
+            preds = trake_precomputed_preds.get(qid)
+            if not preds:
+                preds = trake_solver.solve(schema, cands, total_preds=100)
             with open(csv_path, "w", encoding="utf-8", newline="") as f_out:
                 for p in preds:
                     fids_str = ",".join(str(fid) for fid in p["frame_ids"])
