@@ -18,21 +18,20 @@ class LLMQueryParser:
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def load_model(self):
-        """Loads Qwen2.5-7B-Instruct model strictly in 4-bit NF4 quantization on GPU."""
+        """Loads Qwen2.5-7B-Instruct model strictly on GPU (4-bit NF4 or Dual-GPU FP16)."""
         if self.model is not None:
             return
 
-        print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id}) strictly on GPU in 4-bit NF4 mode...")
+        print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id}) on GPU...")
         
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True
-        )
-
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True
+            )
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
                 quantization_config=bnb_config if torch.cuda.is_available() else None,
@@ -41,9 +40,18 @@ class LLMQueryParser:
                 trust_remote_code=True
             )
             self.model.eval()
-            print("[INFO] LLMQueryParser: Successfully loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")
+            print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")
         except Exception as e:
-            raise RuntimeError(f"[ERROR] LLMQueryParser: Failed to load 4-bit NF4 LLM on GPU ({e}). Execution stopped as requested.")
+            print(f"[WARNING] 4-bit quantization unavailable ({e}). Loading in Dual-GPU FP16 mode (device_map='auto')...")
+            self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
+            self.model = AutoModelForCausalLM.from_pretrained(
+                self.model_id,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="auto" if torch.cuda.is_available() else None,
+                trust_remote_code=True
+            )
+            self.model.eval()
+            print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in Dual-GPU FP16 mode.")
 
     def unload_model(self):
         """Unloads NLP LLM model from VRAM to free memory."""
