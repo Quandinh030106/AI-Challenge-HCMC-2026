@@ -18,11 +18,11 @@ class LLMQueryParser:
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def load_model(self):
-        """Loads Qwen2.5-7B-Instruct model in 4-bit NF4 quantization on cuda:0."""
+        """Loads Qwen2.5-7B-Instruct model strictly in 4-bit NF4 quantization on GPU."""
         if self.model is not None:
             return
 
-        print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id})...")
+        print(f"[INFO] LLMQueryParser: Loading NLP LLM ({self.model_id}) strictly on GPU in 4-bit NF4 mode...")
         
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -41,23 +41,9 @@ class LLMQueryParser:
                 trust_remote_code=True
             )
             self.model.eval()
-            print("[INFO] LLMQueryParser: Loaded NLP LLM in 4-bit NF4 mode on cuda:0.")
+            print("[INFO] LLMQueryParser: Successfully loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")
         except Exception as e:
-            print(f"[WARNING] 4-bit single GPU loading failed ({e}). Retrying with device_map='auto'...")
-            try:
-                self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
-                self.model = AutoModelForCausalLM.from_pretrained(
-                    self.model_id,
-                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                    device_map="auto" if torch.cuda.is_available() else None,
-                    trust_remote_code=True
-                )
-                self.model.eval()
-                print("[INFO] LLMQueryParser: Loaded NLP LLM with device_map='auto'.")
-            except Exception as err:
-                print(f"[WARNING] LLMQueryParser: Could not load 7B LLM into VRAM ({err}). Switching to Zero-VRAM Fast Rule Parser.")
-                self.model = None
-                self.tokenizer = None
+            raise RuntimeError(f"[ERROR] LLMQueryParser: Failed to load 4-bit NF4 LLM on GPU ({e}). Execution stopped as requested.")
 
     def unload_model(self):
         """Unloads NLP LLM model from VRAM to free memory."""
@@ -73,12 +59,10 @@ class LLMQueryParser:
 
     def parse_query_dynamically(self, query_vi, task_type="kis", raw_question=""):
         """
-        Runs LLM prompt execution to dynamically extract structured schema without bias or hardcodes.
+        Runs LLM prompt execution strictly on GPU to dynamically extract structured search schema.
         """
         if self.model is None:
             self.load_model()
-        if self.model is None:
-            return self._fallback_parse(query_vi, task_type)
 
         system_prompt = (
             "Bạn là chuyên gia phân tích cú pháp truy vấn video đa phương thức (CLIP, BM25, OpenImages, VLM).\n"
@@ -108,11 +92,8 @@ class LLMQueryParser:
             {"role": "user", "content": user_content}
         ]
 
-        try:
-            return self._parse_with_llm(messages, query_vi, task_type)
-        except Exception as e:
-            print(f"[WARNING] LLMQueryParser: Dynamic parsing error ({e}). Fallback to standard parser.")
-            return self._fallback_parse(query_vi, task_type)
+        # Execute strictly via GPU LLM without silent fallback
+        return self._parse_with_llm(messages, query_vi, task_type)
 
     def _parse_with_llm(self, messages, query_vi, task_type):
         """Executes text generation and cleans output JSON string."""
