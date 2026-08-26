@@ -5,7 +5,7 @@
 # 1. Cấu hình các mô hình AI
 models:
   nlp_llm: "Qwen/Qwen2.5-7B-Instruct"           # Chạy trên GPU 0 (Bước 1: Phân tích đa góc nhìn)
-  clip_model: "openai/clip-vit-large-patch14"   # Chạy trên GPU 0 (Bước 2: Trích xuất vector 768-dim)
+  clip_model: "openai/clip-vit-base-patch32"    # Chạy trên GPU 0 (Bước 2: Trích xuất vector 512-dim khớp CSDL)
   vlm_model: "Qwen/Qwen2.5-VL-7B-Instruct"       # Chạy trên GPU 1 (Bước 3: Thẩm định thị giác sâu)
 
 # 2. Cấu hình đường dẫn dữ liệu (Tương thích máy ảo Kaggle và Local PC)
