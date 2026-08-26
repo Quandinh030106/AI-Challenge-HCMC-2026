@@ -15,18 +15,20 @@ def run_indexing(config_path="configs/default.yaml"):
     init_db_schema(conn)
     cur = conn.cursor()
 
-    print("🚀 Bắt đầu nạp dữ liệu vào CSDL 2 bảng (videos & keyframes)...")
+    print("🚀 Bắt đầu nạp dữ liệu vào CSDL 2 bảng theo pipeline chuẩn của nhóm...")
 
     data_conf = config.get("data", {})
     raw_dir = data_conf.get("raw_dir", "")            # Dataset video
     keyframes_dir = data_conf.get("keyframes_dir", "")  # Dataset keyframes
+    features_dir = data_conf.get("features_dir", "")   # Tập numpy feature chuẩn của nhóm
     metadata_dir = data_conf.get("metadata_dir", "")   # Dataset metadata media-info
+    objects_dir = data_conf.get("objects_dir", "")     # Visual features/objects
 
     # ==========================================
-    # 1. NẠP DỮ LIỆU BẢNG 1: VIDEOS (Từ Metadata & Files)
+    # 1. NẠP BẢNG 1: VIDEOS
     # ==========================================
     video_rows = {}
-    print("📦 Quét dữ liệu video & metadata...")
+    print("📦 Quét dữ liệu Video & Metadata...")
 
     if metadata_dir and os.path.exists(metadata_dir):
         for root, _, files in os.walk(metadata_dir):
@@ -55,7 +57,6 @@ def run_indexing(config_path="configs/default.yaml"):
                         vpath = os.path.join(root, file)
                         video_rows[vid] = (vid, f"Video {vid}", "No description", "tin_tuc", "[]", vpath)
 
-    # Quét trước một lượt Folder Keyframes để bổ sung các video_id còn thiếu vào bảng videos
     if keyframes_dir and os.path.exists(keyframes_dir):
         for root, _, files in os.walk(keyframes_dir):
             for file in files:
@@ -66,7 +67,7 @@ def run_indexing(config_path="configs/default.yaml"):
                     vid = str(vid)
                     if vid not in video_rows:
                         vpath = os.path.join(raw_dir, f"{vid}.mp4")
-                        video_rows[vid] = (vid, f"Video {vid}", "Auto-created from keyframe", "tin_tuc", "[]", vpath)
+                        video_rows[vid] = (vid, f"Video {vid}", "Auto-created", "tin_tuc", "[]", vpath)
 
     if video_rows:
         insert_vid_sql = """
@@ -84,10 +85,31 @@ def run_indexing(config_path="configs/default.yaml"):
         print(f"✅ Đã nạp {len(video_rows)} video vào bảng 'videos'!")
 
     # ==========================================
-    # 2. NẠP DỮ LIỆU BẢNG 2: KEYFRAMES
+    # 2. NẠP BẢNG 2: KEYFRAMES (Load Features chuẩn của nhóm)
     # ==========================================
     keyframe_rows = []
-    print("📦 Quét và nạp dữ liệu Keyframes...")
+    print("📦 Quét và nạp dữ liệu Keyframes + CLIP Embeddings...")
+
+    # Đọc file feature npy/npz nếu có trong features_dir của nhóm
+    feat_dict = {}
+    if features_dir and os.path.exists(features_dir):
+        print(f"🔄 Đang đọc file feature từ: {features_dir}")
+        for root, _, files in os.walk(features_dir):
+            for file in files:
+                if file.endswith((".npy", ".npz")):
+                    try:
+                        feat_path = os.path.join(root, file)
+                        data = np.load(feat_path)
+                        if isinstance(data, np.ndarray):
+                            # Nếu file npy lưu mảng
+                            fname = os.path.splitext(file)[0]
+                            feat_dict[fname] = data
+                        elif hasattr(data, 'files'):
+                            # Nếu file npz chứa dict
+                            for k in data.files:
+                                feat_dict[k] = data[k]
+                    except Exception:
+                        continue
 
     if keyframes_dir and os.path.exists(keyframes_dir):
         for root, _, files in os.walk(keyframes_dir):
@@ -105,7 +127,13 @@ def run_indexing(config_path="configs/default.yaml"):
                         vid = parts[0]
                         f_idx = 0
 
-                    dummy_vec = str(np.zeros(512).tolist())
+                    # Lấy vector thật của nhóm nếu có, nếu chưa có mới dùng vector 0
+                    if frame_name in feat_dict:
+                        vec = feat_dict[frame_name].flatten().astype(np.float32)
+                        vec_str = str(vec.tolist())
+                    else:
+                        vec_str = str(np.zeros(512).tolist())
+
                     frame_prompt = f"Keyframe {frame_name} of video {vid}"
                     objs_t1 = json.dumps([])
                     objs_t2 = json.dumps([])
@@ -113,7 +141,7 @@ def run_indexing(config_path="configs/default.yaml"):
                     ocr = ""
 
                     keyframe_rows.append((
-                        frame_name, str(vid), f_idx, dummy_vec, 
+                        frame_name, str(vid), f_idx, vec_str, 
                         frame_prompt, objs_t1, objs_t2, objs_t3, ocr
                     ))
 
@@ -129,7 +157,7 @@ def run_indexing(config_path="configs/default.yaml"):
 
     cur.close()
     conn.close()
-    print("🎉 Tải toàn bộ dữ liệu vào CSDL 2 bảng hoàn tất!")
+    print("🎉 Hoàn tất nạp CSDL 2 bảng giữ nguyên cấu trúc nhóm!")
 
 def _insert_keyframes_batch(cur, rows):
     sql = """
@@ -138,6 +166,7 @@ def _insert_keyframes_batch(cur, rows):
         frame_prompt, objects_tier1, objects_tier2, objects_tier3, ocr_text
     ) VALUES %s
     ON CONFLICT (frame_id) DO UPDATE SET
+        clip_embedding = EXCLUDED.clip_embedding,
         frame_prompt = EXCLUDED.frame_prompt,
         objects_tier1 = EXCLUDED.objects_tier1;
     """
