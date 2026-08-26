@@ -51,7 +51,8 @@ class QwenKeyframeCaptioner:
                 )
                 print("[INFO] Loaded Qwen2.5-VL in standard FP16 mode.")
 
-            self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=100352, max_pixels=401408, trust_remote_code=True)
+            # Resolution bounds for crisp visual reading
+            self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=200704, max_pixels=802816, trust_remote_code=True)
             self.model.eval()
             print("[INFO] QwenKeyframeCaptioner: Ready for inference.")
         except Exception as e:
@@ -79,7 +80,7 @@ class QwenKeyframeCaptioner:
 
         try:
             img = Image.open(image_path).convert("RGB")
-            img.thumbnail((448, 448))
+            img.thumbnail((784, 784))
 
             prompt = (
                 "Describe this video keyframe image in English with maximum detail for visual retrieval:\n"
