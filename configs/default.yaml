@@ -33,3 +33,10 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+
+database:
+  host: "localhost"
+  port: 5432
+  dbname: "aic2026"
+  user: "postgres"
+  password: "your_password"
