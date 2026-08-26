@@ -1,5 +1,5 @@
 # ==============================================================================
-# AIC 2026 - MULTIMODAL INGESTION PIPELINE FOR LANCEDB
+# AIC 2026 - MULTIMODAL INGESTION PIPELINE FOR LANCEDB (2-TABLE ARCHITECTURE)
 # ==============================================================================
 import os
 import glob
@@ -9,13 +9,15 @@ import numpy as np
 import pyarrow as pa
 import lancedb
 from tqdm import tqdm
-from src.database.schema import get_aic_master_schema
+from src.database.schema import get_videos_schema, get_keyframes_schema
 
 class MultimodalIngestPipeline:
     """
     Automated pipeline that scans raw competition folders:
     (clip-features-32, map-keyframes, media-info, objects, keyframes)
-    and constructs a unified, indexed LanceDB multimodal table.
+    and constructs a normalized 2-table LanceDB store:
+    - Table 1: `videos` (Video-level metadata, 1 row per video)
+    - Table 2: `keyframes` (Frame-level visual features, captions, objects, exact frame IDs)
     """
     def __init__(self, config: dict):
         self.config = config
@@ -27,7 +29,9 @@ class MultimodalIngestPipeline:
         self.media_info_dir = self._resolve_dir(data_cfg.get("media_info_dir", ""), "media-info", ".json")
         self.objects_dir = self._resolve_dir(data_cfg.get("objects_dir", ""), "objects")
         self.lancedb_uri = data_cfg.get("lancedb_uri", "data/aic_lancedb")
-        self.table_name = "aic_master_table"
+        
+        self.videos_table_name = "videos"
+        self.keyframes_table_name = "keyframes"
 
     def _resolve_dir(self, path: str, hint: str = "", ext_hint: str = None) -> str:
         """Auto-resolves actual directory path across Kaggle and local environments."""
@@ -103,13 +107,11 @@ class MultimodalIngestPipeline:
                         if not rows:
                             continue
                         
-                        # Detect header row
                         header_offset = 1 if not rows[0][0].strip().isdigit() else 0
                         for row_idx in range(header_offset, len(rows)):
                             row = rows[row_idx]
                             idx_0based = row_idx - header_offset
                             
-                            # Standard format: n, pts_time, fps, frame_idx
                             pts_time = 0.0
                             frame_id = idx_0based
                             if len(row) >= 4:
@@ -168,7 +170,6 @@ class MultimodalIngestPipeline:
                                 except Exception:
                                     pass
                             
-                            # Deduplicate preserving order
                             seen = set()
                             unique_entities = [x for x in filtered_entities if not (x in seen or seen.add(x))]
                             return ", ".join(unique_entities)
@@ -201,10 +202,11 @@ class MultimodalIngestPipeline:
                     return c
         return ""
 
-    def build_database(self, overwrite: bool = True) -> lancedb.table.Table:
+    def build_database(self, overwrite: bool = True) -> dict:
         """
-        Executes full multimodal ingestion, normalizes vectors,
-        constructs PyArrow Table, and persists to LanceDB.
+        Executes full multimodal ingestion to construct the normalized 2-table LanceDB store:
+        1. Table `videos` (Video-level metadata)
+        2. Table `keyframes` (Frame-level visual vectors, captions, objects, exact frame IDs)
         """
         print(f"[INFO] IngestPipeline: Connecting to LanceDB at '{self.lancedb_uri}'...")
         os.makedirs(self.lancedb_uri, exist_ok=True)
@@ -213,14 +215,17 @@ class MultimodalIngestPipeline:
         feature_files = sorted(glob.glob(os.path.join(self.features_dir, "*.npy")))
         if not feature_files:
             print(f"[ERROR] IngestPipeline: No .npy feature files found in '{self.features_dir}'!")
-            return None
+            return {}
 
-        print(f"[INFO] IngestPipeline: Found {len(feature_files)} videos to ingest.")
+        print(f"[INFO] IngestPipeline: Found {len(feature_files)} videos to ingest into 2-Table Store.")
 
-        records = []
-        schema = get_aic_master_schema(vector_dim=768)
+        video_records = []
+        keyframe_records = []
 
-        for fpath in tqdm(feature_files, desc="Ingesting Multimodal Data into LanceDB"):
+        videos_schema = get_videos_schema()
+        keyframes_schema = get_keyframes_schema(vector_dim=768)
+
+        for fpath in tqdm(feature_files, desc="Ingesting Data into 2-Table LanceDB Store"):
             video_id = os.path.splitext(os.path.basename(fpath))[0]
             
             try:
@@ -243,6 +248,17 @@ class MultimodalIngestPipeline:
             description = media_info.get("description", "")
             keywords = media_info.get("keywords", "")
 
+            # 1. Populate Video-Level Record (1 row per video)
+            all_video_text = f"{title} {keywords} {description}".strip()
+            video_records.append({
+                "video_id": video_id,
+                "video_title": title,
+                "video_description": description,
+                "video_keywords": keywords,
+                "all_video_text": all_video_text
+            })
+
+            # 2. Populate Keyframe-Level Records
             n_frames = feats_normalized.shape[0]
             for f_idx in range(n_frames):
                 vec = feats_normalized[f_idx].tolist()
@@ -254,43 +270,52 @@ class MultimodalIngestPipeline:
                 img_path = self._find_image_path(video_id, f_idx)
                 obj_text = self._load_frame_objects(video_id, f_idx)
                 
-                # Construct weighted text for BM25 (Title x3, Keywords x2, OCR/Objects x1.5, Desc x1)
-                all_text = f"{title} {title} {title} {keywords} {keywords} {obj_text} {obj_text} {description}".strip()
+                # Frame-level weighted text (ONLY frame-specific content, NO repeated video title)
+                frame_text_weighted = f"{obj_text}".strip()
 
-                records.append({
+                keyframe_records.append({
                     "vector": vec,
                     "video_id": video_id,
                     "frame_idx": int(f_idx),
                     "frame_id": real_frame_id,
                     "pts_time": pts_time,
                     "image_path": img_path,
+                    "keyframe_caption": "",
                     "detected_objects": obj_text,
                     "ocr_text": "",
-                    "video_title": title,
-                    "video_description": description,
-                    "video_keywords": keywords,
-                    "all_text_weighted": all_text
+                    "text_genre": "GENERAL",
+                    "frame_text_weighted": frame_text_weighted
                 })
 
-        print(f"[INFO] IngestPipeline: Building PyArrow Table with {len(records)} keyframe rows...")
-        pa_table = pa.Table.from_pylist(records, schema=schema)
+        print(f"[INFO] IngestPipeline: Building PyArrow Tables ({len(video_records)} videos, {len(keyframe_records)} keyframes)...")
+        pa_videos_table = pa.Table.from_pylist(video_records, schema=videos_schema)
+        pa_keyframes_table = pa.Table.from_pylist(keyframe_records, schema=keyframes_schema)
 
-        if overwrite and self.table_name in db.table_names():
-            db.drop_table(self.table_name)
+        # Build Table 1: videos
+        if overwrite and self.videos_table_name in db.table_names():
+            db.drop_table(self.videos_table_name)
+        v_table = db.create_table(self.videos_table_name, pa_videos_table)
 
-        print(f"[INFO] IngestPipeline: Creating LanceDB table '{self.table_name}'...")
-        table = db.create_table(self.table_name, pa_table)
+        # Build Table 2: keyframes
+        if overwrite and self.keyframes_table_name in db.table_names():
+            db.drop_table(self.keyframes_table_name)
+        kf_table = db.create_table(self.keyframes_table_name, pa_keyframes_table)
 
-        # Create Tantivy BM25 Full-Text Search Index on text fields
+        # Create Tantivy FTS Index on Table 1 (videos) and Table 2 (keyframes)
         try:
-            print("[INFO] IngestPipeline: Creating Tantivy BM25 Full-Text Index on 'all_text_weighted'...")
-            table.create_fts_index(["all_text_weighted", "detected_objects", "video_title"])
-            print("[INFO] IngestPipeline: Full-Text Index created successfully.")
+            print("[INFO] IngestPipeline: Creating Tantivy FTS Index on 'videos' table...")
+            v_table.create_fts_index(["all_video_text", "video_title"])
         except Exception as e:
-            print(f"[WARNING] IngestPipeline: Tantivy FTS Index warning ({e}). Proceeding...")
+            print(f"[WARNING] FTS Index on 'videos' warning ({e})")
 
-        print(f"[INFO] IngestPipeline: Ingestion completed! LanceDB stored at '{self.lancedb_uri}'.")
-        return table
+        try:
+            print("[INFO] IngestPipeline: Creating Tantivy FTS Index on 'keyframes' table...")
+            kf_table.create_fts_index(["frame_text_weighted", "detected_objects"])
+        except Exception as e:
+            print(f"[WARNING] FTS Index on 'keyframes' warning ({e})")
+
+        print(f"[INFO] IngestPipeline: 2-Table Store built successfully at '{self.lancedb_uri}'!")
+        return {"videos": v_table, "keyframes": kf_table}
 
 if __name__ == "__main__":
     import yaml
@@ -299,4 +324,13 @@ if __name__ == "__main__":
         cfg = yaml.safe_load(f)
     
     pipeline = MultimodalIngestPipeline(cfg)
-    pipeline.build_database(overwrite=True)
+    tables = pipeline.build_database(overwrite=True)
+    
+    if tables:
+        print("=" * 80)
+        print("[INFO] VERIFICATION: LANCEDB 2-TABLE STORE INSPECTION REPORT")
+        print("=" * 80)
+        print(f"  - Table 'videos'    : {len(tables['videos'])} records")
+        print(f"  - Table 'keyframes' : {len(tables['keyframes'])} records")
+        print("=" * 80)
+
