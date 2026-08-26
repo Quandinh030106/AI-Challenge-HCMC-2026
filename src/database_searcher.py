@@ -1,37 +1,41 @@
 import psycopg2
-import json
+from psycopg2.extras import execute_values
 
-class DatabaseSearcher:
+class DatabaseManager:
     def __init__(self, db_config):
         self.conn = psycopg2.connect(**db_config)
+        self.cursor = self.conn.cursor()
 
-    def search_candidates(self, query_embedding, tier1_objects=None, top_k=100):
-        cur = self.conn.cursor()
-        query_vec_str = str(query_embedding.tolist())
-        
-        # 1. Hard Filter theo Tier 1 Objects (nếu có)
-        where_clause = ""
-        if tier1_objects and len(tier1_objects) > 0:
-            json_objs = json.dumps(tier1_objects)
-            where_clause = f"WHERE objects_tier1 @> '{json_objs}'::jsonb"
-
-        # 2. Truy vấn kết hợp Filter & Cosine Distance trên DB
-        sql = f"""
-        SELECT 
-            frame_id, 
-            video_id,
-            (1 - (clip_embedding <=> %s::vector)) AS dense_score
-        FROM keyframe_features
-        {where_clause}
-        ORDER BY dense_score DESC
-        LIMIT %s;
+    def search_candidates(self, query_vector, category=None, target_objects=None, top_k=10):
         """
-        
-        cur.execute(sql, (query_vec_str, top_k))
-        results = cur.fetchall()
-        cur.close()
-        
-        return results
+        Truy vấn kết hợp Filter Metadata (Bảng 1 & 2) và Similarity Search (Vector)
+        """
+        query = """
+            SELECT 
+                k.frame_id, 
+                k.video_id, 
+                v.title, 
+                v.video_path, 
+                k.prompt_description,
+                1 - (k.embedding <=> %s::vector) AS similarity_score
+            FROM keyframes k
+            JOIN videos v ON k.video_id = v.video_id
+            WHERE 1=1
+        """
+        params = [query_vector.tolist()]
 
-    def close(self):
-        self.conn.close()
+        # Filter theo thể loại video (Bảng 1)
+        if category:
+            query += " AND v.category = %s"
+            params.append(category)
+
+        # Filter theo objects trong frame (Bảng 2)
+        if target_objects:
+            query += " AND k.detected_objects && %s"
+            params.append(target_objects)
+
+        query += " ORDER BY k.embedding <=> %s::vector LIMIT %s;"
+        params.extend([query_vector.tolist(), top_k])
+
+        self.cursor.execute(query, params)
+        return self.cursor.fetchall()
