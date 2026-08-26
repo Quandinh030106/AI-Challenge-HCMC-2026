@@ -73,7 +73,7 @@ class LanceDBManager:
 
         # PyArrow column projection: load ONLY required lightweight columns to save RAM
         try:
-            df = query.select(["video_id", "frame_idx", "frame_id", "pts_time", "image_path", "detected_objects"]).to_pandas()
+            df = query.select(["video_id", "frame_idx", "frame_id", "pts_time", "image_path", "detected_objects", "_distance"]).to_pandas()
         except Exception:
             df = query.to_pandas()
 
