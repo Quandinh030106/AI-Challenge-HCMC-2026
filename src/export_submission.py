@@ -61,8 +61,13 @@ def parse_raw_query_file(file_path: str) -> dict:
         "events": events
     }
 
-def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output_zip: str = "submission.zip"):
+def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output_zip: str = "submission.zip", output_dir: str = None):
     """Executes full 4-stage Accuracy-First pipeline and exports submission.zip."""
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+        if not output_zip.startswith(output_dir):
+            output_zip = os.path.join(output_dir, "submission.zip")
+
     print("=" * 80)
     print("[INFO] AIC 2026 - STARTING ACCURACY-FIRST MULTIMODAL RETRIEVAL PIPELINE")
     print("=" * 80)
