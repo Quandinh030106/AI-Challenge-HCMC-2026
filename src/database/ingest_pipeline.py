@@ -222,8 +222,21 @@ class MultimodalIngestPipeline:
         video_records = []
         keyframe_records = []
 
+        # Auto-detect vector dimension from the first feature file
+        detected_dim = 768
+        for fpath in feature_files:
+            try:
+                sample_feats = np.load(fpath)
+                if sample_feats.ndim == 1:
+                    sample_feats = sample_feats.reshape(1, -1)
+                detected_dim = int(sample_feats.shape[1])
+                print(f"[INFO] IngestPipeline: Auto-detected Feature Vector Dimension = {detected_dim}-dim")
+                break
+            except Exception:
+                pass
+
         videos_schema = get_videos_schema()
-        keyframes_schema = get_keyframes_schema(vector_dim=768)
+        keyframes_schema = get_keyframes_schema(vector_dim=detected_dim)
 
         for fpath in tqdm(feature_files, desc="Ingesting Data into 2-Table LanceDB Store"):
             video_id = os.path.splitext(os.path.basename(fpath))[0]
