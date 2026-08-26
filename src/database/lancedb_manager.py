@@ -66,7 +66,10 @@ class LanceDBManager:
             query_vector = query_vector.squeeze()
 
         query_vec_list = query_vector.tolist()
-        query = self.keyframes_table.search(query_vec_list).metric("cosine").limit(top_k)
+        try:
+            query = self.keyframes_table.search(query_vec_list, vector_column_name="vector").metric("cosine").limit(top_k)
+        except Exception:
+            query = self.keyframes_table.search(query_vec_list).metric("cosine").limit(top_k)
         
         if filter_sql:
             query = query.where(filter_sql)
@@ -87,7 +90,7 @@ class LanceDBManager:
         top_k: int = 200
     ) -> List[Dict[str, Any]]:
         """
-        Executes LanceDB Native Hybrid Search combining CLIP dense vector and Tantivy BM25.
+        Executes LanceDB Native Hybrid Search with safe fallback to vector search.
         """
         if self.keyframes_table is None:
             return []
@@ -96,16 +99,19 @@ class LanceDBManager:
             query_vector = query_vector.squeeze()
 
         query_vec_list = query_vector.tolist()
+
+        if text_keywords and str(text_keywords).strip():
+            try:
+                query = self.keyframes_table.search(query_type="hybrid").vector(query_vec_list).text(text_keywords).limit(top_k)
+                if filter_sql:
+                    query = query.where(filter_sql)
+                df = query.to_pandas()
+                return df.to_dict(orient="records")
+            except Exception:
+                pass
         
-        try:
-            query = self.keyframes_table.search(query_type="hybrid").vector(query_vec_list).text(text_keywords).limit(top_k)
-            if filter_sql:
-                query = query.where(filter_sql)
-            df = query.to_pandas()
-            return df.to_dict(orient="records")
-        except Exception:
-            # Fallback to vector search
-            return self.search_vector(query_vector, top_k=top_k, filter_sql=filter_sql)
+        # Fallback to vector search
+        return self.search_vector(query_vector, top_k=top_k, filter_sql=filter_sql)
 
     def fetch_video_timeline(self, video_id: str) -> List[Dict[str, Any]]:
         """Retrieves all chronological keyframes of a video for TRAKE and temporal reasoning."""
