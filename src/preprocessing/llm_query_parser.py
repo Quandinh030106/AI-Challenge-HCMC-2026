@@ -43,16 +43,21 @@ class LLMQueryParser:
             self.model.eval()
             print("[INFO] LLMQueryParser: Loaded NLP LLM in 4-bit NF4 mode on cuda:0.")
         except Exception as e:
-            print(f"[WARNING] 4-bit quantization loading failed ({e}). Retrying with standard FP16 on cuda:0...")
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.model_id,
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="cuda:0" if torch.cuda.is_available() else None,
-                trust_remote_code=True
-            )
-            self.model.eval()
-            print("[INFO] LLMQueryParser: Loaded NLP LLM in FP16 mode on cuda:0.")
+            print(f"[WARNING] 4-bit single GPU loading failed ({e}). Retrying with device_map='auto'...")
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_id,
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    device_map="auto" if torch.cuda.is_available() else None,
+                    trust_remote_code=True
+                )
+                self.model.eval()
+                print("[INFO] LLMQueryParser: Loaded NLP LLM with device_map='auto'.")
+            except Exception as err:
+                print(f"[WARNING] LLMQueryParser: Could not load 7B LLM into VRAM ({err}). Switching to Zero-VRAM Fast Rule Parser.")
+                self.model = None
+                self.tokenizer = None
 
     def unload_model(self):
         """Unloads NLP LLM model from VRAM to free memory."""
@@ -72,6 +77,8 @@ class LLMQueryParser:
         """
         if self.model is None:
             self.load_model()
+        if self.model is None:
+            return self._fallback_parse(query_vi, task_type)
 
         system_prompt = (
             "Bạn là chuyên gia phân tích cú pháp truy vấn video đa phương thức (CLIP, BM25, OpenImages, VLM).\n"
