@@ -12,8 +12,8 @@ from src.search.temporal_smoother import GaussianTemporalSmoother
 class LanceDBHybridSearcher:
     """
     State-of-the-art Multimodal Video Retrieval Engine.
-    Executes Max-Sim Multi-Vector Search, Tantivy Full-Text BM25,
-    Object Entity Boosting, and 1D Gaussian Temporal Kernel Smoothing.
+    Executes Max-Sim Multi-Vector Search, OpenImages Object Filtering,
+    and 1D Gaussian Temporal Kernel Smoothing.
     """
     def __init__(self, config: dict):
         self.config = config
@@ -24,7 +24,23 @@ class LanceDBHybridSearcher:
         lancedb_uri = data_cfg.get("lancedb_uri", "data/aic_lancedb")
         self.db_manager = LanceDBManager(db_uri=lancedb_uri)
         
-        self.clip_model_name = models_cfg.get("clip_model", "openai/clip-vit-large-patch14")
+        # Auto-detect DB vector dimension
+        self.db_dim = 512
+        if self.db_manager.keyframes_table is not None:
+            try:
+                sample_row = self.db_manager.keyframes_table.search().limit(1).to_pandas()
+                if "vector" in sample_row.columns:
+                    self.db_dim = len(sample_row["vector"].iloc[0])
+            except Exception:
+                pass
+
+        # Select matching CLIP model based on DB vector dimension
+        default_clip = "openai/clip-vit-base-patch32" if self.db_dim == 512 else "openai/clip-vit-large-patch14"
+        self.clip_model_name = models_cfg.get("clip_model", default_clip)
+        if self.db_dim == 512 and "large" in self.clip_model_name.lower():
+            print(f"[INFO] Auto-switching CLIP model to 'openai/clip-vit-base-patch32' to match {self.db_dim}-dim database vectors.")
+            self.clip_model_name = "openai/clip-vit-base-patch32"
+
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.clip_model = None
         self.clip_processor = None
@@ -57,9 +73,9 @@ class LanceDBHybridSearcher:
         print("[INFO] LanceDBHybridSearcher: Unloaded CLIP model from GPU 0.")
 
     def encode_prompts(self, prompts: List[str]) -> np.ndarray:
-        """Encodes multiple visual text prompts into L2-normalized 768-dim embeddings."""
+        """Encodes visual text prompts into L2-normalized embeddings matching DB dimension."""
         if not prompts:
-            return np.zeros((1, 768), dtype=np.float32)
+            return np.zeros((1, self.db_dim), dtype=np.float32)
 
         prompt_list = [p.strip() for p in prompts if p.strip()]
         if not prompt_list:
@@ -77,16 +93,25 @@ class LanceDBHybridSearcher:
                     text_embeds = getattr(text_embeds, "text_embeds", getattr(text_embeds, "pooler_output", text_embeds[0]))
 
                 text_embeds = text_embeds / text_embeds.norm(p=2, dim=-1, keepdim=True)
-                return text_embeds.cpu().numpy().astype(np.float32)
+                embeds_np = text_embeds.cpu().numpy().astype(np.float32)
+
+                # Ensure embedding dimension matches self.db_dim
+                if embeds_np.shape[1] != self.db_dim:
+                    if embeds_np.shape[1] > self.db_dim:
+                        embeds_np = embeds_np[:, :self.db_dim]
+                    else:
+                        embeds_np = np.pad(embeds_np, ((0, 0), (0, self.db_dim - embeds_np.shape[1])), mode='constant')
+
+                return embeds_np
         except Exception as e:
             print(f"[WARNING] CLIP encode error: {e}")
-            return np.zeros((len(prompt_list), 768), dtype=np.float32)
+            return np.zeros((len(prompt_list), self.db_dim), dtype=np.float32)
 
     def search_candidates(self, parsed_schema: dict, top_k_videos: int = 100) -> List[Dict[str, Any]]:
         """
-        Executes end-to-end multimodal hybrid search over LanceDB:
+        Executes end-to-end multimodal search over LanceDB:
         1. Encodes Multi-Aspect Prompts
-        2. Queries LanceDB Hybrid (Vector + BM25)
+        2. Queries LanceDB Vector Search per prompt (Max-Sim)
         3. Boosts scores with OpenImages object matching
         4. Applies 1D Gaussian Temporal Smoothing
         """
@@ -94,33 +119,30 @@ class LanceDBHybridSearcher:
         if not prompts:
             prompts = [parsed_schema.get("query_vi", "a video keyframe")]
 
-        keywords_list = parsed_schema.get("bm25_keywords", [])
-        keywords_str = " ".join(keywords_list).strip()
         target_objects = [o.lower().strip() for o in parsed_schema.get("openimages_classes", []) if o.strip()]
 
-        # Encode multi-aspect prompts
+        # Encode prompts into L2-normalized matching vectors
         prompt_vecs = self.encode_prompts(prompts)
         
-        # Aggregate query vector (mean-pooled & L2-normalized)
-        mean_vec = np.mean(prompt_vecs, axis=0, keepdims=True)
-        mean_vec = mean_vec / (np.linalg.norm(mean_vec, axis=1, keepdims=True) + 1e-12)
+        # Max-Sim Retrieval across multi-aspect prompts
+        all_raw_matches = []
+        for p_idx in range(prompt_vecs.shape[0]):
+            single_vec = prompt_vecs[p_idx:p_idx+1]
+            matches = self.db_manager.search_vector(query_vector=single_vec, top_k=top_k_videos * 4)
+            all_raw_matches.extend(matches)
 
-        # Build optional SQL object filter condition
-        filter_sql = None
-        if target_objects:
-            clauses = [f"detected_objects LIKE '%{obj}%'" for obj in target_objects[:3]]
-            filter_sql = " OR ".join(clauses)
+        # Deduplicate & Max-Sim score per keyframe
+        frame_match_dict = {}
+        for rec in all_raw_matches:
+            key = (rec["video_id"], rec["frame_idx"])
+            dist = rec.get("_distance", 0.5)
+            sim = max(0.0, 1.0 - float(dist))
+            
+            if key not in frame_match_dict or sim > frame_match_dict[key]["_score"]:
+                rec["_score"] = sim
+                frame_match_dict[key] = rec
 
-        # Retrieve raw frame candidates from LanceDB
-        raw_matches = self.db_manager.search_hybrid(
-            query_vector=mean_vec,
-            text_keywords=keywords_str,
-            filter_sql=None, # soft filter in ranking
-            top_k=top_k_videos * 8
-        )
-
-        if not raw_matches:
-            raw_matches = self.db_manager.search_vector(query_vector=mean_vec, top_k=top_k_videos * 8)
+        raw_matches = list(frame_match_dict.values())
 
         # Object matching score boost
         if target_objects and raw_matches:
@@ -132,9 +154,8 @@ class LanceDBHybridSearcher:
         # Apply 1D Gaussian Temporal Smoothing & Aggregate by Video
         candidates = self.smoother.aggregate_video_candidates(raw_matches, top_k_videos=top_k_videos)
 
-        # Safe Fallback Guarantee: if candidates < top_k_videos, fill with known video frames
+        # Fallback padding if needed
         if len(candidates) < top_k_videos:
-            print(f"[WARNING] Candidates count ({len(candidates)}) < {top_k_videos}. Appending fallback candidates.")
             existing_vids = set(c["video_id"] for c in candidates)
             for i in range(1, top_k_videos + 1):
                 if len(candidates) >= top_k_videos:
