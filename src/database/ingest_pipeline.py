@@ -271,6 +271,23 @@ class MultimodalIngestPipeline:
                 "all_video_text": all_video_text
             })
 
+            # Load cached captions dictionary if available
+            cached_captions = {}
+            caption_paths = [
+                "data/keyframe_captions.json",
+                "/kaggle/working/keyframe_captions.json",
+                "/kaggle/input/keyframe-captions/keyframe_captions.json"
+            ]
+            for cp in caption_paths:
+                if os.path.exists(cp):
+                    try:
+                        with open(cp, "r", encoding="utf-8") as f:
+                            cached_captions = json.load(f)
+                        print(f"[INFO] IngestPipeline: Loaded {len(cached_captions)} keyframe captions from '{cp}'.")
+                        break
+                    except Exception:
+                        pass
+
             # 2. Populate Keyframe-Level Records
             n_frames = feats_normalized.shape[0]
             for f_idx in range(n_frames):
@@ -290,8 +307,13 @@ class MultimodalIngestPipeline:
                 img_path = self._find_image_path(video_id, f_idx)
                 obj_text = self._load_frame_objects(video_id, f_idx)
                 
-                # Frame-level weighted text (ONLY frame-specific content, NO repeated video title)
-                frame_text_weighted = f"{obj_text}".strip()
+                # Fetch keyframe caption if available
+                cap_data = cached_captions.get(img_path, {})
+                kf_caption = cap_data.get("caption", "") if isinstance(cap_data, dict) else str(cap_data)
+                kf_ocr = cap_data.get("ocr_text", "") if isinstance(cap_data, dict) else ""
+
+                # Frame-level weighted text (caption + ocr + detected objects)
+                frame_text_weighted = f"{kf_caption} {kf_ocr} {obj_text}".strip()
 
                 keyframe_records.append({
                     "vector": vec,
@@ -300,9 +322,9 @@ class MultimodalIngestPipeline:
                     "frame_id": real_frame_id,
                     "pts_time": pts_time,
                     "image_path": img_path,
-                    "keyframe_caption": "",
+                    "keyframe_caption": kf_caption,
                     "detected_objects": obj_text,
-                    "ocr_text": "",
+                    "ocr_text": kf_ocr,
                     "text_genre": "GENERAL",
                     "frame_text_weighted": frame_text_weighted
                 })
