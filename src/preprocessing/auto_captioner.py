@@ -30,23 +30,30 @@ class QwenKeyframeCaptioner:
             except ImportError:
                 from transformers import AutoModelForCausalLM as VLMClass
 
-            bnb_config = None
+            # Try loading in 4-bit quantization first, fallback to FP16 if bitsandbytes fails
             try:
-                import bitsandbytes
                 bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4")
-            except Exception:
-                print("[WARNING] bitsandbytes not available. Loading Qwen2.5-VL in FP16 mode...")
+                self.model = VLMClass.from_pretrained(
+                    self.model_id,
+                    quantization_config=bnb_config,
+                    torch_dtype=torch.float16,
+                    device_map=self.device,
+                    trust_remote_code=True
+                )
+                print("[INFO] Loaded Qwen2.5-VL in 4-bit quantized mode.")
+            except Exception as quant_err:
+                print(f"[WARNING] 4-bit quantization failed ({quant_err}). Loading in standard FP16 mode...")
+                self.model = VLMClass.from_pretrained(
+                    self.model_id,
+                    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                    device_map=self.device if torch.cuda.is_available() else None,
+                    trust_remote_code=True
+                )
+                print("[INFO] Loaded Qwen2.5-VL in standard FP16 mode.")
 
-            self.model = VLMClass.from_pretrained(
-                self.model_id,
-                quantization_config=bnb_config if (bnb_config and torch.cuda.is_available()) else None,
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map=self.device if torch.cuda.is_available() else None,
-                trust_remote_code=True
-            )
             self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=100352, max_pixels=401408, trust_remote_code=True)
             self.model.eval()
-            print("[INFO] QwenKeyframeCaptioner: Loaded successfully.")
+            print("[INFO] QwenKeyframeCaptioner: Ready for inference.")
         except Exception as e:
             print(f"[ERROR] QwenKeyframeCaptioner: Failed to load model ({e})")
 
