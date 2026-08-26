@@ -119,24 +119,32 @@ class LanceDBHybridSearcher:
         if not prompts:
             prompts = [parsed_schema.get("query_vi", "a video keyframe")]
 
+        keywords_list = parsed_schema.get("bm25_keywords", [])
+        keywords_str = " ".join(keywords_list).strip()
         target_objects = [o.lower().strip() for o in parsed_schema.get("openimages_classes", []) if o.strip()]
 
         # Encode prompts into L2-normalized matching vectors
         prompt_vecs = self.encode_prompts(prompts)
         
-        # Max-Sim Retrieval across multi-aspect prompts
+        # Max-Sim Retrieval across multi-aspect prompts & hybrid text matching
         all_raw_matches = []
         for p_idx in range(prompt_vecs.shape[0]):
             single_vec = prompt_vecs[p_idx:p_idx+1]
-            matches = self.db_manager.search_vector(query_vector=single_vec, top_k=top_k_videos * 4)
+            if keywords_str:
+                matches = self.db_manager.search_hybrid(query_vector=single_vec, text_keywords=keywords_str, top_k=top_k_videos * 4)
+            else:
+                matches = self.db_manager.search_vector(query_vector=single_vec, top_k=top_k_videos * 4)
             all_raw_matches.extend(matches)
 
         # Deduplicate & Max-Sim score per keyframe
         frame_match_dict = {}
         for rec in all_raw_matches:
             key = (rec["video_id"], rec["frame_idx"])
-            dist = rec.get("_distance", 0.5)
-            sim = max(0.0, 1.0 - float(dist))
+            dist = rec.get("_distance", None)
+            if dist is not None:
+                sim = max(0.0, 1.0 - float(dist))
+            else:
+                sim = float(rec.get("_score", rec.get("score", 0.5)))
             
             if key not in frame_match_dict or sim > frame_match_dict[key]["_score"]:
                 rec["_score"] = sim
