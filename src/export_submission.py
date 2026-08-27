@@ -48,10 +48,11 @@ def parse_raw_query_file(file_path: str) -> dict:
 
     elif task_type == "trake":
         for l in lines:
-            if re.match(r'^(e\d+|sự kiện \d+|\d+\.|\-|\*)\s*[:\.]?', l, re.IGNORECASE):
-                events.append(l)
+            l_clean = re.sub(r'^(e\d+|sự kiện \d+|\d+\.|\-|\*)\s*[:\.]?', '', l, flags=re.IGNORECASE).strip()
+            if l_clean:
+                events.append(l_clean)
         if not events:
-            events = lines[1:] if len(lines) > 1 else lines
+            events = lines
 
     return {
         "query_id": qid,
