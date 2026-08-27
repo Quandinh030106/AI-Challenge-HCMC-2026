@@ -1,194 +1,136 @@
-# AI Challenge HCMC 2026 - Multimodal Video Retrieval System
-## Branch: `ket-hop-database` (Accuracy-First Hybrid LanceDB Architecture)
+# 🚀 AI Challenge HCMC 2026 - Multimodal Video Search Engine & Production Web Service
 
-Hệ thống truy vấn video đa phương thức hiệu năng cao, tối ưu hóa độ chính xác và quản lý tài nguyên độc lập trên môi trường máy chủ **Kaggle 2x Tesla T4 GPU (15GB + 15GB VRAM)**.
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![LanceDB](https://img.shields.io/badge/LanceDB-0.8%2B-green.svg)](https://lancedb.github.io/lancedb/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![Qwen2.5-VL](https://img.shields.io/badge/Qwen2.5--VL-7B--Instruct-purple.svg)](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct)
 
----
-
-### I. TỔNG QUAN VÀ CHIẾN LƯỢC TỐI THƯỢNG (ACCURACY-FIRST)
-
-Hệ thống được thiết kế chuyên biệt để giải quyết 3 dạng truy vấn chính thức của cuộc thi:
-1. **Textual Known Item Search (KIS)**: Định vị chính xác video và frame tương ứng với mô tả văn bản tự nhiên.
-2. **Visual Question Answering (Q&A)**: Tìm video sự kiện và trích xuất câu trả lời thị giác (số cân, biển báo, tên đèo, số lượng).
-3. **Temporal Retrieval and Alignment of Key Events (TRAKE)**: Tìm kiếm video và căn chỉnh chuỗi sự kiện thời gian theo thứ tự tăng dần nghiêm ngặt ($t_1 < t_2 < \dots < t_N$).
-
-#### Mục tiêu tối ưu hóa điểm số:
-Thang điểm của Ban Giám Khảo đánh giá theo công thức:
-$$Final\ Score = \frac{1}{5} \sum_{k \in \{1, 5, 20, 50, 100\}} R@k$$
-Hệ thống áp dụng chiến lược **Đẩy kết quả đúng lên TOP 1 ($R@1 = 1.0$)** thông qua cơ chế thẩm định trực quan sâu bằng VLM, nhằm giành trọn vẹn điểm số **$Final\ Score = 1.00$**.
+Welcome to the official repository for **AI Challenge HCMC 2026**. This project features a state-of-the-art **Multimodal Video Retrieval Pipeline** and **Production RESTful Web Service API** designed to achieve $R@1 = 1.0$ accuracy while automatically exporting official Codabench submission CSVs for competition evaluation.
 
 ---
 
-### II. KIẾN TRÚC HỆ THỐNG 4 GIAI ĐOẠN
+## 🌟 Key Features & Architectural Highlights
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              SƠ ĐỒ HOẠT ĐỘNG TOÀN DIỆN CỦA HỆ THỐNG                                    │
-└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+### 1. Normalized 2-Table LanceDB Storage Architecture
+- **Table `videos` (Video-Level Metadata, 873 rows)**: Stores clean YouTube/streaming MP4 URLs, titles, descriptions, keywords, duration in seconds, FPS, and total keyframe counts. Eliminates 100% text redundancy across keyframes.
+- **Table `keyframes` (Keyframe Visual Store, 177,321 rows)**: Stores L2-normalized 512-dim CLIP vectors, real CSV frame IDs (`frame_id`), formatted human-readable timestamps (`timestamp_formatted`, e.g., `03:22`), Qwen2.5-VL multi-sentence natural language captions, OpenImages object tags, OCR text, and Tantivy Native Rust FTS inverted indexes (`frame_text_weighted`).
 
- [GIAI ĐOẠN 0: KHỞI TẠO LANCEDB MULTIMODAL STORE] (Chạy 1 lần duy nhất ~2–3 phút)
-  • Nạp ~200,000 vector CLIP ViT-L/14 (768 chiều, L2-Normalized) từ clip-features-32/*.npy.
-  • Đọc map-keyframes/*.csv -> Ánh xạ vĩnh viễn frame_idx sang Frame ID thật của video.
-  • Nạp media-info/*.json (Title, Description, Keywords) + objects/*.json (OpenImages score >= 0.10).
-  • Tạo chỉ mục: Flat Vector Index + Tantivy BM25 Full-Text Search đa trường.
-                                    │
-                                    ▼
- [GIAI ĐOẠN 1: MULTI-ASPECT NLP QUERY PARSING] (Qwen2.5-7B 4-bit trên GPU 0)
-  • Phân rã câu hỏi thành 4 Prompts thị giác độc lập (Bối cảnh, Nhân vật, Đồ vật/Màu sắc, Hành động).
-  • Trích xuất Cụm danh từ tiếng Việt có nghĩa (2–4 từ) cho BM25 (loại bỏ 100% stop words).
-  • Trích xuất nhãn thực thể OpenImages & Câu hỏi thị giác (VQA).
-  • [TỰ ĐỘNG UNLOAD GPU 0 VỀ 0 MB VRAM].
-                                    │
-                                    ▼
- [GIAI ĐOẠN 2: LANCEDB NATIVE HYBRID RETRIEVAL & GAUSSIAN SMOOTHING] (CLIP ViT-L trên GPU 0)
-  • Max-Sim Multi-Vector Retrieval: Tìm kiếm song song 4 Prompts thị giác qua LanceDB.
-  • Tantivy BM25 Đa Trường: Title (x3.0) + Keywords (x2.0) + OCR (x2.0) + Objects (x1.5).
-  • Lọc cộng hưởng thời gian Gauss 1D (Gaussian Temporal Smoothing): Lọc bỏ nhiễu frame ngẫu nhiên.
-  • Trích xuất Top 10 Video ứng viên sáng giá nhất + Danh sách Top 100 Candidates.
-  • [TỰ ĐỘNG UNLOAD GPU 0 VỀ 0 MB VRAM].
-                                    │
-                                    ▼
- [GIAI ĐOẠN 3: HEAVY VLM DEEP VISUAL VERIFICATION & TOP-1 PROMOTION] (Qwen2.5-VL-7B trên GPU 1)
-  • Textual KIS: VLM trực tiếp xem ảnh Top 5 video -> Thẩm định độ khớp chi tiết -> ĐẨY LÊN TOP 1.
-  • Visual Q&A: Lấy 3 frame thumbnail ($448 \times 448$) -> Đọc số cân / biển báo -> ĐẨY LÊN TOP 1.
-  • TRAKE: Thuật toán Viterbi DP căn chỉnh chuỗi sự kiện strictly monotonic t_1 < t_2 < ... < t_N.
-  • [TỰ ĐỘNG UNLOAD GPU 1 VỀ 0 MB VRAM].
-                                    │
-                                    ▼
- [GIAI ĐOẠN 4: SUBMISSION VALIDATION & CODABENCH PACKAGING]
-  • Kiểm tra 100% số dòng (đúng 100 dòng/câu), đúng số lượng mốc TRAKE, escape chuỗi Q&A đúng chuẩn.
-  • Đóng gói tự động file submission.zip đạt chuẩn nộp bài.
-```
+### 2. Dual-GPU Hardware Mapping Strategy
+- **GPU 0 (`cuda:0`)**: Executes Phase 1 (NLP Query Parsing via `Qwen2.5-7B-Instruct` 4-bit NF4) $\rightarrow$ Unloads VRAM $\rightarrow$ Executes Phase 2 (Max-Sim CLIP 512-dim Dense Vector Search + Tantivy BM25 + 1D Gaussian Temporal Kernel).
+- **GPU 1 (`cuda:1`)**: Executes Phase 3 (Heavy VLM `Qwen2.5-VL-7B-Instruct` 4-bit NF4) for Deep Visual Inspection, reading exact scale numbers, bridge names, red hat counts, and promoting verified winners to Rank 1 ($R@1 = 1.0$).
+
+### 3. Production FastAPI Web Application
+- **Modern Glassmorphism Web UI**: Features a sleek left-sidebar search panel with Task Tabs (Textual KIS, Visual Q&A, Temporal Event TRAKE).
+- **Interactive Video Player**: Embedded player automatically seeks (jumps) to the exact timestamp (`pts_time`) where the AI identified the target action.
+- **Automated Codabench Submission Generator**: Every executed search automatically exports the official BTC submission CSV (`/kaggle/working/submissions/{query_id}.csv`) and provides a one-click **"Download Submission Package (submission.zip)"** button.
 
 ---
 
-### III. CẤU TRÚC BẢNG DỮ LIỆU LANCEDB (12 TRƯỜNG DỮ LIỆU)
-
-Toàn bộ dữ liệu của 873 video (~200,000 frames) được lưu trữ theo định dạng nhị phân Apache Arrow trong thư mục `data/aic_lancedb`:
-
-| Trường Dữ Liệu | Kiểu Dữ Liệu | Mô Tả Kỹ Thuật |
-| :--- | :--- | :--- |
-| `vector` | `Float32[768]` | Vector đặc trưng CLIP ViT-L/14 chuẩn hóa L2 ($\|\mathbf{v}\| = 1$) |
-| `video_id` | `String` | Tên video (ví dụ: `L21_V001`) |
-| `frame_idx` | `Int32` | Thứ tự index trích xuất: `0, 1, 2...` (tương ứng `001.jpg`) |
-| `frame_id` | `Int64` | **FRAME ID THẬT CỦA VIDEO TỪ CSV** (ví dụ: `0, 90, 261, 1234...`) |
-| `pts_time` | `Float32` | Mốc thời gian thực tế (giây): `0.0, 3.0, 8.7...` |
-| `image_path` | `String` | Đường dẫn tuyệt đối/tương đối đến file ảnh `.jpg` |
-| `detected_objects` | `String` | Nhãn OpenImages ($\ge 0.10$): `lantern, car, balloon, boat...` |
-| `ocr_text` | `String` | Chữ/số trích xuất từ khung hình |
-| `video_title` | `String` | Tiêu đề YouTube từ `media-info.json` |
-| `video_description` | `String` | Mô tả tóm tắt nội dung video |
-| `video_keywords` | `String` | Danh sách 31 tags từ khóa |
-| `all_text_weighted` | `String` | Chuỗi văn bản đa trọng số phục vụ tìm kiếm Tantivy BM25 |
-
----
-
-### IV. CƠ CHẾ PHÂN BỔ TÀI NGUYÊN TRÊN DUAL T4 GPU (0% CUDA OOM)
-
-- **GPU 0 (`cuda:0`, 15GB VRAM)**:
-  - Chạy Giai đoạn 1 (NLP LLM Qwen2.5-7B, ~5.2 GB) $\rightarrow$ Unload sạch về 0 MB.
-  - Chạy Giai đoạn 2 (CLIP ViT-L/14, ~1.8 GB) $\rightarrow$ Unload sạch về 0 MB.
-- **GPU 1 (`cuda:1`, 15GB VRAM)**:
-  - Dành trọn vẹn 15GB VRAM cho Giai đoạn 3 (Qwen2.5-VL-7B 4-bit NF4, ~5.5 GB).
-  - Tối ưu hóa kích thước ảnh thumbnail ($448 \times 448$) và giới hạn token `max_pixels = 384 * 28 * 28` $\rightarrow$ Bộ nhớ tính toán activation luôn dưới 100 MB, triệt tiêu 100% nguy cơ tràn VRAM.
-
----
-
-### V. CẤU TRÚC THƯ MỤC MÃ NGUỒN
+## 🛠 Project Structure
 
 ```
 AI-Challenge-HCMC-2026/
 ├── configs/
-│   └── lancedb_config.yaml          <-- File cấu hình tập trung quản lý toàn bộ hệ thống
-│
+│   └── lancedb_config.yaml           # Master pipeline & model configuration
 ├── src/
 │   ├── database/
-│   │   ├── schema.py                <-- Định nghĩa PyArrow Schema chuẩn 12 trường dữ liệu
-│   │   ├── ingest_pipeline.py       <-- Script tự động quét thô và đóng gói vào LanceDB
-│   │   └── lancedb_manager.py       <-- Interface truy vấn Vector, BM25, lọc và trích xuất ảnh
-│   │
+│   │   ├── schema.py                 # PyArrow schemas for videos and keyframes tables
+│   │   ├── ingest_pipeline.py        # 2-Table LanceDB ingestion & auto-zipping pipeline
+│   │   └── lancedb_manager.py        # Zero-copy memory-safe query manager
 │   ├── preprocessing/
-│   │   ├── llm_query_parser.py      <-- Phân rã 4 khía cạnh thị giác và cụm từ BM25 (Qwen2.5-7B)
-│   │   ├── extract_features.py      <-- Trích xuất đặc trưng CLIP (nếu cần tạo thêm .npy)
-│   │   └── run_ocr.py               <-- Module EasyOCR trích xuất chữ
-│   │
+│   │   ├── llm_query_parser.py       # Qwen2.5-7B NLP query parser (4-bit GPU)
+│   │   └── auto_captioner.py         # Qwen2.5-VL-3B High-Res (784x784) auto-captioner
 │   ├── search/
-│   │   ├── lancedb_hybrid_search.py <-- Bộ tìm kiếm kết hợp Max-Sim Vector + Tantivy BM25 + Objects
-│   │   └── temporal_smoother.py     <-- Thuật toán 1D Gaussian Temporal Smoothing
-│   │
+│   │   ├── temporal_smoother.py      # 1D Gaussian Temporal Kernel Smoother
+│   │   └── lancedb_hybrid_search.py  # Max-Sim CLIP + Tantivy FTS BM25 hybrid searcher
 │   ├── tasks/
-│   │   ├── task_kis.py              <-- Solver KIS tích hợp VLM Deep Visual Verification
-│   │   ├── task_vqa.py              <-- Solver Q&A kèm chiến thuật đẩy lên Top 1 (R@1 = 1.0)
-│   │   └── task_trake.py            <-- Solver TRAKE căn chỉnh Viterbi DP strictly monotonic
-│   │
-│   ├── service/
-│   │   └── api.py                   <-- FastAPI Web Service cung cấp REST API cho toàn hệ thống
-│   │
-│   ├── export_submission.py         <-- Điều phối toàn bộ 4 giai đoạn & đóng gói submission.zip
-│   └── utils.py                     <-- Các hàm tiện ích hỗ trợ đọc ghi file
-│
-└── requirements.txt                 <-- Khai báo đầy đủ các thư viện
+│   │   ├── task_kis.py               # Textual KIS solver with VLM verification
+│   │   ├── task_vqa.py               # Visual Q&A solver with 3-frame window inspection
+│   │   └── task_trake.py             # TRAKE solver with Viterbi DP temporal alignment
+│   ├── web/
+│   │   ├── app.py                    # FastAPI Web Service API backend
+│   │   ├── templates/index.html      # Glassmorphism Web UI layout
+│   │   └── static/                   # App CSS styles and JS interaction logic
+│   └── export_submission.py          # Master pipeline coordinator for full benchmark runs
+└── README.md                         # Documentation
 ```
 
 ---
 
-### VI. HƯỚNG DẪN CHẠY TRÊN KAGGLE NOTEBOOK (4 CELLS TỰ ĐỘNG HÓA)
+## 🚀 Step-by-Step Kaggle Execution Guide
 
-#### CELL 1: Cài đặt thư viện & Kéo mã nguồn
+### Cell 1: Environment Setup & Pull Latest Code
 ```python
 import os
 import torch
 
-print("GPU khả dụng:", torch.cuda.device_count(), "-", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
+print("GPU Available:", torch.cuda.device_count(), "-", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU")
 
+os.chdir("/kaggle/working")
 !rm -rf AI-Challenge-HCMC-2026
-!git clone -b ket-hop-database https://github.com/Quandinh030106/AI-Challenge-HCMC-2026.git
+!git clone -b web-service-api https://github.com/Quandinh030106/AI-Challenge-HCMC-2026.git
 
 os.chdir("/kaggle/working/AI-Challenge-HCMC-2026")
-!pip install -q lancedb pyarrow tantivy-py qwen-vl-utils rank-bm25 pyyaml scipy transformers accelerate bitsandbytes fastapi uvicorn
+print("Working Directory:", os.getcwd())
+
+!pip install -U bitsandbytes accelerate
+!pip install -q lancedb pyarrow pyyaml tqdm numpy qwen-vl-utils fastapi uvicorn[standard] jinja2 pyngrok
 ```
 
-#### CELL 2: Khởi động lại Kernel (Nếu cần dọn sạch VRAM về 0 MB)
-```python
-import os
-os._exit(0)
-```
-
-#### CELL 3: Cấu hình đường dẫn & Xây dựng LanceDB (Chạy 1 lần duy nhất ~2–3 phút)
+### Cell 2: Build 2-Table LanceDB Database Store
 ```python
 import os
 import yaml
+import src.database.ingest_pipeline
 from src.database.ingest_pipeline import MultimodalIngestPipeline
 
-os.chdir("/kaggle/working/AI-Challenge-HCMC-2026")
-
-with open("configs/lancedb_config.yaml", "r", encoding="utf-8") as f:
+config_path = "configs/lancedb_config.yaml"
+with open(config_path, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
-# Tự động quét và build LanceDB nếu chưa có
-ingest_pipeline = MultimodalIngestPipeline(config)
-ingest_pipeline.build_database(overwrite=False)
-
-# Nén lưu trữ dự phòng
-!zip -q -r /kaggle/working/aic_lancedb.zip /kaggle/working/aic_lancedb
-print("[INFO] LanceDB Database is ready!")
+pipeline = MultimodalIngestPipeline(config)
+tables = pipeline.build_database(overwrite=True)
 ```
 
-#### CELL 4: Chạy toàn bộ Master Pipeline & Xuất Submission
+### Cell 3: Database Integrity Audit
 ```python
 import os
+import lancedb
+
+db = lancedb.connect("/kaggle/working/aic_lancedb")
+tbl_videos = db.open_table("videos")
+tbl_keyframes = db.open_table("keyframes")
+
+print(f"Videos count: {len(tbl_videos)} rows (Expected: 873)")
+print(f"Keyframes count: {len(tbl_keyframes)} rows (Expected: ~177,321)")
+```
+
+### Cell 6: Full Benchmark Run Across All 25 Queries
+```python
+import os
+import yaml
 from src.export_submission import run_master_pipeline
 
-os.chdir("/kaggle/working/AI-Challenge-HCMC-2026")
-run_master_pipeline(config_path="configs/lancedb_config.yaml", output_zip="/kaggle/working/submission.zip")
+config_path = "configs/lancedb_config.yaml"
+zip_submission_path = run_master_pipeline(
+    config_path=config_path,
+    output_dir="/kaggle/working/submissions"
+)
+print(f"[INFO] Submission ZIP created at: {zip_submission_path}")
+```
+
+### Cell 7: Launch FastAPI Web App with Public Ngrok URL
+```python
+import os
+from pyngrok import ngrok
+
+public_url = ngrok.connect(8000).public_url
+print(f"  🌟 PUBLIC WEB APP URL: {public_url}")
+
+!uvicorn src.web.app:app --host 0.0.0.0 --port 8000
 ```
 
 ---
 
-### VII. CHẠY FASTAPI WEB SERVICE (TRUY VẤN TỪ XA / LOCAL)
-
-Để khởi động máy chủ API tìm kiếm:
-```bash
-python -m src.service.api
-```
-Truy cập Swagger UI tại: `http://localhost:8000/docs` để thử nghiệm trực quan các API tìm kiếm đa phương thức.
+## 📜 License & Acknowledgments
+Built with ❤️ for **AI Challenge HCMC 2026**. Powered by PyTorch, LanceDB, Hugging Face Transformers, and FastAPI.

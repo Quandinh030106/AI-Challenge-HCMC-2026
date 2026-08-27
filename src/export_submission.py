@@ -214,7 +214,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         csv_path = os.path.join(submission_dir, f"{qid}.csv")
 
         if task_type == "kis":
-            preds = kis_solver.solve(schema, cands, total_preds=100, top_k_verify=5)
+            preds = kis_solver.solve(schema, cands, total_preds=100, top_k_verify=10)
             with open(csv_path, "w", encoding="utf-8", newline="") as f_out:
                 for p in preds:
                     f_out.write(f"{p['video_id']},{p['frame_id']}\n")
