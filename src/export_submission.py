@@ -187,7 +187,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
             vlm_model_id,
             quantization_config=bnb_config if torch.cuda.is_available() else None,
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map=target_vlm_device if torch.cuda.is_available() else None,
+            device_map="auto" if torch.cuda.is_available() else None,
             trust_remote_code=True
         )
         min_pixels = int(config.get("vlm_verification", {}).get("min_pixels", 100352))
@@ -270,6 +270,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
                 zipf.write(file_path, arcname=file)
 
     print(f"[INFO] All done! Submission archive created at: '{output_zip}'")
+    return output_zip
 
 if __name__ == "__main__":
     run_master_pipeline()
