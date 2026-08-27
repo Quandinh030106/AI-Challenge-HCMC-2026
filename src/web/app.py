@@ -10,7 +10,7 @@ import zipfile
 import shutil
 import torch
 from typing import List, Dict, Any, Optional
-from fastapi import FastAPI, Request, Form, BackgroundTask, HTTPException
+from fastapi import FastAPI, Request, Form, BackgroundTasks, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -129,7 +129,7 @@ async def execute_search(
             vlm_model_id,
             quantization_config=bnb_config if torch.cuda.is_available() else None,
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map=target_vlm_device if torch.cuda.is_available() else None,
+            device_map="auto" if torch.cuda.is_available() else "cpu",
             trust_remote_code=True
         )
         vlm_processor = AutoProcessor.from_pretrained(vlm_model_id, min_pixels=100352, max_pixels=301056, trust_remote_code=True)
