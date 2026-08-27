@@ -5,6 +5,7 @@ import os
 import glob
 import json
 import csv
+import shutil
 import numpy as np
 import pyarrow as pa
 import lancedb
@@ -376,6 +377,7 @@ class MultimodalIngestPipeline:
         print(f"[INFO] IngestPipeline: 2-Table Store built successfully at '{self.lancedb_uri}'!")
         # 5. Automatically create aic_lancedb.zip archive for easy download & Kaggle Dataset persistence
         try:
+            import shutil
             db_parent_dir = os.path.dirname(self.lancedb_uri) or "."
             db_base_name = os.path.basename(self.lancedb_uri)
             zip_out_path = os.path.join(db_parent_dir, f"{db_base_name}.zip")
@@ -391,7 +393,7 @@ class MultimodalIngestPipeline:
         except Exception as zip_err:
             print(f"[WARNING] IngestPipeline: Auto-zip notice ({zip_err}).")
 
-        return {"videos": self.videos_table, "keyframes": self.keyframes_table}
+        return {"videos": v_table, "keyframes": kf_table}
 
 if __name__ == "__main__":
     import yaml
