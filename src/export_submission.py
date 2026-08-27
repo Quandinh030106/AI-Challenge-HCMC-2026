@@ -62,7 +62,7 @@ def parse_raw_query_file(file_path: str) -> dict:
         "events": events
     }
 
-def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output_zip: str = "submission.zip", output_dir: str = None):
+def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output_zip: str = "submission.zip", output_dir: str = None, queries_dir: str = None):
     """Executes full 4-stage Accuracy-First pipeline and exports submission.zip."""
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -89,10 +89,12 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         db_manager = LanceDBManager(db_uri=lancedb_uri)
 
     # --------------------------------------------------------------------------
-    # ĐỌC DANH SÁCH CÂU HỎI ĐỀ THI
+    # ĐỌC DANH SÁCH CÂU HỎI ĐỀ THI (DYNAMIC QUERIES DIR OVERRIDE)
     # --------------------------------------------------------------------------
-    queries_dir = config.get("data", {}).get("queries_dir", "")
-    query_files = sorted(glob.glob(os.path.join(queries_dir, "*.txt")) if os.path.exists(queries_dir) else [])
+    if not queries_dir:
+        queries_dir = config.get("data", {}).get("queries_dir", "")
+
+    query_files = sorted(glob.glob(os.path.join(queries_dir, "*.txt")) if (queries_dir and os.path.exists(queries_dir)) else [])
     
     if not query_files:
         # Search Kaggle input
