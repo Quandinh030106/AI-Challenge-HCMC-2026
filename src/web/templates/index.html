@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Challenge HCMC 2026 - Multimodal Video Search Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- LEFT SIDEBAR SEARCH PANEL -->
+    <aside class="sidebar-panel">
+      <div class="brand-header">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AIC 2026 ENGINE</h1>
+          <p class="brand-subtitle">Multimodal Video Retrieval & BTC Auto-Submission</p>
+        </div>
+      </div>
+
+      <form id="search-form" class="search-box-container">
+        <div class="form-group">
+          <label for="task_type" class="input-label">LOẠI TRUY VẤN (TASK TYPE)</label>
+          <div class="task-selector">
+            <button type="button" class="task-tab active" data-task="kis">Textual KIS</button>
+            <button type="button" class="task-tab" data-task="qa">Visual Q&A</button>
+            <button type="button" class="task-tab" data-task="trake">Temporal Event</button>
+          </div>
+          <input type="hidden" name="task_type" id="task_type" value="kis">
+        </div>
+
+        <div class="form-group">
+          <label for="query_id" class="input-label">MÃ CÂU HỎI (QUERY ID)</label>
+          <input type="text" id="query_id" name="query_id" class="text-input" placeholder="Ví dụ: query-p1-1-kis" value="query-p1-1-kis">
+        </div>
+
+        <div class="form-group">
+          <label for="query_vi" class="input-label">NỘI DUNG MÔ TẢ TRUY VẤN (SEARCH QUERY)</label>
+          <textarea id="query_vi" name="query_vi" class="textarea-input" rows="5" placeholder="Nhập câu mô tả tiếng Việt (Ví dụ: Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, cùng thực hiện động tác hai tay chạm mũi chân...)" required>Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, cùng thực hiện động tác hai tay chạm mũi chân. Trong nhóm chỉ có một người đeo kính và ba người đội nón có màu đỏ.</textarea>
+        </div>
+
+        <button type="submit" id="btn-search" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>TÌM KIẾM & XUẤT CSV NỘP BÀI</span>
+        </button>
+      </form>
+
+      <div class="export-box">
+        <div class="export-info">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Codabench Submission Package</span>
+        </div>
+        <button id="btn-download-zip" class="btn-secondary" onclick="window.location.href='/api/v1/submission/download_all'">
+          TẢI FILE TỔNG NỘP BTC (submission.zip)
+        </button>
+      </div>
+
+      <div class="system-status">
+        <div class="status-indicator">
+          <span class="pulse-dot"></span>
+          <span>LanceDB 2-Table Store Ready (177k Frames)</span>
+        </div>
+        <div class="status-indicator">
+          <span class="pulse-dot blue"></span>
+          <span>GPU Acceleration Active (Qwen2.5-VL + CLIP)</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT GRID PANEL -->
+    <main class="main-panel">
+      <!-- HEADER METRICS BAR -->
+      <header class="top-bar">
+        <div class="search-summary" id="search-summary">
+          <h2 class="summary-title">Sẵn Sàng Tìm Kiếm</h2>
+          <p class="summary-desc">Gõ câu hỏi bên trái để khởi chạy AI Retrieval 3 Giai Đoạn & Xuất CSV Nộp Bài.</p>
+        </div>
+        <div class="metrics-pills" id="metrics-pills" style="display: none;">
+          <div class="pill"><span class="pill-label">Thời gian:</span> <span id="metric-time">0.0s</span></div>
+          <div class="pill"><span class="pill-label">Ứng viên:</span> <span id="metric-count">0</span></div>
+          <div class="pill"><span class="pill-label">Intent:</span> <span id="metric-intent">VISUAL_SCENE</span></div>
+        </div>
+      </header>
+
+      <!-- SEARCH PARSED DEBUG CHIPS -->
+      <div id="debug-chips" class="debug-chips-container" style="display: none;"></div>
+
+      <!-- RESULTS GRID -->
+      <section class="results-section">
+        <div id="loading-state" class="loading-state" style="display: none;">
+          <div class="spinner"></div>
+          <p class="loading-text">Đang chạy AI Retrieval 3 Giai Đoạn...</p>
+          <p class="loading-subtext">NLP Parsing (Qwen2.5-7B) ➔ LanceDB Hybrid Search (CLIP 512-dim) ➔ Deep VLM Inspection (Qwen2.5-VL-7B)</p>
+        </div>
+
+        <div id="results-grid" class="results-grid">
+          <!-- Candidate Video Cards loaded dynamically -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
