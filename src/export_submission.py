@@ -210,7 +210,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         shutil.rmtree(submission_dir)
     os.makedirs(submission_dir, exist_ok=True)
 
-    for schema in tqdm(parsed_schemas, desc="Phase 3: Solving & Writing CSVs"):
+    for idx, schema in enumerate(parsed_schemas, 1):
         qid = schema["query_id"]
         task_type = schema["task_type"]
         cands = retrieved_candidates.get(qid, [])
@@ -236,6 +236,26 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
                 for p in preds:
                     fids_str = ",".join(str(fid) for fid in p["frame_ids"])
                     f_out.write(f"{p['video_id']},{fids_str}\n")
+
+        # Detailed Query Inspection Logging for easy error monitoring
+        top1 = preds[0] if preds else {}
+        top1_vid = top1.get("video_id", "N/A")
+        top1_fid = top1.get("frame_id", top1.get("frame_ids", "N/A"))
+        top1_score = round(float(top1.get("score", 0.0)), 4) if "score" in top1 else "N/A"
+
+        # Calculate timestamp string
+        pts = float(cands[0].get("pts_time", 0.0)) if cands else 0.0
+        minutes = int(pts // 60)
+        seconds = int(pts % 60)
+        ts_str = f"{minutes:02d}:{seconds:02d}"
+
+        extra_info = ""
+        if task_type == "qa":
+            extra_info = f" | Answer: {top1.get('answer', 'N/A')}"
+        elif task_type == "trake":
+            extra_info = f" | Frames: {top1_fid}"
+
+        print(f"[{idx}/{len(parsed_schemas)}] Query '{qid}' ({task_type.upper()}) ➔ Top 1 Video: '{top1_vid}', Frame ID: {top1_fid}, Timestamp: {ts_str} ({pts:.1f}s), Score: {top1_score}{extra_info}")
 
     # Unload VLM
     if vlm_model is not None:

@@ -126,38 +126,50 @@ class LanceDBHybridSearcher:
         # Encode prompts into L2-normalized matching vectors
         prompt_vecs = self.encode_prompts(prompts)
         
-        # Max-Sim Retrieval across multi-aspect prompts & hybrid text matching
-        all_raw_matches = []
-        for p_idx in range(prompt_vecs.shape[0]):
+        # Collect prompt-wise similarity matrix per keyframe: (video_id, frame_idx) -> list of similarities per prompt
+        frame_prompt_sims = {}
+        frame_record_map = {}
+
+        n_prompts = prompt_vecs.shape[0]
+        for p_idx in range(n_prompts):
             single_vec = prompt_vecs[p_idx:p_idx+1]
             if keywords_str:
                 matches = self.db_manager.search_hybrid(query_vector=single_vec, text_keywords=keywords_str, top_k=top_k_videos * 4)
             else:
                 matches = self.db_manager.search_vector(query_vector=single_vec, top_k=top_k_videos * 4)
-            all_raw_matches.extend(matches)
-
-        # Deduplicate & Max-Sim score per keyframe
-        frame_match_dict = {}
-        for rec in all_raw_matches:
-            key = (rec["video_id"], rec["frame_idx"])
-            dist = rec.get("_distance", None)
-            if dist is not None:
-                sim = max(0.0, 1.0 - float(dist))
-            else:
-                sim = float(rec.get("_score", rec.get("score", 0.5)))
             
-            if key not in frame_match_dict or sim > frame_match_dict[key]["_score"]:
-                rec["_score"] = sim
-                frame_match_dict[key] = rec
+            for rec in matches:
+                key = (rec["video_id"], rec["frame_idx"])
+                dist = rec.get("_distance", None)
+                if dist is not None:
+                    sim = max(0.0, 1.0 - float(dist))
+                else:
+                    sim = float(rec.get("_score", rec.get("score", 0.5)))
 
-        raw_matches = list(frame_match_dict.values())
+                if key not in frame_prompt_sims:
+                    frame_prompt_sims[key] = [0.0] * n_prompts
+                    frame_record_map[key] = rec
+                frame_prompt_sims[key][p_idx] = max(frame_prompt_sims[key][p_idx], sim)
 
-        # Object matching score boost
-        if target_objects and raw_matches:
-            for rec in raw_matches:
-                frame_objs = str(rec.get("detected_objects", "")).lower()
-                matched_count = sum(1 for obj in target_objects if obj in frame_objs)
-                rec["_score"] = float(rec.get("_score", 0.5)) + (matched_count * 0.08)
+        raw_matches = []
+        epsilon = 0.15
+        for key, rec in frame_record_map.items():
+            sims = frame_prompt_sims[key]
+            # 1. Smoothed Soft-Harmonic Mean across all prompts
+            inv_sum = sum(1.0 / (max(0.001, s) + epsilon) for s in sims)
+            soft_harmonic_score = float(n_prompts / inv_sum)
+
+            # 2. Dynamic Ratio Multiplier for OpenImages Object Matching
+            if target_objects:
+                frame_text = (str(rec.get("detected_objects", "")) + " " + str(rec.get("keyframe_caption", ""))).lower()
+                matched_count = sum(1 for obj in target_objects if obj in frame_text)
+                ratio = float(matched_count / len(target_objects))
+                final_score = soft_harmonic_score * (1.0 + 0.25 * ratio)
+            else:
+                final_score = soft_harmonic_score
+
+            rec["_score"] = final_score
+            raw_matches.append(rec)
 
         # Apply 1D Gaussian Temporal Smoothing & Aggregate by Video
         candidates = self.smoother.aggregate_video_candidates(raw_matches, top_k_videos=top_k_videos)
