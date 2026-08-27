@@ -263,12 +263,25 @@ class MultimodalIngestPipeline:
 
             # 1. Populate Video-Level Record (1 row per video)
             all_video_text = f"{title} {keywords} {description}".strip()
+            n_frames = feats_normalized.shape[0]
+            
+            # Estimate video duration from map_data or last keyframe pts_time
+            max_pts = 0.0
+            for f_info in map_data.values():
+                max_pts = max(max_pts, float(f_info.get("pts_time", 0.0)))
+            duration_sec = max_pts if max_pts > 0 else float(n_frames * 3.0)
+            fps_val = float(n_frames / duration_sec) if duration_sec > 0 else 25.0
+
             video_records.append({
                 "video_id": video_id,
                 "video_title": title,
                 "video_description": description,
                 "video_keywords": keywords,
-                "all_video_text": all_video_text
+                "all_video_text": all_video_text,
+                "video_path": f"/static/videos/{video_id}.mp4",
+                "duration_seconds": float(duration_sec),
+                "fps": float(fps_val),
+                "total_keyframes": int(n_frames)
             })
 
             # Load cached captions dictionary if available
@@ -283,13 +296,11 @@ class MultimodalIngestPipeline:
                     try:
                         with open(cp, "r", encoding="utf-8") as f:
                             cached_captions = json.load(f)
-                        print(f"[INFO] IngestPipeline: Loaded {len(cached_captions)} keyframe captions from '{cp}'.")
                         break
                     except Exception:
                         pass
 
             # 2. Populate Keyframe-Level Records
-            n_frames = feats_normalized.shape[0]
             for f_idx in range(n_frames):
                 row_vec = feats_normalized[f_idx]
                 if len(row_vec) != detected_dim:
@@ -304,6 +315,11 @@ class MultimodalIngestPipeline:
                 real_frame_id = int(frame_map_info.get("frame_id", f_idx))
                 pts_time = float(frame_map_info.get("pts_time", 0.0))
                 
+                # Format PTS timestamp into MM:SS format (e.g. 202.1 -> '03:22')
+                minutes = int(pts_time // 60)
+                seconds = int(pts_time % 60)
+                ts_formatted = f"{minutes:02d}:{seconds:02d}"
+
                 img_path = self._find_image_path(video_id, f_idx)
                 obj_text = self._load_frame_objects(video_id, f_idx)
                 
@@ -321,6 +337,7 @@ class MultimodalIngestPipeline:
                     "frame_idx": int(f_idx),
                     "frame_id": real_frame_id,
                     "pts_time": pts_time,
+                    "timestamp_formatted": ts_formatted,
                     "image_path": img_path,
                     "keyframe_caption": kf_caption,
                     "detected_objects": obj_text,
