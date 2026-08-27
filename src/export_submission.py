@@ -202,7 +202,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     vqa_solver = VisualVQASolver(vlm_model=vlm_model, vlm_processor=vlm_processor, db_manager=db_manager, device=target_vlm_device)
     trake_solver = TRAKESolver(db_manager=db_manager, clip_encoder=None)
 
-    submission_dir = "submission"
+    submission_dir = output_dir if output_dir else "submission"
     if os.path.exists(submission_dir):
         shutil.rmtree(submission_dir)
     os.makedirs(submission_dir, exist_ok=True)
@@ -264,10 +264,9 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
-                file_path = os.path.join(root, file)
-                # Mirror both 'submission/<file>' and root '<file>'
-                zipf.write(file_path, arcname=os.path.join("submission", file))
-                zipf.write(file_path, arcname=file)
+                if file.endswith(".csv"):
+                    file_path = os.path.join(root, file)
+                    zipf.write(file_path, arcname=file)
 
     print(f"[INFO] All done! Submission archive created at: '{output_zip}'")
     return output_zip

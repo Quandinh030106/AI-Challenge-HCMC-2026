@@ -157,7 +157,8 @@ class VisualVQASolver:
 
         try:
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            inputs = self.vlm_processor(text=[text], images=pil_images, padding=True, return_tensors="pt").to(self.device)
+            model_device = next(self.vlm_model.parameters()).device if hasattr(self.vlm_model, "parameters") else self.device
+            inputs = self.vlm_processor(text=[text], images=pil_images, padding=True, return_tensors="pt").to(model_device)
 
             with torch.inference_mode():
                 gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=50)
