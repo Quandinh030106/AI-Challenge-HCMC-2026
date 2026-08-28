@@ -47,12 +47,21 @@ def parse_raw_query_file(file_path: str) -> dict:
             raw_question = lines[-1]
 
     elif task_type == "trake":
+        prefixed_events = []
+        all_cleaned_lines = []
         for l in lines:
-            l_clean = re.sub(r'^(e\d+|sự kiện \d+|\d+\.|\-|\*)\s*[:\.]?', '', l, flags=re.IGNORECASE).strip()
-            if l_clean:
-                events.append(l_clean)
-        if not events:
-            events = lines
+            # Extract ONLY explicit event lines starting with E1, E2, Cảnh 1, Cảnh 2, etc.
+            match = re.search(r'^(e\d+|cảnh\s*\d+|sự kiện\s*\d+|\d+\.)\s*[:\.]?', l, flags=re.IGNORECASE)
+            l_clean = re.sub(r'^(e\d+|cảnh\s*\d+|sự kiện\s*\d+|\d+\.|\-|\*)\s*[:\.]?', '', l, flags=re.IGNORECASE).strip()
+            if match and l_clean:
+                prefixed_events.append(l_clean)
+            elif l_clean:
+                all_cleaned_lines.append(l_clean)
+
+        if prefixed_events:
+            events = prefixed_events
+        else:
+            events = all_cleaned_lines
 
     return {
         "query_id": qid,
