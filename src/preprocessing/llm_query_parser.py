@@ -100,8 +100,19 @@ class LLMQueryParser:
             {"role": "user", "content": user_content}
         ]
 
-        # Execute strictly via GPU LLM without silent fallback
-        return self._parse_with_llm(messages, query_vi, task_type)
+        # Execute strictly via GPU LLM with fallback on any parse error
+        try:
+            return self._parse_with_llm(messages, query_vi, task_type)
+        except Exception as e:
+            print(f"[WARNING] LLM Query Parsing error: {e}. Returning fallback schema.")
+            fallback_schema = {
+                "intent": "VISUAL_SCENE",
+                "golden_english_prompts": [query_vi],
+                "bm25_keywords": [query_vi],
+                "openimages_classes": [],
+                "vlm_question": query_vi if task_type == "qa" else ""
+            }
+            return self._normalize_schema(fallback_schema, query_vi, task_type)
 
     def _parse_with_llm(self, messages, query_vi, task_type):
         """Executes text generation and cleans output JSON string."""
