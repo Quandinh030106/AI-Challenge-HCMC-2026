@@ -37,9 +37,9 @@ class TextualKISSolver:
         final_candidates = list(candidates)
         query_vi = parsed_schema.get("query_vi", "")
 
-        # Deep Visual Verification for Top K candidates using VLM
+        # Deep Visual Verification for Top K candidates using VLM (Expanded to Top 20 candidates)
         if self.enable_vlm_verify and self.vlm_model is not None and self.vlm_processor is not None and query_vi:
-            verify_pool = final_candidates[:top_k_verify]
+            verify_pool = final_candidates[:max(20, top_k_verify)]
             best_promo_idx = 0
             highest_vlm_score = -1.0
 
@@ -72,13 +72,13 @@ class TextualKISSolver:
         return predictions
 
     def _verify_candidate_image(self, img_path: str, query_text: str) -> float:
-        """Asks Qwen2.5-VL to score alignment between keyframe image and text description (0-100)."""
+        """Asks Qwen2.5-VL to score alignment between HD keyframe image and text description (0-100)."""
         try:
             img = Image.open(img_path).convert("RGB")
-            img.thumbnail((448, 448))
+            img.thumbnail((784, 784))
 
             prompt = (
-                f"Nhiệm vụ: Quan sát khung ảnh và đánh giá mức độ trùng khớp với mô tả sau:\n"
+                f"Nhiệm vụ: Quan sát khung ảnh HD và đánh giá mức độ trùng khớp với mô tả sau:\n"
                 f"'{query_text}'\n"
                 f"Trả lời duy nhất một số điểm từ 0 đến 100 thể hiện mức độ chính xác của hình ảnh so với mô tả."
             )
