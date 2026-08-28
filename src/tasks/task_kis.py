@@ -72,24 +72,25 @@ class TextualKISSolver:
         return predictions
 
     def _verify_candidate_image(self, img_path: str, query_text: str) -> float:
-        """Asks Qwen2.5-VL to score alignment between HD keyframe image and text description (0-100)."""
+        """Asks Qwen2.5-VL for two-way visual verification of dynamic M entities at HD resolution (896x896)."""
         try:
             img = Image.open(img_path).convert("RGB")
-            img.thumbnail((784, 784))
+            img.thumbnail((896, 896))
 
-            prompt = (
+            prompt_directional = (
                 f"Nhiệm vụ: Quan sát khung ảnh HD và đánh giá mức độ trùng khớp với mô tả sau:\n"
                 f"'{query_text}'\n"
+                f"Yêu cầu: Đánh giá xem ảnh có chứa ĐỦ CÁC VẬT THỂ/HÀNH ĐỘNG chính trong mô tả hay không.\n"
                 f"Trả lời duy nhất một số điểm từ 0 đến 100 thể hiện mức độ chính xác của hình ảnh so với mô tả."
             )
 
-            messages = [{"role": "user", "content": [{"type": "image", "image": img}, {"type": "text", "text": prompt}]}]
+            messages = [{"role": "user", "content": [{"type": "image", "image": img}, {"type": "text", "text": prompt_directional}]}]
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             model_device = next(self.vlm_model.parameters()).device if hasattr(self.vlm_model, "parameters") else self.device
             inputs = self.vlm_processor(text=[text], images=[img], padding=True, return_tensors="pt").to(model_device)
 
             with torch.inference_mode():
-                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=15)
+                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=20)
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0].strip()
 
