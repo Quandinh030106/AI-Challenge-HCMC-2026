@@ -159,12 +159,26 @@ class LanceDBHybridSearcher:
             inv_sum = sum(1.0 / (max(0.001, s) + epsilon) for s in sims)
             soft_harmonic_score = float(n_prompts / inv_sum)
 
-            # 2. Dynamic Ratio Multiplier for OpenImages Object Matching
-            if target_objects:
-                frame_text = (str(rec.get("detected_objects", "")) + " " + str(rec.get("keyframe_caption", ""))).lower()
-                matched_count = sum(1 for obj in target_objects if obj in frame_text)
-                ratio = float(matched_count / len(target_objects))
-                final_score = soft_harmonic_score * (1.0 + 0.25 * ratio)
+            # 2. Unbiased Soft-Gate Multi-Entity Coverage Booster over (detected_objects + keyframe_caption + ocr_text)
+            metadata_text = (
+                str(rec.get("detected_objects", "")) + " " +
+                str(rec.get("keyframe_caption", "")) + " " +
+                str(rec.get("ocr_text", ""))
+            ).lower()
+
+            entity_targets = set()
+            for obj in target_objects:
+                if len(obj.strip()) >= 2:
+                    entity_targets.add(obj.lower().strip())
+            for kw in keywords_list:
+                if len(kw.strip()) >= 3:
+                    entity_targets.add(kw.lower().strip())
+
+            if entity_targets:
+                matched_count = sum(1 for ent in entity_targets if ent in metadata_text)
+                ratio = float(matched_count / len(entity_targets))
+                # Soft continuous multiplier: 1.0 to 1.35 boost for multi-entity co-occurrence
+                final_score = soft_harmonic_score * (1.0 + 0.35 * ratio)
             else:
                 final_score = soft_harmonic_score
 
