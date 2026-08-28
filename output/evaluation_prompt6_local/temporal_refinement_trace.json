@@ -1,0 +1,61 @@
+{
+  "dev-kis-001": {
+    "query_id": "dev-kis-001",
+    "query": "<mô tả truy vấn>",
+    "enabled": true,
+    "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+    "refinements": [
+      {
+        "status": "fallback_coarse",
+        "prediction_rank": 1,
+        "video_id": "L25_V023",
+        "coarse_mapped_frame": "1629",
+        "best_actual_frame": "1629",
+        "score": null,
+        "error_type": "TemporalRefinementError",
+        "error": "Raw video not found for L25_V023"
+      },
+      {
+        "status": "fallback_coarse",
+        "prediction_rank": 2,
+        "video_id": "L25_V006",
+        "coarse_mapped_frame": "14513",
+        "best_actual_frame": "14513",
+        "score": null,
+        "error_type": "TemporalRefinementError",
+        "error": "Raw video not found for L25_V006"
+      },
+      {
+        "status": "fallback_coarse",
+        "prediction_rank": 3,
+        "video_id": "L25_V023",
+        "coarse_mapped_frame": "1479",
+        "best_actual_frame": "1479",
+        "score": null,
+        "error_type": "TemporalRefinementError",
+        "error": "Raw video not found for L25_V023"
+      },
+      {
+        "status": "fallback_coarse",
+        "prediction_rank": 4,
+        "video_id": "L25_V062",
+        "coarse_mapped_frame": "4500",
+        "best_actual_frame": "4500",
+        "score": null,
+        "error_type": "TemporalRefinementError",
+        "error": "Raw video not found for L25_V062"
+      },
+      {
+        "status": "fallback_coarse",
+        "prediction_rank": 5,
+        "video_id": "L25_V071",
+        "coarse_mapped_frame": "19950",
+        "best_actual_frame": "19950",
+        "score": null,
+        "error_type": "TemporalRefinementError",
+        "error": "Raw video not found for L25_V071"
+      }
+    ],
+    "status": "completed"
+  }
+}

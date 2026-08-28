@@ -3,6 +3,7 @@ import glob
 import json
 import re
 import numpy as np
+from src.utils import natural_sort_key
 
 class ObjectSearcher:
     """
@@ -165,8 +166,12 @@ class ObjectSearcher:
 
     def get_frame_objects(self, video_id, frame_idx, frame_id=""):
         """
-        Lay danh sach thuc the cua mot keyframe tu file JSON cua BTC.
-        Tu dong ho tro dinh dang 3 chu so (001.json), 4 chu so (0001.json), 5 chu so va frame_id.
+        Lay Objects theo keyframe/vector ordinal 0-based.
+
+        Danh sach JSON duoc natural-sort theo dataset,
+        sau do frame_idx duoc dung lam ordinal.
+
+        Khong dung actual video frame_id de doan ten Object JSON.
         """
         cache_key = f"{video_id}_{frame_idx}_{frame_id}"
         if cache_key in self._cache:
@@ -176,30 +181,22 @@ class ObjectSearcher:
         if not v_folder:
             return None
             
-        idx_1 = frame_idx + 1
-        candidate_filenames = [
-            f"{frame_idx:03d}.json",
-            f"{idx_1:03d}.json",
-            f"{frame_idx:04d}.json",
-            f"{idx_1:04d}.json",
-            f"{frame_idx:05d}.json",
-            f"{frame_idx}.json",
-            f"{idx_1}.json"
+        
+        json_files = [
+            os.path.join(v_folder, name)
+            for name in os.listdir(v_folder)
+            if name.lower().endswith(".json")
+            and os.path.isfile(os.path.join(v_folder, name))
         ]
-        if frame_id:
-            fid_clean = str(frame_id).strip()
-            candidate_filenames.append(f"{fid_clean}.json")
-            if fid_clean.isdigit():
-                candidate_filenames.append(f"{int(fid_clean):03d}.json")
-                candidate_filenames.append(f"{int(fid_clean):04d}.json")
-                
-        json_file = None
-        for cf in candidate_filenames:
-            p = os.path.join(v_folder, cf)
-            if os.path.exists(p):
-                json_file = p
-                break
-                
+        json_files.sort(key=natural_sort_key)
+
+        idx = int(frame_idx)
+        if idx < 0 or idx >= len(json_files):
+            return None
+
+        json_file = json_files[idx]
+
+        
         if not json_file:
             return None
             
@@ -222,7 +219,11 @@ class ObjectSearcher:
                     
             self._cache[cache_key] = filtered_objects
             return filtered_objects
-        except Exception:
+        except Exception as exc:
+            print(
+                "ObjectSearcher: Canh bao khong doc duoc "
+                f"{json_file}: {exc}"
+            )
             return None
 
 
@@ -266,10 +267,40 @@ class ObjectSearcher:
             "pineapple", "dish", "spring roll", "robot", "toy", "glass", "tableware", "kitchen utensil", "wheel"
         }
         
-        words = re.findall(r'\b[a-z]{3,}\b', text_lower)
-        for w in words:
-            if w in valid_openimages_classes:
-                target_entities.add(w)
+        # Bao gom ca cac class da duoc khai bao trong entity_map,
+        # tranh hai danh sach OpenImages bi lech nhau.
+        for mapped_entities in self.entity_map.values():
+            for entity in mapped_entities:
+                valid_openimages_classes.add(
+                    entity.lower()
+                )
+
+        # Match truc tiep ca single-word va multi-word class.
+        # Vi du:
+        #   "cell phone"
+        #   "camera lens"
+        #   "space vehicle"
+        #   "sports equipment"
+        #   "musical instrument"
+        for class_name in sorted(
+            valid_openimages_classes,
+            key=lambda value: (
+                -len(value.split()),
+                -len(value),
+            ),
+        ):
+            pattern = (
+                r"(?<!\w)"
+                + re.escape(class_name)
+                + r"(?!\w)"
+            )
+
+            if re.search(
+                pattern,
+                text_lower,
+                flags=re.IGNORECASE,
+            ):
+                target_entities.add(class_name)
                 
         return sorted(list(target_entities))
 
@@ -378,12 +409,12 @@ class ObjectSearcher:
                     frame_match_score = 0.0
                     for obj in objs:
                         ent_lower = obj["entity"].lower()
-                        if ent_lower in target_entities or any(t_ent == ent_lower for t_ent in target_entities):
+                        if ent_lower in target_entities:
                             # Tinh trong so theo Ham luong Thong tin cua thuc the
                             info_weight = self.get_entity_information_weight(ent_lower, query_text)
                             frame_match_score += float(obj["score"]) * (info_weight / 2.0)
                             video_matched_entities.add(ent_lower)
-                            if info_weight >= 4.0:
+                            if info_weight >= 3.0:
                                 video_has_tier1_match = True
                             
                     if frame_match_score > 0:

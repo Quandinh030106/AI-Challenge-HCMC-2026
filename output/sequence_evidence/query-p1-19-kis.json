@@ -1,0 +1,1078 @@
+{
+  "query_id": "query-p1-19-kis",
+  "query": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột. Sau vài giây nghỉ, con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng. Cảnh quay kết thúc khi con lân tiếp tục nhảy sang các cột tiếp theo.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+    "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+    "con lân tiếp tục nhảy sang các cột"
+  ],
+  "markers": [
+    {
+      "marker": "Sau vài giây nghỉ",
+      "relation": "forward"
+    },
+    {
+      "marker": "Cảnh quay kết thúc khi",
+      "relation": "forward"
+    },
+    {
+      "marker": "tiếp theo",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L24_V026",
+      "sequence_score": 0.8593460069116307,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.989247311827957,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9975716869036356,
+        "temporal_alignment_raw": 0.9975716869036356,
+        "event_sparse_score": 0.2186379928315412,
+        "object_signal": 0.23320992677323366,
+        "object_rrf_delta": 0.32035611556,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 1,
+          "dense_score": 0.40410763025283813,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 49,
+          "aligned_keyframe_ordinal": 49
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 2,
+          "dense_score": 0.3994446396827698,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 120
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 2,
+          "dense_score": 0.3868129253387451,
+          "sparse_rank": 33,
+          "sparse_score": 4.285316463457675,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 152
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L24_V018",
+      "sequence_score": 0.8445788575863117,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.8229312354312354,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9889382123947144,
+        "temporal_alignment_raw": 0.9889382123947144,
+        "event_sparse_score": 0.48508375682288724,
+        "object_signal": 0.08152371734116348,
+        "object_rrf_delta": 0.11198760608000004,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 6,
+          "dense_score": 0.3851928114891052,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 88,
+          "aligned_keyframe_ordinal": 88
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 20,
+          "dense_score": 0.3629663288593292,
+          "sparse_rank": 17,
+          "sparse_score": 10.781535949084166,
+          "raw_peak_keyframe_ordinal": 148,
+          "aligned_keyframe_ordinal": 148
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 18,
+          "dense_score": 0.37115010619163513,
+          "sparse_rank": 32,
+          "sparse_score": 4.285316463457675,
+          "raw_peak_keyframe_ordinal": 88,
+          "aligned_keyframe_ordinal": 177
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L24_V021",
+      "sequence_score": 0.8321834278294028,
+      "score_components": {
+        "baseline_rank_score": 0.8243243243243243,
+        "semantic_event_score": 0.9737929894179894,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9711343248685201,
+        "temporal_alignment_raw": 0.9711343248685201,
+        "event_sparse_score": 0.2606837606837607,
+        "object_signal": 0.06884282680974069,
+        "object_rrf_delta": 0.09456810388,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 4,
+          "dense_score": 0.38850098848342896,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 33,
+          "aligned_keyframe_ordinal": 33
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 3,
+          "dense_score": 0.39476799964904785,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 33,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 1,
+          "dense_score": 0.3937229514122009,
+          "sparse_rank": 18,
+          "sparse_score": 5.338198011029114,
+          "raw_peak_keyframe_ordinal": 33,
+          "aligned_keyframe_ordinal": 106
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L24_V020",
+      "sequence_score": 0.8320208541779046,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.908003515733779,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9757345120112101,
+        "temporal_alignment_raw": 0.9757345120112101,
+        "event_sparse_score": 0.2785388127853881,
+        "object_signal": 0.2224005418367241,
+        "object_rrf_delta": 0.3055074656,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 16,
+          "dense_score": 0.3788464069366455,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 44
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 4,
+          "dense_score": 0.3903225064277649,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 117,
+          "aligned_keyframe_ordinal": 73
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 3,
+          "dense_score": 0.3864452838897705,
+          "sparse_rank": 13,
+          "sparse_score": 5.523115325913819,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 74
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L24_V037",
+      "sequence_score": 0.8257743548633062,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.9174527875666395,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9827316204706827,
+        "temporal_alignment_raw": 0.9827316204706827,
+        "event_sparse_score": 0.2747747747747748,
+        "object_signal": 0.25969262757135414,
+        "object_rrf_delta": 0.35673490644000005,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 2,
+          "dense_score": 0.3978133797645569,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 98,
+          "aligned_keyframe_ordinal": 83
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 8,
+          "dense_score": 0.3780137300491333,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 95,
+          "aligned_keyframe_ordinal": 95
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 10,
+          "dense_score": 0.3792387843132019,
+          "sparse_rank": 14,
+          "sparse_score": 5.361612371395769,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 98
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L24_V006",
+      "sequence_score": 0.8227098611789332,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.9136977058029689,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9734891454378763,
+        "temporal_alignment_raw": 0.9734891454378763,
+        "event_sparse_score": 0.20132013201320131,
+        "object_signal": 0.21228357011095988,
+        "object_rrf_delta": 0.29160997072000006,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 5,
+          "dense_score": 0.388126939535141,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 107,
+          "aligned_keyframe_ordinal": 93
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 1,
+          "dense_score": 0.40472739934921265,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 107,
+          "aligned_keyframe_ordinal": 107
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 16,
+          "dense_score": 0.37241220474243164,
+          "sparse_rank": 41,
+          "sparse_score": 4.265378928511411,
+          "raw_peak_keyframe_ordinal": 107,
+          "aligned_keyframe_ordinal": 139
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L24_V008",
+      "sequence_score": 0.8143492224532114,
+      "score_components": {
+        "baseline_rank_score": 0.8026315789473685,
+        "semantic_event_score": 0.8967521367521366,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9837446610132853,
+        "temporal_alignment_raw": 0.9837446610132853,
+        "event_sparse_score": 0.2824074074074074,
+        "object_signal": 0.17989651490726313,
+        "object_rrf_delta": 0.24712047859999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 15,
+          "dense_score": 0.37937015295028687,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 155,
+          "aligned_keyframe_ordinal": 20
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 5,
+          "dense_score": 0.3902410566806793,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 155,
+          "aligned_keyframe_ordinal": 117
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 5,
+          "dense_score": 0.38234633207321167,
+          "sparse_rank": 12,
+          "sparse_score": 5.531446261200261,
+          "raw_peak_keyframe_ordinal": 155,
+          "aligned_keyframe_ordinal": 155
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L24_V007",
+      "sequence_score": 0.8096107812930895,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.9104477611940297,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9903538227081299,
+        "temporal_alignment_raw": 0.9903538227081299,
+        "event_sparse_score": 0.21403508771929824,
+        "object_signal": 0.24178982019791612,
+        "object_rrf_delta": 0.33214215471999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 7,
+          "dense_score": 0.38282468914985657,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 94,
+          "aligned_keyframe_ordinal": 94
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 7,
+          "dense_score": 0.37874409556388855,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 42,
+          "aligned_keyframe_ordinal": 95
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 7,
+          "dense_score": 0.3801707625389099,
+          "sparse_rank": 35,
+          "sparse_score": 4.275324451951075,
+          "raw_peak_keyframe_ordinal": 150,
+          "aligned_keyframe_ordinal": 150
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L24_V024",
+      "sequence_score": 0.8004060798674082,
+      "score_components": {
+        "baseline_rank_score": 0.7530864197530864,
+        "semantic_event_score": 0.8945695003353453,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9826434055964152,
+        "temporal_alignment_raw": 0.9826434055964152,
+        "event_sparse_score": 0.22344322344322343,
+        "object_signal": 0.23354225264805442,
+        "object_rrf_delta": 0.3208126254,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 10,
+          "dense_score": 0.382125586271286,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 82
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 11,
+          "dense_score": 0.37521570920944214,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 137,
+          "aligned_keyframe_ordinal": 137
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 4,
+          "dense_score": 0.3860786557197571,
+          "sparse_rank": 31,
+          "sparse_score": 4.295355289741478,
+          "raw_peak_keyframe_ordinal": 136,
+          "aligned_keyframe_ordinal": 139
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L24_V013",
+      "sequence_score": 0.7864935115129695,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.8652629902629903,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9763812224070231,
+        "temporal_alignment_raw": 0.9763812224070231,
+        "event_sparse_score": 0.20962199312714777,
+        "object_signal": 0.21429487910852094,
+        "object_rrf_delta": 0.29437286828000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 12,
+          "dense_score": 0.3810828924179077,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 15,
+          "aligned_keyframe_ordinal": 15
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 14,
+          "dense_score": 0.3731692433357239,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 15,
+          "aligned_keyframe_ordinal": 17
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 6,
+          "dense_score": 0.38099366426467896,
+          "sparse_rank": 37,
+          "sparse_score": 4.275324451951075,
+          "raw_peak_keyframe_ordinal": 15,
+          "aligned_keyframe_ordinal": 79
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L24_V005",
+      "sequence_score": 0.781409914861614,
+      "score_components": {
+        "baseline_rank_score": 0.782051282051282,
+        "semantic_event_score": 0.8263989695063044,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9748673439025879,
+        "temporal_alignment_raw": 0.9748673439025879,
+        "event_sparse_score": 0.19182389937106917,
+        "object_signal": 0.2333495215394243,
+        "object_rrf_delta": 0.32054787428000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 19,
+          "dense_score": 0.37536704540252686,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 25,
+          "aligned_keyframe_ordinal": 25
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 10,
+          "dense_score": 0.37548011541366577,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 169,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 13,
+          "dense_score": 0.3755866289138794,
+          "sparse_rank": 46,
+          "sparse_score": 4.245626054121705,
+          "raw_peak_keyframe_ordinal": 25,
+          "aligned_keyframe_ordinal": 143
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L24_V035",
+      "sequence_score": 0.7719781888042674,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.8124876213111508,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6666666666666666,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.8444271342456826,
+        "object_signal": 0.20911711306040995,
+        "object_rrf_delta": 0.28726026788,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 8,
+          "dense_score": 0.38253986835479736,
+          "sparse_rank": 33,
+          "sparse_score": 7.511331595628078,
+          "raw_peak_keyframe_ordinal": 88,
+          "aligned_keyframe_ordinal": 88
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 12,
+          "dense_score": 0.3738195300102234,
+          "sparse_rank": 4,
+          "sparse_score": 15.27415746122687,
+          "raw_peak_keyframe_ordinal": 138,
+          "aligned_keyframe_ordinal": 138
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 28,
+          "dense_score": 0.3675968647003174,
+          "sparse_rank": 6,
+          "sparse_score": 5.832883376588285,
+          "raw_peak_keyframe_ordinal": 148,
+          "aligned_keyframe_ordinal": 148
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L24_V043",
+      "sequence_score": 0.7584757839776579,
+      "score_components": {
+        "baseline_rank_score": 0.6931818181818182,
+        "semantic_event_score": 0.804452703454308,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9799486398696899,
+        "temporal_alignment_raw": 0.9799486398696899,
+        "event_sparse_score": 0.18154761904761904,
+        "object_signal": 0.2671310283957279,
+        "object_rrf_delta": 0.36695289856,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 18,
+          "dense_score": 0.3780367076396942,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 173,
+          "aligned_keyframe_ordinal": 31
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 19,
+          "dense_score": 0.36337393522262573,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 152,
+          "aligned_keyframe_ordinal": 152
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 11,
+          "dense_score": 0.376424103975296,
+          "sparse_rank": 52,
+          "sparse_score": 4.149543830900609,
+          "raw_peak_keyframe_ordinal": 31,
+          "aligned_keyframe_ordinal": 173
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L24_V028",
+      "sequence_score": 0.7279519543952191,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.8137384058436691,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6477669212553236,
+        "temporal_alignment_raw": 0.9716503818829855,
+        "event_sparse_score": 0.5753902031501518,
+        "object_signal": 0.16201466226326938,
+        "object_rrf_delta": 0.22255651199999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 3,
+          "dense_score": 0.3890705108642578,
+          "sparse_rank": 92,
+          "sparse_score": 6.6412474777462664,
+          "raw_peak_keyframe_ordinal": 110,
+          "aligned_keyframe_ordinal": 29
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 16,
+          "dense_score": 0.3663434386253357,
+          "sparse_rank": 45,
+          "sparse_score": 8.735768923935286,
+          "raw_peak_keyframe_ordinal": 109,
+          "aligned_keyframe_ordinal": 109
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 31,
+          "dense_score": 0.36578115820884705,
+          "sparse_rank": 22,
+          "sparse_score": 5.030632580459528,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 161
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L24_V039",
+      "sequence_score": 0.7014975861250018,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.8175050753911176,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6433544556299845,
+        "temporal_alignment_raw": 0.9650316834449768,
+        "event_sparse_score": 0.4542942942942943,
+        "object_signal": 0.27713689458346413,
+        "object_rrf_delta": 0.38069776984000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 11,
+          "dense_score": 0.3813515305519104,
+          "sparse_rank": 51,
+          "sparse_score": 7.121576677788067,
+          "raw_peak_keyframe_ordinal": 66,
+          "aligned_keyframe_ordinal": 20
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 26,
+          "dense_score": 0.3519134223461151,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 28,
+          "aligned_keyframe_ordinal": 26
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 9,
+          "dense_score": 0.37957099080085754,
+          "sparse_rank": 15,
+          "sparse_score": 5.353784795731111,
+          "raw_peak_keyframe_ordinal": 26,
+          "aligned_keyframe_ordinal": 28
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L24_V032",
+      "sequence_score": 0.6873139072819207,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.7584694998488102,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6666666666666666,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.3683937257473902,
+        "object_signal": 0.2557751443261336,
+        "object_rrf_delta": 0.35135353295999994,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 17,
+          "dense_score": 0.37883204221725464,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 55,
+          "aligned_keyframe_ordinal": 55
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 18,
+          "dense_score": 0.3637024164199829,
+          "sparse_rank": 47,
+          "sparse_score": 8.648212896675837,
+          "raw_peak_keyframe_ordinal": 81,
+          "aligned_keyframe_ordinal": 81
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 27,
+          "dense_score": 0.3679405450820923,
+          "sparse_rank": 54,
+          "sparse_score": 4.030952660849117,
+          "raw_peak_keyframe_ordinal": 137,
+          "aligned_keyframe_ordinal": 137
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L24_V019",
+      "sequence_score": 0.6470276683139441,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.8086764513874488,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6572009060117934,
+        "temporal_alignment_raw": 0.9858013590176901,
+        "event_sparse_score": 0.19365079365079366,
+        "object_signal": 0.19233545065644053,
+        "object_rrf_delta": 0.26420761204000004,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 25,
+          "dense_score": 0.3731474280357361,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 18
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 9,
+          "dense_score": 0.37788087129592896,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 81,
+          "aligned_keyframe_ordinal": 81
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 14,
+          "dense_score": 0.3743802309036255,
+          "sparse_rank": 45,
+          "sparse_score": 4.255479569461415,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 120
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L24_V022",
+      "sequence_score": 0.6282724197945316,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.794629843575214,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6384168598386977,
+        "temporal_alignment_raw": 0.9576252897580465,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.1657520882565908,
+        "object_rrf_delta": 0.2276905442,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 13,
+          "dense_score": 0.38045331835746765,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 124,
+          "aligned_keyframe_ordinal": 69
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 15,
+          "dense_score": 0.37315040826797485,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 69,
+          "aligned_keyframe_ordinal": 119
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 23,
+          "dense_score": 0.36842137575149536,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 69,
+          "aligned_keyframe_ordinal": 124
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L24_V031",
+      "sequence_score": 0.6235101791224245,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.7413498326159731,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3276794089211358,
+        "temporal_alignment_raw": 0.9830382267634074,
+        "event_sparse_score": 0.8413239889848078,
+        "object_signal": 0.21058504868629668,
+        "object_rrf_delta": 0.2892767436,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 22,
+          "dense_score": 0.3748215436935425,
+          "sparse_rank": 16,
+          "sparse_score": 8.703885517846249,
+          "raw_peak_keyframe_ordinal": 89,
+          "aligned_keyframe_ordinal": 89
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 25,
+          "dense_score": 0.3519386649131775,
+          "sparse_rank": 21,
+          "sparse_score": 10.414685285519171,
+          "raw_peak_keyframe_ordinal": 34,
+          "aligned_keyframe_ordinal": 128
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 20,
+          "dense_score": 0.36911869049072266,
+          "sparse_rank": 3,
+          "sparse_score": 8.703885517846249,
+          "raw_peak_keyframe_ordinal": 150,
+          "aligned_keyframe_ordinal": 150
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L24_V044",
+      "sequence_score": 0.5966523526413134,
+      "score_components": {
+        "baseline_rank_score": 0.5980392156862745,
+        "semantic_event_score": 0.7322710184552289,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6615541511111789,
+        "temporal_alignment_raw": 0.9923312266667684,
+        "event_sparse_score": 0.24796747967479674,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+          "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+          "dense_rank": 20,
+          "dense_score": 0.3750041127204895,
+          "sparse_rank": 22,
+          "sparse_score": 8.139886589441673,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+          "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+          "dense_rank": 17,
+          "dense_score": 0.3654499650001526,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "con lân tiếp tục nhảy sang các cột",
+          "query_en": "The lion dance performer continues to jump to the columns",
+          "dense_rank": 35,
+          "dense_score": 0.3616477847099304,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 39,
+          "aligned_keyframe_ordinal": 39
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột",
+      "query_en": "Lion dance performer by two drivers standing upright and rotating on top of the column",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng",
+      "query_en": "The lion dance performer suddenly jumped over the two columns next to each other, nodding his head down and grabbing red beans and yellow flowers.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "con lân tiếp tục nhảy sang các cột",
+      "query_en": "The lion dance performer continues to jump to the columns",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

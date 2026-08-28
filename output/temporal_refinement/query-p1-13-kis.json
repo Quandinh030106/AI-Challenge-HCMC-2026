@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-13-kis",
+  "query": "Một người đứng dưới nước và rọi đèn. Tiếp theo là cảnh người này kéo lưới cá lúc bình minh, sau đó được một nhóm người khác tiến đến dùng máy quay ghi hình.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L29_V016",
+      "coarse_mapped_frame": "1266",
+      "best_actual_frame": "1266",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V016"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L29_V007",
+      "coarse_mapped_frame": "1266",
+      "best_actual_frame": "1266",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V007"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L29_V016",
+      "coarse_mapped_frame": "1265",
+      "best_actual_frame": "1265",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V016"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L29_V021",
+      "coarse_mapped_frame": "7277",
+      "best_actual_frame": "7277",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V021"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L29_V006",
+      "coarse_mapped_frame": "1265",
+      "best_actual_frame": "1265",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V006"
+    }
+  ],
+  "status": "completed"
+}

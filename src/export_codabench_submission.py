@@ -28,8 +28,13 @@ from src.preprocessing.query_processor import QueryProcessor
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
+from src.search.sequence_search import rerank_sequence_aware_kis
+from src.search.temporal_refiner import TemporalRefiner
 from src.tasks.task1_kis import get_frame_id_from_idx, generate_diversity_top100_kis, gaussian_smooth_scores
-from src.tasks.task2_vqa import solve_task2
+from src.tasks.task2_vqa import (
+    build_task2_top100_predictions,
+    solve_task2,
+)
 from src.tasks.task3_trake import solve_task3, align_events_dynamic_programming
 from src.search.object_search import ObjectSearcher
 from src.search.visual_reranker import VisualReRanker
@@ -40,127 +45,352 @@ def load_config(config_path="configs/default.yaml"):
         return yaml.safe_load(f)
 
 def parse_query_file(file_path):
-    """Phan tich noi dung file cau hoi (.txt) uu tien tuyet doi theo ten duoi file."""
+    """
+    Phan tich file query BTC.
+
+    Output:
+    - KIS:
+        {
+            "query_id": str,
+            "task_type": "kis",
+            "query": str
+        }
+
+    - Q&A:
+        {
+            "query_id": str,
+            "task_type": "qa",
+            "query": visual_context,
+            "question": question
+        }
+
+    - TRAKE:
+        {
+            "query_id": str,
+            "task_type": "trake",
+            "query": retrieval_context,
+            "context": context,
+            "events": [E1, E2, E3, ...]
+        }
+
+    Quy tac TRAKE:
+    - Context dung de retrieve video.
+    - Chi cac dong E1/E2/E3... moi tao semantic event.
+    """
+
     filename = os.path.basename(file_path)
     query_id = os.path.splitext(filename)[0]
     q_id_lower = query_id.lower()
-    
+
     with open(file_path, "r", encoding="utf-8") as f:
-        raw_lines = [line.strip() for line in f.readlines() if line.strip()]
-        
-    full_content = "\n".join(raw_lines)
+        raw_lines = [
+            line.strip()
+            for line in f.readlines()
+            if line.strip()
+        ]
+
+    full_content = "\n".join(raw_lines).strip()
     full_content_lower = full_content.lower()
-    
-    # 1. UU TIEN SO 1: NHAN DIEN THEO TEN DUOI FILE (-kis, -qa, -trake)
-    is_explicit_kis = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["kis", "-kis", "_kis"])
-    is_explicit_qa = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["qa", "-qa", "_qa", "vqa", "-vqa", "_vqa"])
-    is_explicit_trake = any(q_id_lower.endswith(k) or f"-{k}-" in q_id_lower or f"_{k}_" in q_id_lower for k in ["trake", "-trake", "_trake", "event", "-event", "_event"])
-    
-    if is_explicit_kis:
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 1 (Textual KIS)")
+
+    # ---------------------------------------------------------
+    # Helper 1: Task type tu filename
+    # ---------------------------------------------------------
+    filename_tokens = [
+        token
+        for token in re.split(r"[-_]+", q_id_lower)
+        if token
+    ]
+
+    is_explicit_trake = any(
+        token in {"trake", "event"}
+        for token in filename_tokens
+    )
+
+    is_explicit_qa = any(
+        token in {"qa", "vqa"}
+        for token in filename_tokens
+    )
+
+    is_explicit_kis = "kis" in filename_tokens
+
+    # ---------------------------------------------------------
+    # Helper 2: Nhan dien dong semantic event TRAKE
+    # Ho tro:
+    # E1 ...
+    # E1: ...
+    # Event 1 ...
+    # Su kien 1 ...
+    # Buoc 1 ...
+    # 1. ...
+    # ---------------------------------------------------------
+    trake_event_pattern = re.compile(
+        r"^(?:"
+        r"e\s*(\d+)"
+        r"|(?:sự\s*kiện|su\s*kien|event|bước|buoc)\s*(\d+)"
+        r"|(\d+)\s*[\.\:\)]"
+        r")"
+        r"\s*[:\.\-\)]?\s*(.*)$",
+        flags=re.IGNORECASE,
+    )
+
+    def parse_trake_lines(lines):
+        context_lines = []
+        events = []
+        seen_first_event = False
+
+        for line in lines:
+            match = trake_event_pattern.match(line)
+
+            if match:
+                seen_first_event = True
+                event_text = (match.group(4) or "").strip()
+
+                if event_text:
+                    events.append(event_text)
+
+                continue
+
+            # Dong khong co marker truoc E1 -> Context retrieval.
+            if not seen_first_event:
+                context_lines.append(line)
+                continue
+
+            # Dong khong co marker sau khi da gap E1:
+            # coi la continuation cua event truoc, khong tao event moi.
+            if events:
+                events[-1] = f"{events[-1]} {line}".strip()
+
+        context = " ".join(context_lines).strip()
+
+        # Neu query TRAKE khong co context rieng,
+        # dung event text lam retrieval fallback.
+        retrieval_query = (
+            context
+            if context
+            else " ".join(events).strip()
+        )
+
+        return context, events, retrieval_query
+
+    # ---------------------------------------------------------
+    # Helper 3: Q&A visual context / question split
+    # ---------------------------------------------------------
+    def looks_like_question(sentence):
+        text = sentence.strip()
+        text_lower = text.lower()
+
+        if "?" in text:
+            return True
+
+        if re.match(
+            r"^(câu hỏi|cau hoi|question|hỏi|hoi|cho biết|cho biet)\b",
+            text_lower,
+        ):
+            return True
+
+        question_phrases = [
+            " bao nhiêu",
+            " là gì",
+            " ở đâu",
+            " màu gì",
+            " tên của ",
+            " ai là",
+        ]
+
+        return any(
+            phrase in f" {text_lower}"
+            for phrase in question_phrases
+        )
+
+    def parse_qa_lines(lines):
+        content = " ".join(lines).strip()
+
+        sentences = [
+            sentence.strip()
+            for sentence in re.split(
+                r"(?<=[.!?])\s+",
+                content,
+            )
+            if sentence.strip()
+        ]
+
+        question_start = None
+
+        for idx, sentence in enumerate(sentences):
+            if looks_like_question(sentence):
+                question_start = idx
+                break
+
+        if question_start is None:
+            # File co suffix QA nhung khong tach duoc question:
+            # khong tu gan full content thanh ca query lan question.
+            return content, ""
+
+        visual_context = " ".join(
+            sentences[:question_start]
+        ).strip()
+
+        question = " ".join(
+            sentences[question_start:]
+        ).strip()
+
+        question = re.sub(
+            r"^(câu hỏi|cau hoi|question)\s*[:\.]?\s*",
+            "",
+            question,
+            flags=re.IGNORECASE,
+        ).strip()
+
+        # Neu question nam ngay dau file va khong co visual_context rieng,
+        # giu full content cho retrieval thay vi tao query rong.
+        if not visual_context:
+            visual_context = content
+
+        return visual_context, question
+
+    # =========================================================
+    # 1. EXPLICIT TASK DETECTION TU FILENAME
+    # =========================================================
+
+    # TRAKE duoc uu tien truoc vi marker E1/E2/E3 co cau truc manh.
+    if is_explicit_trake:
+        context, events, retrieval_query = parse_trake_lines(
+            raw_lines
+        )
+
+        if not events:
+            print(
+                f"[{query_id}] CANH BAO: "
+                "File duoc nhan dien TRAKE nhung khong tim thay E1/E2/..."
+            )
+
+        print(
+            f"[{query_id}] -> TASK 3 (TRAKE) | "
+            f"Context: '{context[:80]}...' | "
+            f"{len(events)} events"
+        )
+
         return {
             "query_id": query_id,
-            "task_type": "kis",
-            "query": " ".join(raw_lines).strip()
+            "task_type": "trake",
+            "query": retrieval_query,
+            "context": context,
+            "events": events,
         }
-        
+
     if is_explicit_qa:
-        visual_lines = []
-        question_lines = []
-        is_q = False
-        for line in raw_lines:
-            line_l = line.lower()
-            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
-                is_q = True
-                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-                if cleaned:
-                    question_lines.append(cleaned)
-            elif is_q:
-                question_lines.append(line)
-            else:
-                visual_lines.append(line)
-                
-        # Phan tach ro rang phan mo ta boi canh va cau hoi cu the
-        visual_parts = []
-        question_parts = []
-        for line in raw_lines:
-            # Tach cac cau trong dong
-            sents = re.split(r'(?<=[.!?])\s+', line)
-            for s in sents:
-                s_strip = s.strip()
-                if not s_strip:
-                    continue
-                if "?" in s_strip or re.search(r'^(câu hỏi|hỏi|cho biết|tìm xem)\b', s_strip, re.IGNORECASE):
-                    cleaned_q = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', s_strip, flags=re.IGNORECASE).strip()
-                    if cleaned_q:
-                        question_parts.append(cleaned_q)
-                else:
-                    visual_parts.append(s_strip)
-                    
-        query = " ".join(visual_parts).strip() or full_content
-        question = " ".join(question_parts).strip() or full_content
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 2 (Visual Q&A) | Visual: '{query[:60]}...' | Question: '{question}'")
+        query, question = parse_qa_lines(raw_lines)
+
+        if not question:
+            print(
+                f"[{query_id}] CANH BAO: "
+                "File QA nhung parser chua tach duoc cau hoi."
+            )
+
+        print(
+            f"[{query_id}] -> TASK 2 (Visual Q&A) | "
+            f"Visual: '{query[:80]}...' | "
+            f"Question: '{question}'"
+        )
+
         return {
             "query_id": query_id,
             "task_type": "qa",
             "query": query,
-            "question": question
+            "question": question,
         }
 
-        
-    if is_explicit_trake:
-        events = []
-        for line in raw_lines:
-            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-            if cleaned:
-                events.append(cleaned)
-        if not events:
-            events = raw_lines
-        print(f"[{query_id}] -> Xac dinh theo ten file: TASK 3 (TRAKE) | {len(events)} su kien")
+    if is_explicit_kis:
+        query = " ".join(raw_lines).strip()
+
+        print(
+            f"[{query_id}] -> TASK 1 (Textual KIS)"
+        )
+
+        return {
+            "query_id": query_id,
+            "task_type": "kis",
+            "query": query,
+        }
+
+    # =========================================================
+    # 2. FALLBACK TASK DETECTION KHI FILENAME KHONG CO SUFFIX
+    # =========================================================
+
+    # Structural TRAKE marker manh hon Q&A keyword.
+    trake_event_count = sum(
+        1
+        for line in raw_lines
+        if trake_event_pattern.match(line)
+    )
+
+    if trake_event_count >= 2:
+        context, events, retrieval_query = parse_trake_lines(
+            raw_lines
+        )
+
+        print(
+            f"[{query_id}] -> Nhan dien noi dung: "
+            f"TASK 3 (TRAKE) | {len(events)} events"
+        )
+
         return {
             "query_id": query_id,
             "task_type": "trake",
+            "query": retrieval_query,
+            "context": context,
             "events": events,
-            "query": " ".join(events)
         }
 
-    # 2. FALLBACK KHI TEN FILE KHONG CO HAU TO: PHAN TICH THEO NOI DUNG
     qa_indicators = [
-        "?", "câu hỏi", "cau hoi", "question", "q&a", "hỏi:", "là gì", "ở đâu", 
-        "thế nào", "màu gì", "bao nhiêu", "tên của", "ai là", "mấy câu thơ", "tiêu đề"
+        "?",
+        "câu hỏi",
+        "cau hoi",
+        "question",
+        "q&a",
+        "hỏi:",
+        "là gì",
+        "ở đâu",
+        "thế nào",
+        "màu gì",
+        "bao nhiêu",
+        "tên của",
+        "ai là",
+        "mấy câu thơ",
+        "tiêu đề",
     ]
-    if any(k in full_content_lower for k in qa_indicators):
-        visual_lines = []
-        question_lines = []
-        is_q = False
-        for line in raw_lines:
-            line_l = line.lower()
-            if "?" in line or any(k in line_l for k in ["câu hỏi", "cau hoi", "question", "hỏi:"]):
-                is_q = True
-                cleaned = re.sub(r'^(câu hỏi|cau hoi|question)\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-                if cleaned:
-                    question_lines.append(cleaned)
-            elif is_q:
-                question_lines.append(line)
-            else:
-                visual_lines.append(line)
-        query = " ".join(visual_lines).strip() or full_content
-        question = " ".join(question_lines).strip() or full_content
-        print(f"[{query_id}] -> Nhan dien: TASK 2 (Visual Q&A) | Question: '{question}'")
-        return {"query_id": query_id, "task_type": "qa", "query": query, "question": question}
-        
-    has_trake_flag = any(re.match(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*', line, re.IGNORECASE) for line in raw_lines)
-    if has_trake_flag and len(raw_lines) >= 3:
-        events = []
-        for line in raw_lines:
-            cleaned = re.sub(r'^(sự kiện|su kien|event|bước|buoc|e\d+|\d+[\.\:\)]|\(\d+\))\s*\d*\s*[:\.]?\s*', '', line, flags=re.IGNORECASE).strip()
-            if cleaned:
-                events.append(cleaned)
-        print(f"[{query_id}] -> Nhan dien: TASK 3 (TRAKE) | {len(events)} su kien")
-        return {"query_id": query_id, "task_type": "trake", "events": events, "query": " ".join(events)}
 
-    print(f"[{query_id}] -> Nhan dien: TASK 1 (Textual KIS)")
-    return {"query_id": query_id, "task_type": "kis", "query": full_content}
+    if any(
+        indicator in full_content_lower
+        for indicator in qa_indicators
+    ):
+        query, question = parse_qa_lines(raw_lines)
+
+        print(
+            f"[{query_id}] -> Nhan dien noi dung: "
+            f"TASK 2 (Visual Q&A) | "
+            f"Question: '{question}'"
+        )
+
+        return {
+            "query_id": query_id,
+            "task_type": "qa",
+            "query": query,
+            "question": question,
+        }
+
+    # Mac dinh la KIS.
+    print(
+        f"[{query_id}] -> Nhan dien noi dung: "
+        "TASK 1 (Textual KIS)"
+    )
+
+    return {
+        "query_id": query_id,
+        "task_type": "kis",
+        "query": full_content,
+    }
+
 
 
 def format_answer_for_csv(ans_text):
@@ -201,6 +431,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     object_searcher = ObjectSearcher(config)
     vlm_model_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2-VL-2B-Instruct")
     visual_reranker = VisualReRanker(vlm_model_name)
+    temporal_refiner = TemporalRefiner(config, dense_searcher)
 
     
     keyframes_dir = config["data"].get("keyframes_dir")
@@ -219,12 +450,15 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         if cmd and os.path.exists(cmd):
             try:
                 csv_files = [f for f in os.listdir(cmd) if f.lower().endswith(".csv")]
-                if len(csv_files) > 10:
+                if csv_files:
                     map_keyframes_dir = cmd
                     map_csv_count = len(csv_files)
                     break
-            except Exception:
-                pass
+            except Exception as exc:
+                print(
+                    "Canh bao: Khong doc duoc thu muc Map-Keyframes "
+                    f"{cmd}: {exc}"
+                )
 
             
     print(f"Map-Keyframes Directory: {map_keyframes_dir} ({map_csv_count} CSV files found)")
@@ -248,8 +482,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             try:
                 with zipfile.ZipFile(z, "r") as zf:
                     zf.extractall(input_dir)
-            except Exception:
-                pass
+            except Exception as exc:
+                print(
+                    f"Canh bao: Khong giai nen duoc {z}: {exc}"
+                )
                 
     def natural_sort_key(s):
         return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
@@ -277,8 +513,11 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                                 for fs in f_sub:
                                     if fs.lower().endswith(".txt"):
                                         all_found_txts.append(os.path.join(r_sub, fs))
-                        except Exception:
-                            pass
+                        except Exception as exc:
+                            print(
+                                "Canh bao: Khong giai nen duoc "
+                                f"{os.path.join(root, file)}: {exc}"
+                            )
 
     txt_files = sorted(list(set(all_found_txts)), key=natural_sort_key)
     if not txt_files:
@@ -304,7 +543,9 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         q_info = query_processor.process(query_text)
         intent = q_info["intent_info"]
         
-        search_text = f"{query_text} {parsed.get('question', '')}".strip() if task_type == "qa" else query_text
+        # Video retrieval chi dung visual/context description.
+        # Question duoc giu rieng cho VQA sau retrieval.
+        search_text = query_text
         dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
         sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
         dense_w = 0.4 if task_type == "qa" else intent["dense_weight"]
@@ -316,6 +557,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             sparse_weight=sparse_w,
             dense_dict=getattr(dense_searcher, "last_dense_dict", None)
         )
+        pre_object_fused = [dict(item) for item in fused]
         
         fused = object_searcher.boost_candidates(fused, f"{query_text} {q_info.get('query_en', '')}")
 
@@ -323,13 +565,31 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
 
         # TASK 1: TEXTUAL KIS
         if task_type == "kis":
+            fused, _ = rerank_sequence_aware_kis(
+                query_text=query_text,
+                fused_candidates=fused,
+                dense_searcher=dense_searcher,
+                sparse_searcher=sparse_searcher,
+                query_processor=query_processor,
+                config=config,
+                pre_object_candidates=pre_object_fused,
+                query_id=query_id,
+            )
             if visual_reranker is not None:
                 fused = visual_reranker.rerank_candidates(
                     fused, query_text, keyframes_dir, top_n_verify=5
                 )
             
-            top100_preds = generate_diversity_top100_kis(
+            coarse_top100 = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
+            )
+            top100_preds, _ = temporal_refiner.refine_kis_predictions(
+                query_id=query_id,
+                query_text=query_text,
+                prompt_ensemble=q_info["prompt_ensemble"],
+                coarse_predictions=coarse_top100,
+                fused_candidates=fused,
+                query_processor=query_processor,
             )
             
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
@@ -346,7 +606,12 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                 query_text, question, fused, keyframes_dir, 
                 model_id=vlm_model_name,
                 metadata_dir=map_keyframes_dir,
-                object_searcher=object_searcher
+                object_searcher=object_searcher,
+                ocr_dir=config["data"].get("metadata_dir"),
+                qa_config=config.get("search", {}).get("qa_evidence", {}),
+                temporal_refiner=temporal_refiner,
+                query_processor=query_processor,
+                query_id=query_id,
             )
             
             promoted_idx = ans_res.get("promoted_idx", 0)
@@ -354,17 +619,21 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                 promoted_cand = fused.pop(promoted_idx)
                 fused.insert(0, promoted_cand)
 
-            vlm_answer = format_answer_for_csv(ans_res["answer"])
-            
-            top100_preds = generate_diversity_top100_kis(
-                fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
+            top100_preds = build_task2_top100_predictions(
+                fused_candidates=fused,
+                answer_result=ans_res,
+                keyframes_dir=keyframes_dir,
+                metadata_dir=map_keyframes_dir,
+                total_preds=100,
+                qa_config=config.get("search", {}).get("qa_evidence", {}),
             )
             
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:
                 for pred in top100_preds:
                     vid = pred["video_id"]
                     fid = int(pred["frame_id"]) if str(pred["frame_id"]).isdigit() else pred["frame_id"]
-                    f_out.write(f"{vid}, {fid}, {vlm_answer}\n")
+                    answer_for_row = format_answer_for_csv(pred.get("answer"))
+                    f_out.write(f"{vid}, {fid}, {answer_for_row}\n")
 
                     
         # TASK 3: TRAKE
@@ -372,9 +641,10 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
             events = parsed["events"]
             from src.tasks.task3_trake import solve_task3_batch
             all_aligned_preds = solve_task3_batch(
-                events, fused, keyframes_dir, dense_searcher, 
+                events, fused, keyframes_dir, dense_searcher,
                 metadata_dir=map_keyframes_dir, query_processor=query_processor,
-                total_preds=100
+                total_preds=100, config=config, temporal_refiner=temporal_refiner,
+                query_id=query_id,
             )
             
             with open(csv_filepath, "w", encoding="utf-8", newline="") as f_out:

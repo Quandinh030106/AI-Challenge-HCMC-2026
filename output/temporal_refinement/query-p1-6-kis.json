@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-6-kis",
+  "query": "Mẩu tin bắt đầu với hình ảnh nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười. Tiếp theo có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L27_V001",
+      "coarse_mapped_frame": "412",
+      "best_actual_frame": "412",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V001"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L28_V009",
+      "coarse_mapped_frame": "22950",
+      "best_actual_frame": "22950",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V009"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L27_V001",
+      "coarse_mapped_frame": "411",
+      "best_actual_frame": "411",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V001"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L25_V035",
+      "coarse_mapped_frame": "31302",
+      "best_actual_frame": "31302",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V035"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L25_V023",
+      "coarse_mapped_frame": "35767",
+      "best_actual_frame": "35767",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V023"
+    }
+  ],
+  "status": "completed"
+}

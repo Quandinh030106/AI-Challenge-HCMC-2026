@@ -1,0 +1,848 @@
+{
+  "query_id": "query-p1-14-kis",
+  "query": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa. Sau đó, đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp trước đó.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+    "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp"
+  ],
+  "markers": [
+    {
+      "marker": "Sau đó",
+      "relation": "forward"
+    },
+    {
+      "marker": "trước đó",
+      "relation": "reverse"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L26_V027",
+      "sequence_score": 0.8645608552702526,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.9121621621621622,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.966344028711319,
+        "temporal_alignment_raw": 0.966344028711319,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9192120462981244,
+        "object_rrf_delta": 0.43408552344000007,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 1,
+          "dense_score": 0.3260440230369568,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 98,
+          "aligned_keyframe_ordinal": 98
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 14,
+          "dense_score": 0.31247755885124207,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 99
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L26_V414",
+      "sequence_score": 0.6333967536345169,
+      "score_components": {
+        "baseline_rank_score": 0.7922077922077922,
+        "semantic_event_score": 0.6941888619854721,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.478429913520813,
+        "temporal_alignment_raw": 0.956859827041626,
+        "event_sparse_score": 0.4493404956919477,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.4722365478000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 58,
+          "dense_score": 0.3052385449409485,
+          "sparse_rank": 59,
+          "sparse_score": 16.79623669398833,
+          "raw_peak_keyframe_ordinal": 139,
+          "aligned_keyframe_ordinal": 126
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 10,
+          "dense_score": 0.3135008215904236,
+          "sparse_rank": 98,
+          "sparse_score": 10.379374572692756,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 139
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L26_V185",
+      "sequence_score": 0.6215611985962224,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.7861071821467861,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.42636945843696594,
+        "temporal_alignment_raw": 0.8527389168739319,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6816263498866784,
+        "object_rrf_delta": 0.32188887435999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 3,
+          "dense_score": 0.3231169581413269,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 97,
+          "aligned_keyframe_ordinal": 97
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 41,
+          "dense_score": 0.30960699915885925,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 104
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L26_V357",
+      "sequence_score": 0.5832677152114125,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.5875467691374254,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4580136388540268,
+        "temporal_alignment_raw": 0.9160272777080536,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8305489018738755,
+        "object_rrf_delta": 0.3922155462,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 2,
+          "dense_score": 0.32405197620391846,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 259,
+          "dense_score": 0.2991120517253876,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 116
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L26_V270",
+      "sequence_score": 0.5820372050520956,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.8217902350813744,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.903334230184555,
+        "temporal_alignment_raw": 0.903334230184555,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 10,
+          "dense_score": 0.3123393654823303,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 56,
+          "aligned_keyframe_ordinal": 56
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 19,
+          "dense_score": 0.309736967086792,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 139
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L26_V257",
+      "sequence_score": 0.5739126603326513,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.6127232142857143,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47406458854675293,
+        "temporal_alignment_raw": 0.9481291770935059,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7914848611808354,
+        "object_rrf_delta": 0.37376807848,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 164,
+          "dense_score": 0.2971482574939728,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 124,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 4,
+          "dense_score": 0.31732046604156494,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 68
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L26_V279",
+      "sequence_score": 0.5672220680945373,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.5842541436464088,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4878927022218704,
+        "temporal_alignment_raw": 0.9757854044437408,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9386186750368245,
+        "object_rrf_delta": 0.44325004280000013,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 302,
+          "dense_score": 0.28935903310775757,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 13
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 1,
+          "dense_score": 0.32112210988998413,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 58,
+          "aligned_keyframe_ordinal": 58
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L26_V446",
+      "sequence_score": 0.5563979523788299,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.49162488393686166,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47219276428222656,
+        "temporal_alignment_raw": 0.9443855285644531,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9491314511087487,
+        "object_rrf_delta": 0.4482145598800001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 15,
+          "dense_score": 0.3109973669052124,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 299,
+          "dense_score": 0.29734253883361816,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 124
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L26_V368",
+      "sequence_score": 0.5525490091842374,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.48533782804117737,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4851016700267792,
+        "temporal_alignment_raw": 0.9702033400535583,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.810632332341474,
+        "object_rrf_delta": 0.38281021416000005,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 303,
+          "dense_score": 0.2893107235431671,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 98,
+          "aligned_keyframe_ordinal": 98
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 16,
+          "dense_score": 0.31028610467910767,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 132
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L26_V211",
+      "sequence_score": 0.5447122319950077,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.504702806072669,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4678165465593338,
+        "temporal_alignment_raw": 0.9356330931186676,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8207871190100208,
+        "object_rrf_delta": 0.38760567556000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 291,
+          "dense_score": 0.2900046408176422,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 124
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 13,
+          "dense_score": 0.3127918839454651,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 125
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L26_V484",
+      "sequence_score": 0.5403849608328596,
+      "score_components": {
+        "baseline_rank_score": 0.8472222222222222,
+        "semantic_event_score": 0.49750619530098183,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9337731559624112,
+        "object_rrf_delta": 0.4409618116000001,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 11,
+          "dense_score": 0.31193193793296814,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 82
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 389,
+          "dense_score": 0.29318925738334656,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 93,
+          "aligned_keyframe_ordinal": 93
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L26_V011",
+      "sequence_score": 0.536511467125849,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.5776515151515151,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48605814576148987,
+        "temporal_alignment_raw": 0.9721162915229797,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8305360582258601,
+        "object_rrf_delta": 0.39220948096,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 204,
+          "dense_score": 0.2951522171497345,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 46,
+          "aligned_keyframe_ordinal": 15
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 6,
+          "dense_score": 0.31523269414901733,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 45
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L26_V403",
+      "sequence_score": 0.5285068541003857,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.5152445211038961,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.481366366147995,
+        "temporal_alignment_raw": 0.96273273229599,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7812375236070196,
+        "object_rrf_delta": 0.36892891116,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 196,
+          "dense_score": 0.2953629493713379,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 131,
+          "aligned_keyframe_ordinal": 122
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 17,
+          "dense_score": 0.3101232051849365,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 131,
+          "aligned_keyframe_ordinal": 131
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L26_V249",
+      "sequence_score": 0.5259013860398203,
+      "score_components": {
+        "baseline_rank_score": 0.3370165745856354,
+        "semantic_event_score": 0.7283459255261737,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.43446995317935944,
+        "temporal_alignment_raw": 0.8689399063587189,
+        "event_sparse_score": 0.7482380048793711,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 8,
+          "dense_score": 0.31347915530204773,
+          "sparse_rank": 2,
+          "sparse_score": 27.670763319785063,
+          "raw_peak_keyframe_ordinal": 138,
+          "aligned_keyframe_ordinal": 1
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 49,
+          "dense_score": 0.30960699915885925,
+          "sparse_rank": 59,
+          "sparse_score": 11.21467035346346,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 7
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L26_V433",
+      "sequence_score": 0.5206314925144929,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.5354802425665102,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4981686919927597,
+        "temporal_alignment_raw": 0.9963373839855194,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8004804141506134,
+        "object_rrf_delta": 0.37801610736,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 228,
+          "dense_score": 0.2939295470714569,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 119,
+          "aligned_keyframe_ordinal": 119
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 11,
+          "dense_score": 0.3130526542663574,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 130
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L26_V256",
+      "sequence_score": 0.5205668463259284,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.4935652395514781,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.43150804936885834,
+        "temporal_alignment_raw": 0.8630160987377167,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.812955587678468,
+        "object_rrf_delta": 0.38390734024,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 12,
+          "dense_score": 0.3119077980518341,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 113,
+          "aligned_keyframe_ordinal": 103
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 376,
+          "dense_score": 0.29365211725234985,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 113
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L26_V432",
+      "sequence_score": 0.512070054436869,
+      "score_components": {
+        "baseline_rank_score": 0.580952380952381,
+        "semantic_event_score": 0.7362652608213096,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 46,
+          "dense_score": 0.3064107894897461,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 68
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 8,
+          "dense_score": 0.31498193740844727,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 127,
+          "aligned_keyframe_ordinal": 127
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L26_V391",
+      "sequence_score": 0.4968542599081177,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.4709290215070562,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.44295401871204376,
+        "temporal_alignment_raw": 0.8859080374240875,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9120607776897692,
+        "object_rrf_delta": 0.43070843303999995,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 14,
+          "dense_score": 0.3111870288848877,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 127,
+          "aligned_keyframe_ordinal": 127
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 459,
+          "dense_score": 0.28950896859169006,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 10,
+          "aligned_keyframe_ordinal": 145
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L26_V284",
+      "sequence_score": 0.48741528906304155,
+      "score_components": {
+        "baseline_rank_score": 0.648936170212766,
+        "semantic_event_score": 0.6248430141287284,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.46783433854579926,
+        "temporal_alignment_raw": 0.9356686770915985,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 136,
+          "dense_score": 0.2995784282684326,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 134,
+          "aligned_keyframe_ordinal": 124
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 5,
+          "dense_score": 0.3155064284801483,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 132
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L26_V330",
+      "sequence_score": 0.4799949594216497,
+      "score_components": {
+        "baseline_rank_score": 0.5980392156862745,
+        "semantic_event_score": 0.5709897445820433,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.44972658157348633,
+        "temporal_alignment_raw": 0.8994531631469727,
+        "event_sparse_score": 0.21631205673758866,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+          "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+          "dense_rank": 4,
+          "dense_score": 0.31923720240592957,
+          "sparse_rank": 81,
+          "sparse_score": 16.32359534272848,
+          "raw_peak_keyframe_ordinal": 104,
+          "aligned_keyframe_ordinal": 102
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+          "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+          "dense_rank": 263,
+          "dense_score": 0.2989382743835449,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 104
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa",
+      "query_en": "The cook, in turn, places pieces of bar-shaped material and floral cuts into a boiling dish in the pot.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp",
+      "query_en": "The cook uses a spoon to extract a soft material from the glass plate. This piece of material is placed in the middle of the plate, surrounded by arranged bar-shaped pieces and flowers.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

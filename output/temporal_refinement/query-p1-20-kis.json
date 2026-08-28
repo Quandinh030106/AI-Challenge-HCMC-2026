@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-20-kis",
+  "query": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng. Sau đó ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L28_V008",
+      "coarse_mapped_frame": "17820",
+      "best_actual_frame": "17820",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V008"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L28_V010",
+      "coarse_mapped_frame": "27000",
+      "best_actual_frame": "27000",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V010"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L28_V008",
+      "coarse_mapped_frame": "17777",
+      "best_actual_frame": "17777",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V008"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L27_V004",
+      "coarse_mapped_frame": "6934",
+      "best_actual_frame": "6934",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V004"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L28_V019",
+      "coarse_mapped_frame": "27942",
+      "best_actual_frame": "27942",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V019"
+    }
+  ],
+  "status": "completed"
+}

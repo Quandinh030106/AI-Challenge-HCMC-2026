@@ -6,6 +6,8 @@ from PIL import Image
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor, SiglipModel, SiglipProcessor, AutoModel, AutoProcessor
 from src.utils import load_config
+from src.utils import natural_sort_key
+
 
 def extract_all_features(config_path="configs/default.yaml", batch_size=32):
     """Trich xuat vector dac trung anh theo batch tren GPU."""
@@ -39,7 +41,10 @@ def extract_all_features(config_path="configs/default.yaml", batch_size=32):
         if os.path.exists(output_path):
             continue
             
-        image_paths = sorted(glob.glob(os.path.join(video_dir, "*.jpg")))
+        image_paths = sorted(
+            glob.glob(os.path.join(video_dir, "*.jpg")),
+            key=natural_sort_key,
+        )
         if not image_paths:
             continue
             

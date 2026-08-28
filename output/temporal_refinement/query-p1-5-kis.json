@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-5-kis",
+  "query": "Đoạn clip bắt đầu bằng việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn. Đoạn clip kết thúc với khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L26_V269",
+      "coarse_mapped_frame": "4096",
+      "best_actual_frame": "4096",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V269"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L26_V294",
+      "coarse_mapped_frame": "2816",
+      "best_actual_frame": "2816",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V294"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L26_V269",
+      "coarse_mapped_frame": "4097",
+      "best_actual_frame": "4097",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V269"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L26_V206",
+      "coarse_mapped_frame": "3779",
+      "best_actual_frame": "3779",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V206"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L26_V214",
+      "coarse_mapped_frame": "3195",
+      "best_actual_frame": "3195",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V214"
+    }
+  ],
+  "status": "completed"
+}

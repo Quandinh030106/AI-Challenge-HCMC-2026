@@ -1,0 +1,78 @@
+{
+  "task1": [
+    {
+      "query_id": "t1_01",
+      "query": "Tìm cảnh nhiều ngôi nhà trước sân nhà có đoạn đường bị sụp lún và ngập nước.",
+      "video_id": "L21_V001",
+      "frame_start": 411,
+      "frame_end": 435
+    },
+    {
+      "query_id": "t1_02",
+      "query": "Tìm cảnh một cánh rừng giáp với biển mà phần nối giữa chúng là cát.",
+      "video_id": "L21_V001",
+      "frame_start": 531,
+      "frame_end": 555
+    },
+    {
+      "query_id": "t1_03",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_04",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_05",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+
+    {
+      "query_id": "t1_06",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_07",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_08",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_09",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    },
+    {
+      "query_id": "t1_10",
+      "query": "Tìm cảnh một người đang mở laptop trong văn phòng.",
+      "video_id": "L21_V001",
+      "frame_start": 500,
+      "frame_end": 510
+    }
+
+
+  ]
+
+}

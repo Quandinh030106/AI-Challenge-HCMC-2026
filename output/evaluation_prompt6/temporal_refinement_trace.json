@@ -1,0 +1,10 @@
+{
+  "dev-kis-001": {
+    "query_id": "dev-kis-001",
+    "query": "<mô tả truy vấn>",
+    "enabled": true,
+    "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+    "refinements": [],
+    "status": "disabled_or_empty"
+  }
+}

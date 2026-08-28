@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-7-kis",
+  "query": "Đoạn clip bắt đầu bằng cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ. Đoạn clip kết thúc bằng hình ảnh đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L26_V108",
+      "coarse_mapped_frame": "164",
+      "best_actual_frame": "164",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V108"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L26_V096",
+      "coarse_mapped_frame": "164",
+      "best_actual_frame": "164",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V096"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L26_V108",
+      "coarse_mapped_frame": "165",
+      "best_actual_frame": "165",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V108"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L26_V092",
+      "coarse_mapped_frame": "2560",
+      "best_actual_frame": "2560",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V092"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L26_V432",
+      "coarse_mapped_frame": "2816",
+      "best_actual_frame": "2816",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V432"
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-18-kis",
+  "query": "Cảnh quay cho thấy hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng, sau đó đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và kết thúc bằng việc thả một cọng ngò lên trên cùng. Cảnh quay tiếp theo là cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L26_V179",
+      "coarse_mapped_frame": "4224",
+      "best_actual_frame": "4224",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V179"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L26_V235",
+      "coarse_mapped_frame": "2613",
+      "best_actual_frame": "2613",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V235"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L26_V179",
+      "coarse_mapped_frame": "4205",
+      "best_actual_frame": "4205",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V179"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L26_V027",
+      "coarse_mapped_frame": "5400",
+      "best_actual_frame": "5400",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V027"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L26_V134",
+      "coarse_mapped_frame": "3747",
+      "best_actual_frame": "3747",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V134"
+    }
+  ],
+  "status": "completed"
+}

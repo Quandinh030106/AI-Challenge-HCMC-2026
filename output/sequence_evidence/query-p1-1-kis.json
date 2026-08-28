@@ -1,0 +1,14 @@
+{
+  "query_id": "query-p1-1-kis",
+  "query": "Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, cùng thực hiện động tác hai tay chạm mũi chân. Trong nhóm chỉ có một người đeo kính và ba người đội nón có màu đỏ.",
+  "mode": "single_scene",
+  "reason": "no_strong_temporal_marker",
+  "events": [
+    "Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, cùng thực hiện động tác hai tay chạm mũi chân. Trong nhóm chỉ có một người đeo kính và ba người đội nón có màu đỏ."
+  ],
+  "markers": [],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [],
+  "applied": false
+}

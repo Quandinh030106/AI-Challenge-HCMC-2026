@@ -1,0 +1,104 @@
+{
+"task2": [
+    {
+      "query_id": "t2_01",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_02",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_03",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_04",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_05",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_06",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_07",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_08",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_09",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    },
+
+    {
+      "query_id": "t2_10",
+      "query": "Người phụ nữ mặc váy đỏ đang cầm ly nước.",
+      "question": "Cái ly nước màu gì?",
+      "video_id": "L05_V005",
+      "frame_start": 800,
+      "frame_end": 900,
+      "answer": "màu xanh"
+    }
+  ]
+
+}

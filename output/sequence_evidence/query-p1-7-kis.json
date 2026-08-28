@@ -1,0 +1,848 @@
+{
+  "query_id": "query-p1-7-kis",
+  "query": "Đoạn clip bắt đầu bằng cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ. Đoạn clip kết thúc bằng hình ảnh đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+    "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải"
+  ],
+  "markers": [
+    {
+      "marker": "Đoạn clip bắt đầu bằng",
+      "relation": "forward"
+    },
+    {
+      "marker": "Đoạn clip kết thúc bằng",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L26_V108",
+      "sequence_score": 0.7455695394517975,
+      "score_components": {
+        "baseline_rank_score": 0.6777777777777778,
+        "semantic_event_score": 0.8531468531468531,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.8669325709342957,
+        "temporal_alignment_raw": 0.8669325709342957,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.4806008462408298,
+        "object_rrf_delta": 0.09835821068,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 6,
+          "dense_score": 0.3180980086326599,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 99,
+          "aligned_keyframe_ordinal": 99
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 18,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 142
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L26_V096",
+      "sequence_score": 0.7330669148558473,
+      "score_components": {
+        "baseline_rank_score": 0.6931818181818182,
+        "semantic_event_score": 0.8191240086517664,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.8827795088291168,
+        "temporal_alignment_raw": 0.8827795088291168,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.3255284459917219,
+        "object_rrf_delta": 0.06662159612,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 13,
+          "dense_score": 0.31211715936660767,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 101,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 16,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L26_V092",
+      "sequence_score": 0.6207144175143964,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.7709856915739268,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.45383185148239136,
+        "temporal_alignment_raw": 0.9076637029647827,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6143786463971939,
+        "object_rrf_delta": 0.12573674144,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 25,
+          "dense_score": 0.3061680197715759,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 54,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 14,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L26_V432",
+      "sequence_score": 0.6195897129895696,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.9112597547380157,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9747452437877655,
+        "temporal_alignment_raw": 0.9747452437877655,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 5,
+          "dense_score": 0.3181266784667969,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 68
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 9,
+          "dense_score": 0.3113393187522888,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 74
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L26_V185",
+      "sequence_score": 0.563621781020015,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.628096198156682,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.45452360808849335,
+        "temporal_alignment_raw": 0.9090472161769867,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.4984965624186089,
+        "object_rrf_delta": 0.10202068992000002,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 2,
+          "dense_score": 0.3210400938987732,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 96,
+          "aligned_keyframe_ordinal": 93
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 164,
+          "dense_score": 0.3034202456474304,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 96
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L26_V039",
+      "sequence_score": 0.5495260849054814,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.5396825396825397,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4455472379922867,
+        "temporal_alignment_raw": 0.8910944759845734,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5427688730216564,
+        "object_rrf_delta": 0.11108131744000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 3,
+          "dense_score": 0.32037436962127686,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 101,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 489,
+          "dense_score": 0.290931761264801,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 6
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L26_V093",
+      "sequence_score": 0.547222657944805,
+      "score_components": {
+        "baseline_rank_score": 0.7093023255813954,
+        "semantic_event_score": 0.6944025157232705,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4531731754541397,
+        "temporal_alignment_raw": 0.9063463509082794,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5813092358684768,
+        "object_rrf_delta": 0.11896886312,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 46,
+          "dense_score": 0.2984330952167511,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 117,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 15,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L26_V331",
+      "sequence_score": 0.546506089807029,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.5982072608744521,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.2526429367762196,
+        "object_rrf_delta": 0.05170508416,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 227,
+          "dense_score": 0.2886672019958496,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 2,
+          "dense_score": 0.33086419105529785,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 123,
+          "aligned_keyframe_ordinal": 123
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L26_V446",
+      "sequence_score": 0.5399298678805756,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.44450506814103496,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4564630538225174,
+        "temporal_alignment_raw": 0.9129261076450348,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.826693916330009,
+        "object_rrf_delta": 0.16918849608,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 19,
+          "dense_score": 0.3090590536594391,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 462,
+          "dense_score": 0.2948179244995117,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 137
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L26_V426",
+      "sequence_score": 0.5177476884318476,
+      "score_components": {
+        "baseline_rank_score": 0.7922077922077922,
+        "semantic_event_score": 0.47856606606606605,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4816851168870926,
+        "temporal_alignment_raw": 0.9633702337741852,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8696708527481098,
+        "object_rrf_delta": 0.17798401652,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 495,
+          "dense_score": 0.2768166661262512,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 121,
+          "aligned_keyframe_ordinal": 121
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 12,
+          "dense_score": 0.3092009425163269,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 133
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L26_V104",
+      "sequence_score": 0.5065242730164881,
+      "score_components": {
+        "baseline_rank_score": 0.6853932584269663,
+        "semantic_event_score": 0.5646121833967138,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.46889355778694153,
+        "temporal_alignment_raw": 0.9377871155738831,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5945586528807874,
+        "object_rrf_delta": 0.12168044584000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 121,
+          "dense_score": 0.29232174158096313,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 17,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L26_V088",
+      "sequence_score": 0.48486475475000795,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.4799263454509946,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4638094902038574,
+        "temporal_alignment_raw": 0.9276189804077148,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5557203163885021,
+        "object_rrf_delta": 0.11373191784000002,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 431,
+          "dense_score": 0.2839437425136566,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 121,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 13,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L26_V081",
+      "sequence_score": 0.47577782279787917,
+      "score_components": {
+        "baseline_rank_score": 0.5083333333333333,
+        "semantic_event_score": 0.6647435897435897,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49792052805423737,
+        "temporal_alignment_raw": 0.9958410561084747,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 96,
+          "dense_score": 0.29364949464797974,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 5,
+          "dense_score": 0.3164747953414917,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 122
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L26_V246",
+      "sequence_score": 0.4488857712698711,
+      "score_components": {
+        "baseline_rank_score": 0.5922330097087378,
+        "semantic_event_score": 0.45591925804691763,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4915250092744827,
+        "temporal_alignment_raw": 0.9830500185489655,
+        "event_sparse_score": 0.19934640522875818,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 18,
+          "dense_score": 0.30949389934539795,
+          "sparse_rank": 93,
+          "sparse_score": 7.226544186028318,
+          "raw_peak_keyframe_ordinal": 91,
+          "aligned_keyframe_ordinal": 91
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 410,
+          "dense_score": 0.300134539604187,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 98
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L26_V121",
+      "sequence_score": 0.4419866478507472,
+      "score_components": {
+        "baseline_rank_score": 0.6703296703296703,
+        "semantic_event_score": 0.4480678192857878,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49000245332717896,
+        "temporal_alignment_raw": 0.9800049066543579,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 432,
+          "dense_score": 0.2839437425136566,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 19,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 118
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L26_V130",
+      "sequence_score": 0.43590374093804685,
+      "score_components": {
+        "baseline_rank_score": 0.6630434782608695,
+        "semantic_event_score": 0.44311612576064907,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4690680503845215,
+        "temporal_alignment_raw": 0.938136100769043,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 433,
+          "dense_score": 0.2839437425136566,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 20,
+          "dense_score": 0.3091009557247162,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L26_V140",
+      "sequence_score": 0.4204923444832958,
+      "score_components": {
+        "baseline_rank_score": 0.3836477987421384,
+        "semantic_event_score": 0.5980857520815501,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4289137274026871,
+        "temporal_alignment_raw": 0.8578274548053741,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 11,
+          "dense_score": 0.3129156827926636,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 95,
+          "aligned_keyframe_ordinal": 95
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 121,
+          "dense_score": 0.30402040481567383,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 113
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L26_V272",
+      "sequence_score": 0.375771151263341,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.6097122302158273,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.43910887837409973,
+        "temporal_alignment_raw": 0.8782177567481995,
+        "event_sparse_score": 0.26991150442477874,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 1,
+          "dense_score": 0.32355356216430664,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 136,
+          "aligned_keyframe_ordinal": 136
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 218,
+          "dense_score": 0.30273663997650146,
+          "sparse_rank": 53,
+          "sparse_score": 19.038159302062486,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 157
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L26_V032",
+      "sequence_score": 0.36890830800405267,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.6463610266801756,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 128,
+          "dense_score": 0.2920543849468231,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 3,
+          "dense_score": 0.3189030885696411,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 126,
+          "aligned_keyframe_ordinal": 126
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L26_V357",
+      "sequence_score": 0.36879304384056516,
+      "score_components": {
+        "baseline_rank_score": 0.8472222222222222,
+        "semantic_event_score": 0.5171309976079921,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9619596898555756,
+        "event_sparse_score": 0.23282442748091603,
+        "object_signal": 0.41853714731262975,
+        "object_rrf_delta": 0.08565645532,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+          "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+          "dense_rank": 43,
+          "dense_score": 0.2993243336677551,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+          "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+          "dense_rank": 78,
+          "dense_score": 0.3043217658996582,
+          "sparse_rank": 71,
+          "sparse_score": 16.619687065692126,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 84
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "cảnh cà rốt cắt hình ngôi sao đang được luộc trong nồi nước sôi, đặt trong rổ lưới kim loại và được đảo bằng đôi đũa gỗ",
+      "query_en": "The scene of star-shaped carrots being baked in a boiling pot, placed in a metal mesh and inserted with wooden sticks",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "đĩa rau củ luộc và đồ chiên được trình bày đẹp mắt, gồm đậu bắp, súp lơ, cà rốt hình ngôi sao, bí xanh, chén nước chấm màu hồng ở giữa và đôi đũa màu hồng nhạt đặt bên phải",
+      "query_en": "The dishes of spices and pastries are beautifully presented, including beans, soups, star-shaped carrots, blue seeds, a cup of pink dots in the middle and a pair of pale pink sticks placed on the right.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

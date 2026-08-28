@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-22-kis",
+  "query": "Người phụ nữ mặc áo dài màu hồng, đeo kính đang giảng giải về các trường hợp sử dụng khác nhau của động từ 'remember' dựa trên mốc thời gian của hành động được nhắc tới.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L25_V011",
+      "coarse_mapped_frame": "19800",
+      "best_actual_frame": "19800",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V011"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L25_V045",
+      "coarse_mapped_frame": "33450",
+      "best_actual_frame": "33450",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V045"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L25_V011",
+      "coarse_mapped_frame": "19777",
+      "best_actual_frame": "19777",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V011"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L25_V081",
+      "coarse_mapped_frame": "54600",
+      "best_actual_frame": "54600",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V081"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L25_V065",
+      "coarse_mapped_frame": "27523",
+      "best_actual_frame": "27523",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V065"
+    }
+  ],
+  "status": "completed"
+}

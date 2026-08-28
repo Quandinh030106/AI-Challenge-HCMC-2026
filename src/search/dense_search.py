@@ -88,8 +88,11 @@ class DenseSearcher:
                 })
                 self.all_video_ids.append(video_id)
                 current_idx += n_frames
-            except Exception:
-                pass
+            except Exception as exc:
+                print(
+                    "DenseSearcher: Canh bao bo qua feature "
+                    f"{file_path}: {exc}"
+                )
                 
         if all_vectors:
             concat_matrix = np.vstack(all_vectors)

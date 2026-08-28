@@ -4,6 +4,7 @@ import json
 import torch
 from tqdm import tqdm
 from src.utils import load_config
+from src.utils import natural_sort_key
 
 try:
     import easyocr
@@ -34,7 +35,10 @@ def run_ocr_on_all_keyframes(config_path="configs/default.yaml", step=5):
         if os.path.exists(output_path):
             continue
             
-        image_paths = sorted(glob.glob(os.path.join(video_dir, "*.jpg")))
+        image_paths = sorted(
+            glob.glob(os.path.join(video_dir, "*.jpg")),
+            key=natural_sort_key,
+        )
         if not image_paths:
             continue
             

@@ -1,0 +1,844 @@
+{
+  "query_id": "query-p1-4-kis",
+  "query": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật.. Sau đó có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+    "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú"
+  ],
+  "markers": [
+    {
+      "marker": "Sau đó",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L22_V021",
+      "sequence_score": 0.778421052631579,
+      "score_components": {
+        "baseline_rank_score": 0.6421052631578947,
+        "semantic_event_score": 1.0,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 1,
+          "dense_score": 0.2933633327484131,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 109,
+          "aligned_keyframe_ordinal": 109
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 1,
+          "dense_score": 0.31692594289779663,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 190,
+          "aligned_keyframe_ordinal": 190
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L29_V008",
+      "sequence_score": 0.7683335122348003,
+      "score_components": {
+        "baseline_rank_score": 0.6288659793814433,
+        "semantic_event_score": 0.9112597547380157,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1918238993710692,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 5,
+          "dense_score": 0.25262150168418884,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 9,
+          "dense_score": 0.29605114459991455,
+          "sparse_rank": 99,
+          "sparse_score": 7.783577628248116,
+          "raw_peak_keyframe_ordinal": 238,
+          "aligned_keyframe_ordinal": 238
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L29_V010",
+      "sequence_score": 0.7388216375558693,
+      "score_components": {
+        "baseline_rank_score": 0.5596330275229358,
+        "semantic_event_score": 0.8578125,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1955128205128205,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 20,
+          "dense_score": 0.2467508614063263,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 133,
+          "aligned_keyframe_ordinal": 133
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 4,
+          "dense_score": 0.30039817094802856,
+          "sparse_rank": 96,
+          "sparse_score": 7.807394329611521,
+          "raw_peak_keyframe_ordinal": 325,
+          "aligned_keyframe_ordinal": 325
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L29_V012",
+      "sequence_score": 0.7129266069075851,
+      "score_components": {
+        "baseline_rank_score": 0.4621212121212121,
+        "semantic_event_score": 0.8381328816111425,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.190625,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 9,
+          "dense_score": 0.2512802183628082,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 17,
+          "dense_score": 0.29183483123779297,
+          "sparse_rank": 100,
+          "sparse_score": 7.783577628248116,
+          "raw_peak_keyframe_ordinal": 227,
+          "aligned_keyframe_ordinal": 227
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L29_V004",
+      "sequence_score": 0.7104319945100035,
+      "score_components": {
+        "baseline_rank_score": 0.4728682170542636,
+        "semantic_event_score": 0.8206031058143735,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1967741935483871,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 11,
+          "dense_score": 0.2499089241027832,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 18,
+          "dense_score": 0.29098182916641235,
+          "sparse_rank": 95,
+          "sparse_score": 7.807394329611521,
+          "raw_peak_keyframe_ordinal": 541,
+          "aligned_keyframe_ordinal": 541
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L29_V020",
+      "sequence_score": 0.7099695928805518,
+      "score_components": {
+        "baseline_rank_score": 0.45185185185185184,
+        "semantic_event_score": 0.8299703813402444,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.20608108108108109,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 14,
+          "dense_score": 0.24964484572410583,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 136,
+          "aligned_keyframe_ordinal": 136
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 13,
+          "dense_score": 0.2948405146598816,
+          "sparse_rank": 88,
+          "sparse_score": 7.855493056026526,
+          "raw_peak_keyframe_ordinal": 234,
+          "aligned_keyframe_ordinal": 234
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L29_V022",
+      "sequence_score": 0.7069873322463315,
+      "score_components": {
+        "baseline_rank_score": 0.4485294117647059,
+        "semantic_event_score": 0.8909381663113006,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 7,
+          "dense_score": 0.2515988051891327,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 74
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 10,
+          "dense_score": 0.2958947718143463,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 133,
+          "aligned_keyframe_ordinal": 133
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L29_V016",
+      "sequence_score": 0.70120805462053,
+      "score_components": {
+        "baseline_rank_score": 0.5041322314049587,
+        "semantic_event_score": 0.8346053611317945,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 19,
+          "dense_score": 0.24756811559200287,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 134,
+          "aligned_keyframe_ordinal": 134
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 8,
+          "dense_score": 0.29727092385292053,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 405,
+          "aligned_keyframe_ordinal": 405
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L29_V002",
+      "sequence_score": 0.6946363780479393,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.8353860294117648,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.5,
+        "object_signal": 0.444927513520457,
+        "object_rrf_delta": 0.11498867248,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 4,
+          "dense_score": 0.2529938817024231,
+          "sparse_rank": 1,
+          "sparse_score": 47.87129834364305,
+          "raw_peak_keyframe_ordinal": 62,
+          "aligned_keyframe_ordinal": 62
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 25,
+          "dense_score": 0.29002633690834045,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 343,
+          "aligned_keyframe_ordinal": 343
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L30_V044",
+      "sequence_score": 0.6603820522237368,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.7382936507936508,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6901296477495107,
+        "object_signal": 0.024603971197936378,
+        "object_rrf_delta": 0.006358739120000002,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 3,
+          "dense_score": 0.2541663944721222,
+          "sparse_rank": 52,
+          "sparse_score": 13.535358179737358,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 68
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 60,
+          "dense_score": 0.2799520790576935,
+          "sparse_rank": 13,
+          "sparse_score": 14.238651498237406,
+          "raw_peak_keyframe_ordinal": 81,
+          "aligned_keyframe_ordinal": 81
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L30_V021",
+      "sequence_score": 0.6112728826208254,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.6890740740740741,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.498578816652298,
+        "temporal_alignment_raw": 0.997157633304596,
+        "event_sparse_score": 0.4357142857142857,
+        "object_signal": 0.13561289246894812,
+        "object_rrf_delta": 0.0350482854,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 48,
+          "dense_score": 0.22991418838500977,
+          "sparse_rank": 10,
+          "sparse_score": 18.613261934912472,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 82
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 15,
+          "dense_score": 0.29213854670524597,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 37,
+          "aligned_keyframe_ordinal": 96
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L30_V047",
+      "sequence_score": 0.5609660760755822,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.5633493946132938,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4442690312862396,
+        "temporal_alignment_raw": 0.8885380625724792,
+        "event_sparse_score": 0.4178082191780822,
+        "object_signal": 0.13456973755902663,
+        "object_rrf_delta": 0.03477868868,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 168,
+          "dense_score": 0.2060321718454361,
+          "sparse_rank": 13,
+          "sparse_score": 18.41578420851902,
+          "raw_peak_keyframe_ordinal": 40,
+          "aligned_keyframe_ordinal": 40
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 11,
+          "dense_score": 0.29572075605392456,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 83
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L30_V089",
+      "sequence_score": 0.5455586861671884,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.597509883755237,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4829556494951248,
+        "temporal_alignment_raw": 0.9659112989902496,
+        "event_sparse_score": 0.4765625,
+        "object_signal": 0.019360567565068397,
+        "object_rrf_delta": 0.0050036149600000005,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 209,
+          "dense_score": 0.20102566480636597,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 22,
+          "aligned_keyframe_ordinal": 22
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 3,
+          "dense_score": 0.3034129738807678,
+          "sparse_rank": 4,
+          "sparse_score": 16.740288851482035,
+          "raw_peak_keyframe_ordinal": 14,
+          "aligned_keyframe_ordinal": 67
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L27_V004",
+      "sequence_score": 0.5364760860484543,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.6131213450292398,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.5325396825396825,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.00997757416,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 16,
+          "dense_score": 0.24844831228256226,
+          "sparse_rank": 66,
+          "sparse_score": 12.64096014105455,
+          "raw_peak_keyframe_ordinal": 109,
+          "aligned_keyframe_ordinal": 109
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 84,
+          "dense_score": 0.2767919898033142,
+          "sparse_rank": 45,
+          "sparse_score": 9.27197774214423,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L29_V023",
+      "sequence_score": 0.5011114219630299,
+      "score_components": {
+        "baseline_rank_score": 0.4206896551724138,
+        "semantic_event_score": 0.7388005253173793,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.20333333333333334,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 17,
+          "dense_score": 0.2483367770910263,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 29,
+          "dense_score": 0.28864046931266785,
+          "sparse_rank": 90,
+          "sparse_score": 7.855493056026526,
+          "raw_peak_keyframe_ordinal": 394,
+          "aligned_keyframe_ordinal": 394
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L28_V009",
+      "sequence_score": 0.49821133688576824,
+      "score_components": {
+        "baseline_rank_score": 0.4765625,
+        "semantic_event_score": 0.6777777777777778,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4984583705663681,
+        "temporal_alignment_raw": 0.9969167411327362,
+        "event_sparse_score": 0.24796747967479674,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 60,
+          "dense_score": 0.22505033016204834,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 304,
+          "aligned_keyframe_ordinal": 166
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 12,
+          "dense_score": 0.29537224769592285,
+          "sparse_rank": 63,
+          "sparse_score": 8.16925670614131,
+          "raw_peak_keyframe_ordinal": 223,
+          "aligned_keyframe_ordinal": 223
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L30_V011",
+      "sequence_score": 0.4953152489190656,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.5478337958680234,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.961166253101737,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.25844360932,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 81,
+          "dense_score": 0.21894203126430511,
+          "sparse_rank": 5,
+          "sparse_score": 20.86411673876101,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 32,
+          "dense_score": 0.287473201751709,
+          "sparse_rank": 2,
+          "sparse_score": 22.20578786028874,
+          "raw_peak_keyframe_ordinal": 12,
+          "aligned_keyframe_ordinal": 12
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L28_V012",
+      "sequence_score": 0.4947678625788215,
+      "score_components": {
+        "baseline_rank_score": 0.488,
+        "semantic_event_score": 0.6598717112415743,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.24206349206349206,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 13,
+          "dense_score": 0.2497129738330841,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 66,
+          "dense_score": 0.2791444659233093,
+          "sparse_rank": 66,
+          "sparse_score": 8.146997129840353,
+          "raw_peak_keyframe_ordinal": 324,
+          "aligned_keyframe_ordinal": 324
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L29_V015",
+      "sequence_score": 0.4941783396835826,
+      "score_components": {
+        "baseline_rank_score": 0.4357142857142857,
+        "semantic_event_score": 0.7113469601677149,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4955173134803772,
+        "temporal_alignment_raw": 0.9910346269607544,
+        "event_sparse_score": 0.1930379746835443,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 12,
+          "dense_score": 0.24985140562057495,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 72,
+          "aligned_keyframe_ordinal": 72
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 46,
+          "dense_score": 0.28329911828041077,
+          "sparse_rank": 98,
+          "sparse_score": 7.807394329611521,
+          "raw_peak_keyframe_ordinal": 65,
+          "aligned_keyframe_ordinal": 261
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L29_V019",
+      "sequence_score": 0.48448964635165004,
+      "score_components": {
+        "baseline_rank_score": 0.580952380952381,
+        "semantic_event_score": 0.5881542699724518,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47403059899806976,
+        "temporal_alignment_raw": 0.9480611979961395,
+        "event_sparse_score": 0.20748299319727892,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+          "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+          "dense_rank": 6,
+          "dense_score": 0.2525603175163269,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        },
+        {
+          "event_index": 2,
+          "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+          "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+          "dense_rank": 182,
+          "dense_score": 0.2674943208694458,
+          "sparse_rank": 87,
+          "sparse_score": 7.855493056026526,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 499
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "Một đàn sư tử đang nghỉ ngơi và leo trèo trên các bục gỗ trong khu nuôi dưỡng, phía trước có bảng thông tin của London Zoo phục vụ công tác theo dõi và bảo tồn động vật",
+      "query_en": "A herd of lions resting and climbing on the wooded hedges in the breeding grounds, in front of which is the London Zoo's information board serving the task of monitoring and conserving animals.",
+      "intent": "OCR_TEXT"
+    },
+    {
+      "event_text": "có cảnh hai nhân viên mặc áo xanh lá đang cân và ghi nhận số liệu của một con vật trong khuôn viên sở thú",
+      "query_en": "There's a scene of two employees wearing green shirts weighing and recording the numbers of an animal in the zoo.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

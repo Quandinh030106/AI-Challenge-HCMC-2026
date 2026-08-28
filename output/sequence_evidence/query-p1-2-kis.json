@@ -1,0 +1,1078 @@
+{
+  "query_id": "query-p1-2-kis",
+  "query": "Đoạn phim bắt đầu bằng một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần. Sau đó chuyển sang cảnh một con đập được quay từ trên cao, tiếp đến là cảnh cận con đập dưới trời mưa.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+    "chuyển sang cảnh một con đập được quay từ trên cao",
+    "là cảnh cận con đập dưới trời mưa"
+  ],
+  "markers": [
+    {
+      "marker": "Đoạn phim bắt đầu bằng",
+      "relation": "forward"
+    },
+    {
+      "marker": "Sau đó",
+      "relation": "forward"
+    },
+    {
+      "marker": "tiếp đến",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L28_V008",
+      "sequence_score": 0.7931830902253437,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.8516359417767868,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 10,
+          "dense_score": 0.3012196123600006,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 27,
+          "aligned_keyframe_ordinal": 27
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 11,
+          "dense_score": 0.2889970541000366,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 135,
+          "aligned_keyframe_ordinal": 135
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 14,
+          "dense_score": 0.29589736461639404,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 274,
+          "aligned_keyframe_ordinal": 274
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L27_V016",
+      "sequence_score": 0.6883454301625459,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.7790345428789364,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6374464167488946,
+        "temporal_alignment_raw": 0.9561696251233419,
+        "event_sparse_score": 0.4627300674731505,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 16,
+          "dense_score": 0.29169905185699463,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 317,
+          "aligned_keyframe_ordinal": 104
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 32,
+          "dense_score": 0.280715674161911,
+          "sparse_rank": 61,
+          "sparse_score": 5.0803296507260125,
+          "raw_peak_keyframe_ordinal": 326,
+          "aligned_keyframe_ordinal": 105
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 10,
+          "dense_score": 0.29873842000961304,
+          "sparse_rank": 9,
+          "sparse_score": 5.0803296507260125,
+          "raw_peak_keyframe_ordinal": 166,
+          "aligned_keyframe_ordinal": 166
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L29_V015",
+      "sequence_score": 0.6565809449489698,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.7290586457319052,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6140875551435683,
+        "temporal_alignment_raw": 0.9211313327153524,
+        "event_sparse_score": 0.40585898709036744,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 19,
+          "dense_score": 0.2893293797969818,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 444,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 5,
+          "dense_score": 0.2926117181777954,
+          "sparse_rank": 46,
+          "sparse_score": 6.370060764632116,
+          "raw_peak_keyframe_ordinal": 90,
+          "aligned_keyframe_ordinal": 90
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 68,
+          "dense_score": 0.27305662631988525,
+          "sparse_rank": 35,
+          "sparse_score": 3.025373938071598,
+          "raw_peak_keyframe_ordinal": 204,
+          "aligned_keyframe_ordinal": 204
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L28_V006",
+      "sequence_score": 0.6462647040808167,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.7374370905867852,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6536629994710286,
+        "temporal_alignment_raw": 0.980494499206543,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 11,
+          "dense_score": 0.3010619282722473,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 406,
+          "aligned_keyframe_ordinal": 406
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 53,
+          "dense_score": 0.2746807038784027,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 440
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 15,
+          "dense_score": 0.295423686504364,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 61,
+          "aligned_keyframe_ordinal": 506
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L28_V005",
+      "sequence_score": 0.6429010942760942,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.7298092031425365,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6666666666666666,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 15,
+          "dense_score": 0.293738454580307,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 69,
+          "aligned_keyframe_ordinal": 69
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 75,
+          "dense_score": 0.26842033863067627,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 161,
+          "aligned_keyframe_ordinal": 161
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 6,
+          "dense_score": 0.30136018991470337,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 414,
+          "aligned_keyframe_ordinal": 414
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L29_V018",
+      "sequence_score": 0.5694075668541662,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.760077990332341,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.31345395247141516,
+        "temporal_alignment_raw": 0.9403618574142456,
+        "event_sparse_score": 0.4560985797827903,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 17,
+          "dense_score": 0.2912963032722473,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 567,
+          "aligned_keyframe_ordinal": 160
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 21,
+          "dense_score": 0.28476279973983765,
+          "sparse_rank": 35,
+          "sparse_score": 6.415409422193981,
+          "raw_peak_keyframe_ordinal": 65,
+          "aligned_keyframe_ordinal": 165
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 23,
+          "dense_score": 0.28695231676101685,
+          "sparse_rank": 24,
+          "sparse_score": 3.0469116677390984,
+          "raw_peak_keyframe_ordinal": 93,
+          "aligned_keyframe_ordinal": 404
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L29_V020",
+      "sequence_score": 0.5666376784648528,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.6981842028563102,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32757298151652015,
+        "temporal_alignment_raw": 0.9827189445495605,
+        "event_sparse_score": 0.4460561016542795,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 40,
+          "dense_score": 0.2780267298221588,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 153,
+          "aligned_keyframe_ordinal": 110
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 34,
+          "dense_score": 0.28019413352012634,
+          "sparse_rank": 37,
+          "sparse_score": 6.415409422193981,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 146
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 13,
+          "dense_score": 0.2966049909591675,
+          "sparse_rank": 26,
+          "sparse_score": 3.0469116677390984,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 153
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L30_V033",
+      "sequence_score": 0.5514698876934693,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.720426245210728,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3323212464650472,
+        "temporal_alignment_raw": 0.9969637393951416,
+        "event_sparse_score": 0.18827160493827158,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 36,
+          "dense_score": 0.27911829948425293,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 166,
+          "aligned_keyframe_ordinal": 74
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 1,
+          "dense_score": 0.30199435353279114,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 76,
+          "aligned_keyframe_ordinal": 76
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 56,
+          "dense_score": 0.2755262553691864,
+          "sparse_rank": 48,
+          "sparse_score": 2.6965674051493336,
+          "raw_peak_keyframe_ordinal": 83,
+          "aligned_keyframe_ordinal": 83
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L29_V003",
+      "sequence_score": 0.5274509290373655,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.5951534391534391,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3301086823145548,
+        "temporal_alignment_raw": 0.9903260469436646,
+        "event_sparse_score": 0.5843621399176955,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 66,
+          "dense_score": 0.26781362295150757,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 389,
+          "aligned_keyframe_ordinal": 48
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 15,
+          "dense_score": 0.28707945346832275,
+          "sparse_rank": 1,
+          "sparse_score": 13.691969055558737,
+          "raw_peak_keyframe_ordinal": 267,
+          "aligned_keyframe_ordinal": 49
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 65,
+          "dense_score": 0.27350130677223206,
+          "sparse_rank": 21,
+          "sparse_score": 3.090920381346007,
+          "raw_peak_keyframe_ordinal": 131,
+          "aligned_keyframe_ordinal": 131
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L29_V010",
+      "sequence_score": 0.5027984268814942,
+      "score_components": {
+        "baseline_rank_score": 0.6630434782608695,
+        "semantic_event_score": 0.7155402170176336,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.31630612081951565,
+        "temporal_alignment_raw": 0.948918362458547,
+        "event_sparse_score": 0.4141508133443617,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 43,
+          "dense_score": 0.2765306234359741,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 517,
+          "aligned_keyframe_ordinal": 54
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 9,
+          "dense_score": 0.28980642557144165,
+          "sparse_rank": 44,
+          "sparse_score": 6.370060764632116,
+          "raw_peak_keyframe_ordinal": 56,
+          "aligned_keyframe_ordinal": 56
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 31,
+          "dense_score": 0.28469574451446533,
+          "sparse_rank": 33,
+          "sparse_score": 3.025373938071598,
+          "raw_peak_keyframe_ordinal": 83,
+          "aligned_keyframe_ordinal": 83
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L29_V012",
+      "sequence_score": 0.4949486784798919,
+      "score_components": {
+        "baseline_rank_score": 0.648936170212766,
+        "semantic_event_score": 0.7018297005139109,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32104338539971244,
+        "temporal_alignment_raw": 0.9631301561991373,
+        "event_sparse_score": 0.3978935980654194,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 35,
+          "dense_score": 0.2793923616409302,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 445,
+          "aligned_keyframe_ordinal": 58
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 12,
+          "dense_score": 0.2882134020328522,
+          "sparse_rank": 48,
+          "sparse_score": 6.347626006446511,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 59
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 39,
+          "dense_score": 0.28053349256515503,
+          "sparse_rank": 37,
+          "sparse_score": 3.0147188540418637,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L28_V011",
+      "sequence_score": 0.49278377322739353,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.6430132118507043,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3224310543802049,
+        "temporal_alignment_raw": 0.9672931631406149,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 2,
+          "dense_score": 0.3072563409805298,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 27,
+          "aligned_keyframe_ordinal": 27
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 46,
+          "dense_score": 0.27673712372779846,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 217,
+          "aligned_keyframe_ordinal": 217
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 105,
+          "dense_score": 0.26197192072868347,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 280
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L28_V015",
+      "sequence_score": 0.4843482542952062,
+      "score_components": {
+        "baseline_rank_score": 0.8472222222222222,
+        "semantic_event_score": 0.6607904772803171,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 23,
+          "dense_score": 0.28777015209198,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 26,
+          "aligned_keyframe_ordinal": 26
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 74,
+          "dense_score": 0.26890283823013306,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 70,
+          "aligned_keyframe_ordinal": 70
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 17,
+          "dense_score": 0.28901228308677673,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 302,
+          "aligned_keyframe_ordinal": 302
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L21_V003",
+      "sequence_score": 0.48276768478505844,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.6309647463849775,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 147,
+          "dense_score": 0.25710320472717285,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 20,
+          "aligned_keyframe_ordinal": 20
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 8,
+          "dense_score": 0.2901909351348877,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 24,
+          "aligned_keyframe_ordinal": 24
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 27,
+          "dense_score": 0.28639259934425354,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L29_V016",
+      "sequence_score": 0.4812701605156612,
+      "score_components": {
+        "baseline_rank_score": 0.5865384615384616,
+        "semantic_event_score": 0.7033567931589241,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.31758074627982247,
+        "temporal_alignment_raw": 0.9527422388394674,
+        "event_sparse_score": 0.38651651651651653,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 57,
+          "dense_score": 0.27128928899765015,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 575,
+          "aligned_keyframe_ordinal": 56
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 13,
+          "dense_score": 0.2873676121234894,
+          "sparse_rank": 51,
+          "sparse_score": 6.325348719900285,
+          "raw_peak_keyframe_ordinal": 573,
+          "aligned_keyframe_ordinal": 58
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 21,
+          "dense_score": 0.2877645194530487,
+          "sparse_rank": 40,
+          "sparse_score": 3.004138559030848,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 85
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L29_V009",
+      "sequence_score": 0.4775061565170042,
+      "score_components": {
+        "baseline_rank_score": 0.5258620689655172,
+        "semantic_event_score": 0.7155564990616536,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32480775647693205,
+        "temporal_alignment_raw": 0.9744232694307963,
+        "event_sparse_score": 0.4227896286719816,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 51,
+          "dense_score": 0.27282005548477173,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 162,
+          "aligned_keyframe_ordinal": 57
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 3,
+          "dense_score": 0.2961796820163727,
+          "sparse_rank": 42,
+          "sparse_score": 6.404011833129556,
+          "raw_peak_keyframe_ordinal": 313,
+          "aligned_keyframe_ordinal": 58
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 37,
+          "dense_score": 0.2810250520706177,
+          "sparse_rank": 31,
+          "sparse_score": 3.0414985374431036,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 85
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L28_V002",
+      "sequence_score": 0.4770845297421294,
+      "score_components": {
+        "baseline_rank_score": 0.7093023255813954,
+        "semantic_event_score": 0.7285246598639455,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 4,
+          "dense_score": 0.30626600980758667,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 31,
+          "aligned_keyframe_ordinal": 31
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 40,
+          "dense_score": 0.2786775827407837,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 127,
+          "aligned_keyframe_ordinal": 127
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 38,
+          "dense_score": 0.2809962034225464,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 211,
+          "aligned_keyframe_ordinal": 211
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L28_V010",
+      "sequence_score": 0.47489483914350783,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.679677351770375,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.33263058132595485,
+        "temporal_alignment_raw": 0.9978917439778646,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 1,
+          "dense_score": 0.3082072138786316,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 28,
+          "aligned_keyframe_ordinal": 28
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 26,
+          "dense_score": 0.2827261984348297,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 460,
+          "aligned_keyframe_ordinal": 151
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 125,
+          "dense_score": 0.25812724232673645,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 206,
+          "aligned_keyframe_ordinal": 206
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L29_V004",
+      "sequence_score": 0.470185547202154,
+      "score_components": {
+        "baseline_rank_score": 0.5,
+        "semantic_event_score": 0.7193082788671022,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3058923151757982,
+        "temporal_alignment_raw": 0.9176769455273946,
+        "event_sparse_score": 0.41842549598986906,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 25,
+          "dense_score": 0.2858279347419739,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 554,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 30,
+          "dense_score": 0.2816622853279114,
+          "sparse_rank": 43,
+          "sparse_score": 6.370060764632116,
+          "raw_peak_keyframe_ordinal": 327,
+          "aligned_keyframe_ordinal": 58
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 20,
+          "dense_score": 0.28783202171325684,
+          "sparse_rank": 32,
+          "sparse_score": 3.025373938071598,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L29_V005",
+      "sequence_score": 0.46122503958284766,
+      "score_components": {
+        "baseline_rank_score": 0.5980392156862745,
+        "semantic_event_score": 0.6059025149934242,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.43179775280898874,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+          "query_en": "a map, on which a type of waterworks appears four times in a row.",
+          "dense_rank": 61,
+          "dense_score": 0.2692011892795563,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 58,
+          "aligned_keyframe_ordinal": 58
+        },
+        {
+          "event_index": 2,
+          "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+          "query_en": "And then there's the view of a dam being turned from above.",
+          "dense_rank": 17,
+          "dense_score": 0.286763459444046,
+          "sparse_rank": 40,
+          "sparse_score": 6.404011833129556,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 59
+        },
+        {
+          "event_index": 3,
+          "event_text": "là cảnh cận con đập dưới trời mưa",
+          "query_en": "It's a close-up of a crash in the rain.",
+          "dense_rank": 57,
+          "dense_score": 0.27485519647598267,
+          "sparse_rank": 29,
+          "sparse_score": 3.0414985374431036,
+          "raw_peak_keyframe_ordinal": 101,
+          "aligned_keyframe_ordinal": 101
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần",
+      "query_en": "a map, on which a type of waterworks appears four times in a row.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "chuyển sang cảnh một con đập được quay từ trên cao",
+      "query_en": "And then there's the view of a dam being turned from above.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "là cảnh cận con đập dưới trời mưa",
+      "query_en": "It's a close-up of a crash in the rain.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

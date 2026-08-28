@@ -1,0 +1,848 @@
+{
+  "query_id": "query-p1-21-kis",
+  "query": "Cảnh quay bắt đầu bằng cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn. Sau đó là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+    "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp"
+  ],
+  "markers": [
+    {
+      "marker": "Cảnh quay bắt đầu bằng",
+      "relation": "forward"
+    },
+    {
+      "marker": "Sau đó",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L26_V401",
+      "sequence_score": 0.8616759911247175,
+      "score_components": {
+        "baseline_rank_score": 0.782051282051282,
+        "semantic_event_score": 0.8840579710144928,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9772904515266418,
+        "temporal_alignment_raw": 0.9772904515266418,
+        "event_sparse_score": 0.6196885313531353,
+        "object_signal": 0.629718450916069,
+        "object_rrf_delta": 0.28930413836,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 9,
+          "dense_score": 0.314056932926178,
+          "sparse_rank": 41,
+          "sparse_score": 12.883028233290048,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 66
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 9,
+          "dense_score": 0.32186704874038696,
+          "sparse_rank": 36,
+          "sparse_score": 28.975653113389846,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 67
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L26_V110",
+      "sequence_score": 0.8442694255651898,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.9250919117647058,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5809908868694051,
+        "object_rrf_delta": 0.26691780695999995,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 4,
+          "dense_score": 0.3156590163707733,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 94,
+          "aligned_keyframe_ordinal": 94
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 8,
+          "dense_score": 0.32196658849716187,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 95,
+          "aligned_keyframe_ordinal": 95
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L26_V213",
+      "sequence_score": 0.8404215926322459,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.9533577533577533,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.44649428772227934,
+        "object_rrf_delta": 0.20512761695999998,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 5,
+          "dense_score": 0.3156062364578247,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 137,
+          "aligned_keyframe_ordinal": 137
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 3,
+          "dense_score": 0.3276028633117676,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 146,
+          "aligned_keyframe_ordinal": 146
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L26_V434",
+      "sequence_score": 0.8295177237862585,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.891025641025641,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9832687973976135,
+        "temporal_alignment_raw": 0.9832687973976135,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5974245404087873,
+        "object_rrf_delta": 0.27446772703999994,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 1,
+          "dense_score": 0.32173222303390503,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 55,
+          "aligned_keyframe_ordinal": 55
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 18,
+          "dense_score": 0.31917858123779297,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 55,
+          "aligned_keyframe_ordinal": 146
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L26_V335",
+      "sequence_score": 0.8012284556430901,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.843371212121212,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9668082296848297,
+        "temporal_alignment_raw": 0.9668082296848297,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6272974327701822,
+        "object_rrf_delta": 0.28819187848,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 6,
+          "dense_score": 0.31539294123649597,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 102,
+          "aligned_keyframe_ordinal": 81
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 20,
+          "dense_score": 0.318090558052063,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L29_V015",
+      "sequence_score": 0.7312510549160202,
+      "score_components": {
+        "baseline_rank_score": 0.5398230088495575,
+        "semantic_event_score": 0.8481971614883007,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9960036873817444,
+        "temporal_alignment_raw": 0.9960036873817444,
+        "event_sparse_score": 0.1942675159235669,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 19,
+          "dense_score": 0.308777779340744,
+          "sparse_rank": 97,
+          "sparse_score": 9.957378116456965,
+          "raw_peak_keyframe_ordinal": 258,
+          "aligned_keyframe_ordinal": 258
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 6,
+          "dense_score": 0.3221466541290283,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 183,
+          "aligned_keyframe_ordinal": 263
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L26_V310",
+      "sequence_score": 0.6650970365182144,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.7184409161894847,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4761841297149658,
+        "temporal_alignment_raw": 0.9523682594299316,
+        "event_sparse_score": 0.4236111111111111,
+        "object_signal": 0.8425047488443875,
+        "object_rrf_delta": 0.38706204348,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 8,
+          "dense_score": 0.31461063027381897,
+          "sparse_rank": 12,
+          "sparse_score": 15.841777369869746,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 60
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 53,
+          "dense_score": 0.3116837739944458,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 73,
+          "aligned_keyframe_ordinal": 73
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L26_V275",
+      "sequence_score": 0.6512332595483332,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.6183254848750898,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48304101824760437,
+        "temporal_alignment_raw": 0.9660820364952087,
+        "event_sparse_score": 0.6715359373346036,
+        "object_signal": 0.5225173523041046,
+        "object_rrf_delta": 0.24005399899999996,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 127,
+          "dense_score": 0.29857224225997925,
+          "sparse_rank": 81,
+          "sparse_score": 10.15763313305835,
+          "raw_peak_keyframe_ordinal": 123,
+          "aligned_keyframe_ordinal": 123
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 7,
+          "dense_score": 0.3221311867237091,
+          "sparse_rank": 7,
+          "sparse_score": 36.11573910977832,
+          "raw_peak_keyframe_ordinal": 123,
+          "aligned_keyframe_ordinal": 133
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L30_V084",
+      "sequence_score": 0.6313151412394625,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.7653472740851381,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48160943388938904,
+        "temporal_alignment_raw": 0.9632188677787781,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7768908786102554,
+        "object_rrf_delta": 0.35691783511999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 43,
+          "dense_score": 0.3051198422908783,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 41,
+          "aligned_keyframe_ordinal": 41
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 5,
+          "dense_score": 0.32412561774253845,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 50
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L29_V019",
+      "sequence_score": 0.601323169582851,
+      "score_components": {
+        "baseline_rank_score": 0.7530864197530864,
+        "semantic_event_score": 0.7422763042844651,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49862971901893616,
+        "temporal_alignment_raw": 0.9972594380378723,
+        "event_sparse_score": 0.2089041095890411,
+        "object_signal": 0.6467625107029937,
+        "object_rrf_delta": 0.2971344902,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 34,
+          "dense_score": 0.30652856826782227,
+          "sparse_rank": 86,
+          "sparse_score": 10.02078264325845,
+          "raw_peak_keyframe_ordinal": 336,
+          "aligned_keyframe_ordinal": 335
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 13,
+          "dense_score": 0.32021936774253845,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 336,
+          "aligned_keyframe_ordinal": 336
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L22_V011",
+      "sequence_score": 0.599450424670438,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.676300578034682,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4937492609024048,
+        "temporal_alignment_raw": 0.9874985218048096,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5144733715257114,
+        "object_rrf_delta": 0.23635844755999996,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 113,
+          "dense_score": 0.29916828870773315,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 134,
+          "aligned_keyframe_ordinal": 133
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 1,
+          "dense_score": 0.3333813548088074,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 134,
+          "aligned_keyframe_ordinal": 134
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L29_V008",
+      "sequence_score": 0.5844163648326435,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.6331391875746715,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4796636551618576,
+        "temporal_alignment_raw": 0.9593273103237152,
+        "event_sparse_score": 0.29901960784313725,
+        "object_signal": 0.802461990032993,
+        "object_rrf_delta": 0.36866566996,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 156,
+          "dense_score": 0.29751190543174744,
+          "sparse_rank": 42,
+          "sparse_score": 12.824740389872368,
+          "raw_peak_keyframe_ordinal": 309,
+          "aligned_keyframe_ordinal": 309
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 2,
+          "dense_score": 0.33037853240966797,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 309,
+          "aligned_keyframe_ordinal": 347
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L26_V428",
+      "sequence_score": 0.5765831287818161,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.5523596463193778,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.488770067691803,
+        "temporal_alignment_raw": 0.977540135383606,
+        "event_sparse_score": 0.48412698412698413,
+        "object_signal": 0.9123522910965588,
+        "object_rrf_delta": 0.41915127796,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 3,
+          "dense_score": 0.31606829166412354,
+          "sparse_rank": 3,
+          "sparse_score": 18.839529402825733,
+          "raw_peak_keyframe_ordinal": 119,
+          "aligned_keyframe_ordinal": 43
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 387,
+          "dense_score": 0.29363927245140076,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 46
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L26_V425",
+      "sequence_score": 0.5736723746697022,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.7290327089740005,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.490766778588295,
+        "temporal_alignment_raw": 0.98153355717659,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5383433088484489,
+        "object_rrf_delta": 0.24732473199999994,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 13,
+          "dense_score": 0.3119187653064728,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 62
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 38,
+          "dense_score": 0.31357908248901367,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 85
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L26_V229",
+      "sequence_score": 0.5699084680632277,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.6061676936087954,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4999181032180786,
+        "temporal_alignment_raw": 0.9998362064361572,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6731735958398994,
+        "object_rrf_delta": 0.30926822428,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 2,
+          "dense_score": 0.31926488876342773,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 79,
+          "aligned_keyframe_ordinal": 79
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 207,
+          "dense_score": 0.29996034502983093,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 39,
+          "aligned_keyframe_ordinal": 132
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L26_V211",
+      "sequence_score": 0.563862743051233,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.6991064491064491,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47661541402339935,
+        "temporal_alignment_raw": 0.9532308280467987,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6771601682182045,
+        "object_rrf_delta": 0.31109972832,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 18,
+          "dense_score": 0.30904507637023926,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 65
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 39,
+          "dense_score": 0.31350260972976685,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 82
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L26_V487",
+      "sequence_score": 0.5601161291680842,
+      "score_components": {
+        "baseline_rank_score": 0.6777777777777778,
+        "semantic_event_score": 0.595927495291902,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4879315495491028,
+        "temporal_alignment_raw": 0.9758630990982056,
+        "event_sparse_score": 0.22592592592592592,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.45941823356000006,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 12,
+          "dense_score": 0.3123348355293274,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 48,
+          "aligned_keyframe_ordinal": 48
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 117,
+          "dense_score": 0.30482354760169983,
+          "sparse_rank": 75,
+          "sparse_score": 25.661110459954504,
+          "raw_peak_keyframe_ordinal": 47,
+          "aligned_keyframe_ordinal": 146
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L26_V274",
+      "sequence_score": 0.5577963570167801,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.5782077515647568,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4786731004714966,
+        "temporal_alignment_raw": 0.9573462009429932,
+        "event_sparse_score": 0.3719512195121951,
+        "object_signal": 0.6019969857462789,
+        "object_rrf_delta": 0.2765683918,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 7,
+          "dense_score": 0.31515946984291077,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 66,
+          "aligned_keyframe_ordinal": 66
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 188,
+          "dense_score": 0.3005899488925934,
+          "sparse_rank": 22,
+          "sparse_score": 30.709631047419506,
+          "raw_peak_keyframe_ordinal": 52,
+          "aligned_keyframe_ordinal": 162
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L26_V125",
+      "sequence_score": 0.5432787342005023,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.5907567832625041,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5677006511016893,
+        "object_rrf_delta": 0.26081203032,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 101,
+          "dense_score": 0.2999208867549896,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 79,
+          "aligned_keyframe_ordinal": 79
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 16,
+          "dense_score": 0.3194538950920105,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 131,
+          "aligned_keyframe_ordinal": 131
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L26_V222",
+      "sequence_score": 0.5207394100827263,
+      "score_components": {
+        "baseline_rank_score": 0.5545454545454546,
+        "semantic_event_score": 0.6963980463980464,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.482708215713501,
+        "temporal_alignment_raw": 0.965416431427002,
+        "event_sparse_score": 0.2850467289719626,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+          "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+          "dense_rank": 57,
+          "dense_score": 0.30364954471588135,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 89,
+          "aligned_keyframe_ordinal": 60
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+          "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+          "dense_rank": 10,
+          "dense_score": 0.32185354828834534,
+          "sparse_rank": 47,
+          "sparse_score": 28.236091496298563,
+          "raw_peak_keyframe_ordinal": 89,
+          "aligned_keyframe_ordinal": 89
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "cảnh những con tôm đã được lột vỏ và nấu chín đang nằm trên dĩa, phía sau là người đầu bếp đang đặt 3 ổ bánh mì lên bàn",
+      "query_en": "The shrimp are being peeled and cooked on the table, and the chef is laying three loaves of bread on the counter.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "là cảnh quay các đầu bếp, có người thì trang trí món ăn, có người thì chế biến món ăn. Những con tôm được cắt làm đôi và được nướng trên bếp",
+      "query_en": "It's the scene of the chefs, some people decorating the food, others preparing the dishes. The shrimp are cut into pairs and baked in the kitchen.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

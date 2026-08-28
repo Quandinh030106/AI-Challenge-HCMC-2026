@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-24-kis",
+  "query": "Đoạn clip được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình. Đầu tiên là một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách. Ngay sau cảnh này, người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L29_V001",
+      "coarse_mapped_frame": "22339",
+      "best_actual_frame": "22339",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V001"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L27_V012",
+      "coarse_mapped_frame": "360",
+      "best_actual_frame": "360",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V012"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L29_V001",
+      "coarse_mapped_frame": "22350",
+      "best_actual_frame": "22350",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V001"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L29_V014",
+      "coarse_mapped_frame": "21330",
+      "best_actual_frame": "21330",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V014"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L27_V013",
+      "coarse_mapped_frame": "360",
+      "best_actual_frame": "360",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V013"
+    }
+  ],
+  "status": "completed"
+}

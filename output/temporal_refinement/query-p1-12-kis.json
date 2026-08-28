@@ -1,0 +1,149 @@
+{
+  "query_id": "query-p1-12-kis",
+  "query": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình. Trước đó là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "refined",
+      "prediction_rank": 1,
+      "video_id": "L21_V023",
+      "coarse_keyframe_ordinal": 176,
+      "map_n": 177,
+      "coarse_mapped_frame": 22164,
+      "coarse_pts_time": 738.833,
+      "map_fps": 30.0,
+      "decoder_fps": 30.0,
+      "effective_fps": 30.0,
+      "fps_source": "map_keyframes",
+      "decoder_backend": "FFMPEG",
+      "raw_video_path": "data\\Videos_L21_a\\video\\L21_V023.mp4",
+      "semantic_anchor": {
+        "event_index": 2,
+        "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+        "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame."
+      },
+      "refine_interval": {
+        "coarse": {
+          "start_frame": 22014,
+          "end_frame": 22314,
+          "start_time": 733.833,
+          "end_time": 743.833,
+          "sample_fps": 4.0,
+          "sample_count": 39
+        },
+        "fine": {
+          "start_frame": 22144,
+          "end_frame": 22188,
+          "sample_fps": "native_frame_by_frame",
+          "sample_count": 45
+        }
+      },
+      "coarse_stage_best_actual_frame": 22166,
+      "coarse_stage_score": 0.3182111382484436,
+      "best_actual_frame": 22165,
+      "score": 0.31902503967285156
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L22_V001",
+      "coarse_mapped_frame": "21216",
+      "best_actual_frame": "21216",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L22_V001"
+    },
+    {
+      "status": "refined",
+      "prediction_rank": 3,
+      "video_id": "L21_V023",
+      "coarse_keyframe_ordinal": 175,
+      "map_n": 176,
+      "coarse_mapped_frame": 22134,
+      "coarse_pts_time": 737.833,
+      "map_fps": 30.0,
+      "decoder_fps": 30.0,
+      "effective_fps": 30.0,
+      "fps_source": "map_keyframes",
+      "decoder_backend": "FFMPEG",
+      "raw_video_path": "data\\Videos_L21_a\\video\\L21_V023.mp4",
+      "semantic_anchor": {
+        "event_index": 2,
+        "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+        "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame."
+      },
+      "refine_interval": {
+        "coarse": {
+          "start_frame": 21984,
+          "end_frame": 22284,
+          "start_time": 732.833,
+          "end_time": 742.833,
+          "sample_fps": 4.0,
+          "sample_count": 39
+        },
+        "fine": {
+          "start_frame": 22146,
+          "end_frame": 22190,
+          "sample_fps": "native_frame_by_frame",
+          "sample_count": 45
+        }
+      },
+      "coarse_stage_best_actual_frame": 22168,
+      "coarse_stage_score": 0.3150739073753357,
+      "best_actual_frame": 22166,
+      "score": 0.3182111382484436
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L22_V008",
+      "coarse_mapped_frame": "7350",
+      "best_actual_frame": "7350",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L22_V008"
+    },
+    {
+      "status": "refined",
+      "prediction_rank": 5,
+      "video_id": "L21_V012",
+      "coarse_keyframe_ordinal": 122,
+      "map_n": 123,
+      "coarse_mapped_frame": 14853,
+      "coarse_pts_time": 495.133,
+      "map_fps": 30.0,
+      "decoder_fps": 30.0,
+      "effective_fps": 30.0,
+      "fps_source": "map_keyframes",
+      "decoder_backend": "FFMPEG",
+      "raw_video_path": "data\\Videos_L21_a\\video\\L21_V012.mp4",
+      "semantic_anchor": {
+        "event_index": 2,
+        "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+        "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame."
+      },
+      "refine_interval": {
+        "coarse": {
+          "start_frame": 14703,
+          "end_frame": 15003,
+          "start_time": 490.133,
+          "end_time": 500.133,
+          "sample_fps": 4.0,
+          "sample_count": 39
+        },
+        "fine": {
+          "start_frame": 14969,
+          "end_frame": 15013,
+          "sample_fps": "native_frame_by_frame",
+          "sample_count": 45
+        }
+      },
+      "coarse_stage_best_actual_frame": 14991,
+      "coarse_stage_score": 0.30690377950668335,
+      "best_actual_frame": 14991,
+      "score": 0.30690380930900574
+    }
+  ],
+  "status": "completed"
+}

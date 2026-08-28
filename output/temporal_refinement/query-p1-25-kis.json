@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-25-kis",
+  "query": "Hai bạn học sinh mặc đồng phục áo trắng, quần xanh, quàng khăn đỏ đang làm MC trên một sân khấu tại trường học, phía sau là một bộ trống cơ màu đỏ và một cây đàn piano.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L25_V056",
+      "coarse_mapped_frame": "5212",
+      "best_actual_frame": "5212",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V056"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L26_V379",
+      "coarse_mapped_frame": "5760",
+      "best_actual_frame": "5760",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V379"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L25_V056",
+      "coarse_mapped_frame": "5211",
+      "best_actual_frame": "5211",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V056"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L30_V026",
+      "coarse_mapped_frame": "779",
+      "best_actual_frame": "779",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L30_V026"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L29_V003",
+      "coarse_mapped_frame": "18900",
+      "best_actual_frame": "18900",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V003"
+    }
+  ],
+  "status": "completed"
+}

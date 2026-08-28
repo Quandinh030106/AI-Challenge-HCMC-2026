@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-1-kis",
+  "query": "Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, cùng thực hiện động tác hai tay chạm mũi chân. Trong nhóm chỉ có một người đeo kính và ba người đội nón có màu đỏ.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L29_V005",
+      "coarse_mapped_frame": "12690",
+      "best_actual_frame": "12690",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V005"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L24_V002",
+      "coarse_mapped_frame": "12288",
+      "best_actual_frame": "12288",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V002"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L29_V005",
+      "coarse_mapped_frame": "12555",
+      "best_actual_frame": "12555",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V005"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L30_V049",
+      "coarse_mapped_frame": "983",
+      "best_actual_frame": "983",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L30_V049"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L24_V003",
+      "coarse_mapped_frame": "1024",
+      "best_actual_frame": "1024",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V003"
+    }
+  ],
+  "status": "completed"
+}

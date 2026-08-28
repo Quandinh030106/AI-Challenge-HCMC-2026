@@ -1,0 +1,844 @@
+{
+  "query_id": "query-p1-12-kis",
+  "query": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình. Trước đó là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+    "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình"
+  ],
+  "markers": [
+    {
+      "marker": "Trước đó",
+      "relation": "reverse"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L22_V001",
+      "sequence_score": 0.8278857514949781,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.8778782894736843,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9826598465442657,
+        "temporal_alignment_raw": 0.9826598465442657,
+        "event_sparse_score": 0.0,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.4724639664,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 16,
+          "dense_score": 0.29412147402763367,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 187,
+          "aligned_keyframe_ordinal": 174
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 4,
+          "dense_score": 0.2973652780056,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 185,
+          "aligned_keyframe_ordinal": 185
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L21_V023",
+      "sequence_score": 0.8275114562625713,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.917345092718227,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.560444283227776,
+        "object_rrf_delta": 0.26478972900000003,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 6,
+          "dense_score": 0.30549508333206177,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 105,
+          "aligned_keyframe_ordinal": 105
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 7,
+          "dense_score": 0.29534024000167847,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 176,
+          "aligned_keyframe_ordinal": 176
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L22_V008",
+      "sequence_score": 0.8204441169369665,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.8854427736006684,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9123108088970184,
+        "temporal_alignment_raw": 0.9123108088970184,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7175022256681457,
+        "object_rrf_delta": 0.33899394744,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 3,
+          "dense_score": 0.30721837282180786,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 248,
+          "aligned_keyframe_ordinal": 74
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 16,
+          "dense_score": 0.2854653298854828,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 74,
+          "aligned_keyframe_ordinal": 181
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L30_V038",
+      "sequence_score": 0.8003691036689022,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.8986021505376345,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5271615752155273,
+        "object_rrf_delta": 0.24906484875999998,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 2,
+          "dense_score": 0.308401882648468,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 15,
+          "dense_score": 0.2870909571647644,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 11,
+          "aligned_keyframe_ordinal": 11
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L21_V012",
+      "sequence_score": 0.7879330908251626,
+      "score_components": {
+        "baseline_rank_score": 0.7530864197530864,
+        "semantic_event_score": 0.8606915739268681,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.582166693929698,
+        "object_rrf_delta": 0.27505278531999994,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 14,
+          "dense_score": 0.2962547838687897,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 114,
+          "aligned_keyframe_ordinal": 114
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 8,
+          "dense_score": 0.2951664328575134,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 125
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L22_V028",
+      "sequence_score": 0.7810411680650436,
+      "score_components": {
+        "baseline_rank_score": 0.7011494252873564,
+        "semantic_event_score": 0.872140522875817,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.926419585943222,
+        "temporal_alignment_raw": 0.926419585943222,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8041237650668803,
+        "object_rrf_delta": 0.37991950352000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 8,
+          "dense_score": 0.30023860931396484,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 199,
+          "aligned_keyframe_ordinal": 199
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 12,
+          "dense_score": 0.2904928922653198,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 18,
+          "aligned_keyframe_ordinal": 259
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L21_V021",
+      "sequence_score": 0.7767891960362093,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.8232789855072464,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.8767746984958649,
+        "temporal_alignment_raw": 0.8767746984958649,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7124525788597791,
+        "object_rrf_delta": 0.33660817128000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 9,
+          "dense_score": 0.2999303936958313,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 49,
+          "aligned_keyframe_ordinal": 49
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 20,
+          "dense_score": 0.2806713581085205,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 26,
+          "aligned_keyframe_ordinal": 53
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L22_V020",
+      "sequence_score": 0.7401015599486284,
+      "score_components": {
+        "baseline_rank_score": 0.580952380952381,
+        "semantic_event_score": 0.9276497695852535,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9707743525505066,
+        "temporal_alignment_raw": 0.9707743525505066,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 10,
+          "dense_score": 0.29932719469070435,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 255,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 2,
+          "dense_score": 0.2982807159423828,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 245,
+          "aligned_keyframe_ordinal": 245
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L30_V079",
+      "sequence_score": 0.6598242795060808,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.7277053455019556,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.8702029334940727,
+        "object_signal": 0.7192594148276193,
+        "object_rrf_delta": 0.339824156,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 5,
+          "dense_score": 0.3055240511894226,
+          "sparse_rank": 19,
+          "sparse_score": 9.818576795884754,
+          "raw_peak_keyframe_ordinal": 27,
+          "aligned_keyframe_ordinal": 27
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 58,
+          "dense_score": 0.26528653502464294,
+          "sparse_rank": 3,
+          "sparse_score": 15.870246825443363,
+          "raw_peak_keyframe_ordinal": 48,
+          "aligned_keyframe_ordinal": 48
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L22_V022",
+      "sequence_score": 0.6586325477309022,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.8546511627906976,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49153636395931244,
+        "temporal_alignment_raw": 0.9830727279186249,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6346510150281801,
+        "object_rrf_delta": 0.29984973583999996,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 26,
+          "dense_score": 0.29072853922843933,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 40,
+          "aligned_keyframe_ordinal": 39
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 1,
+          "dense_score": 0.31017228960990906,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 40,
+          "aligned_keyframe_ordinal": 40
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L22_V015",
+      "sequence_score": 0.6455077781763274,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.8307178932178932,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4775475859642029,
+        "temporal_alignment_raw": 0.9550951719284058,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7393592924804264,
+        "object_rrf_delta": 0.34932062391999996,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 28,
+          "dense_score": 0.2904185354709625,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 233,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 3,
+          "dense_score": 0.2974967956542969,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 43
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L22_V027",
+      "sequence_score": 0.6309931359791965,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.8323260073260073,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4739219546318054,
+        "temporal_alignment_raw": 0.9478439092636108,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.3311249387165963,
+        "object_rrf_delta": 0.15644460192,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 24,
+          "dense_score": 0.2908276319503784,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 236,
+          "aligned_keyframe_ordinal": 18
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 5,
+          "dense_score": 0.29699283838272095,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 20,
+          "aligned_keyframe_ordinal": 20
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L30_V044",
+      "sequence_score": 0.6301089884940563,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.7708791208791208,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.779935347636704,
+        "object_rrf_delta": 0.36849134788000004,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 31,
+          "dense_score": 0.2886962890625,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 10,
+          "aligned_keyframe_ordinal": 10
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 10,
+          "dense_score": 0.29310402274131775,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 23,
+          "aligned_keyframe_ordinal": 23
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L21_V031",
+      "sequence_score": 0.6017347266717323,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.7702020202020201,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.3252471181048782,
+        "object_rrf_delta": 0.15366754348,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 39,
+          "dense_score": 0.286257266998291,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 22,
+          "aligned_keyframe_ordinal": 22
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 6,
+          "dense_score": 0.29570472240448,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 156,
+          "aligned_keyframe_ordinal": 156
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L30_V081",
+      "sequence_score": 0.6012393912171957,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.7684663536776213,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49547503888607025,
+        "temporal_alignment_raw": 0.9909500777721405,
+        "event_sparse_score": 0.2629310344827586,
+        "object_signal": 0.496940611892556,
+        "object_rrf_delta": 0.23478653256,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 11,
+          "dense_score": 0.2991228699684143,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 17,
+          "aligned_keyframe_ordinal": 17
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 30,
+          "dense_score": 0.27777546644210815,
+          "sparse_rank": 56,
+          "sparse_score": 7.653993954470674,
+          "raw_peak_keyframe_ordinal": 12,
+          "aligned_keyframe_ordinal": 51
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L22_V013",
+      "sequence_score": 0.5676892397013684,
+      "score_components": {
+        "baseline_rank_score": 0.8472222222222222,
+        "semantic_event_score": 0.6840924775707384,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.3603410397140501,
+        "object_rrf_delta": 0.17024815688000003,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 66,
+          "dense_score": 0.275635302066803,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 228,
+          "aligned_keyframe_ordinal": 228
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 9,
+          "dense_score": 0.29445651173591614,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 274,
+          "aligned_keyframe_ordinal": 274
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L21_V017",
+      "sequence_score": 0.5583678853129962,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.6637759611135661,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4338907450437546,
+        "temporal_alignment_raw": 0.8677814900875092,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.3467978203892927,
+        "object_rrf_delta": 0.16384947376,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 64,
+          "dense_score": 0.2763174772262573,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 129,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 13,
+          "dense_score": 0.28957581520080566,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 27,
+          "aligned_keyframe_ordinal": 27
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L22_V031",
+      "sequence_score": 0.5546681713092931,
+      "score_components": {
+        "baseline_rank_score": 0.6853932584269663,
+        "semantic_event_score": 0.6793451801363194,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7757193116600819,
+        "object_rrf_delta": 0.36649942280000003,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 44,
+          "dense_score": 0.28501367568969727,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 205,
+          "aligned_keyframe_ordinal": 205
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 19,
+          "dense_score": 0.28074291348457336,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 223,
+          "aligned_keyframe_ordinal": 223
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L22_V029",
+      "sequence_score": 0.5460815421289422,
+      "score_components": {
+        "baseline_rank_score": 0.782051282051282,
+        "semantic_event_score": 0.6073376977632297,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6493995277943381,
+        "object_rrf_delta": 0.30681787668,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 81,
+          "dense_score": 0.26945197582244873,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 50,
+          "aligned_keyframe_ordinal": 50
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 18,
+          "dense_score": 0.2813589870929718,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 189,
+          "aligned_keyframe_ordinal": 189
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L22_V004",
+      "sequence_score": 0.5443295914444293,
+      "score_components": {
+        "baseline_rank_score": 0.7093023255813954,
+        "semantic_event_score": 0.6663288288288288,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5514095535900323,
+        "object_rrf_delta": 0.2605211448,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+          "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+          "dense_rank": 60,
+          "dense_score": 0.2782599925994873,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 21,
+          "aligned_keyframe_ordinal": 21
+        },
+        {
+          "event_index": 2,
+          "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+          "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+          "dense_rank": 14,
+          "dense_score": 0.28716152906417847,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 240,
+          "aligned_keyframe_ordinal": 240
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "là cảnh một người đậy nắp bình xăng xe máy của họ. Có thông tin về giá dầu mazut được hiển thị trong khung hình",
+      "query_en": "This is a scene of a man covering his motorcycle's gas tank.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "Có thể thấy trong cảnh quay có 4 tài xế xe ôm công nghệ trong trạm xăng, trong đó 3 người đứng đợi còn 1 người lái xe từ trái sang phải khung hình",
+      "query_en": "You can see in the footage that there are four tech-savvy drivers in the gas station, three of whom are waiting and one driver is driving from left to right in the frame.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

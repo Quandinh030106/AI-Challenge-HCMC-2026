@@ -21,7 +21,7 @@ def natural_sort_key(s):
 def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     """
     Script chan doan chuyen sau:
-    Doc toan bo 24 cau hoi de thi va hien thi chi tiet cau truc du lieu, cau dich Meta NLLB-200,
+    Doc toan bo cac cau hoi de thi va hien thi chi tiet cau truc du lieu, cau dich Meta NLLB-200,
     cac thuc the viet hoa, tu khoa hiem, lop vat the Objects va Prompt Ensemble gui cho AI.
     """
     config = load_config(config_path) if os.path.exists(config_path) else {"data": {}, "models": {}}
@@ -86,7 +86,8 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
                 print(f"    - Bước {ev_idx}: {ev}")
                 
         # 1. Xu ly dich & Prompt Ensemble
-        search_target = f"{q_text} {parsed.get('question', '')}".strip() if task_type == "qa" else q_text
+        # Giong production: video retrieval/query processing chi dung visual/context description.
+        search_target = q_text
         proc_res = query_processor.process(search_target)
         trans_en = proc_res.get("query_en", "")
         intent_info = proc_res.get("intent_info", {})
@@ -133,7 +134,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
 
             
     print("\n================================================================")
-    print("✅ HOAN TAT KIEM TRA TOAN BO 24 CAU HOI!")
+    print("✅ HOAN TAT KIEM TRA TOAN BO QUERY!")
     print("Ban hay quan sat toan bo ket qua dich va tu khoa o tren.")
     print("Neu tat ca deu chuan xac, ban co the tu tin chay Cell tiep theo de tao submission.zip!")
     print("================================================================")

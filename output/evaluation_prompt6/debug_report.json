@@ -1,0 +1,314 @@
+{
+  "ground_truth": {
+    "source": "data\\dev\\local_val_gt.json",
+    "counts": {
+      "task1": 1,
+      "task2": 1,
+      "task3": 1
+    },
+    "total_queries": 3,
+    "is_placeholder": true,
+    "placeholder_reasons": [
+      "Ground Truth được đánh dấu là dữ liệu mẫu."
+    ],
+    "issues": [
+      "task1/dev-kis-001: frame range không hợp lệ",
+      "task2/dev-qa-001: frame range không hợp lệ",
+      "task3/dev-trake-001: event 1 có frame range không hợp lệ",
+      "task3/dev-trake-001: event 2 có frame range không hợp lệ"
+    ],
+    "is_usable": false
+  },
+  "benchmark_claim_allowed": false,
+  "metrics": {
+    "query_count": 3,
+    "Final_Score": 0.0,
+    "R@1": 0.0,
+    "R@5": 0.0,
+    "R@20": 0.0,
+    "R@50": 0.0,
+    "R@100": 0.0,
+    "Video Recall@1": 0.0,
+    "Video Recall@5": 0.0,
+    "Video Recall@20": 0.0,
+    "Frame Recall@1": 0.0,
+    "Frame Recall@5": 0.0,
+    "Frame Recall@20": 0.0,
+    "ground_truth": {
+      "source": "data\\dev\\local_val_gt.json",
+      "counts": {
+        "task1": 1,
+        "task2": 1,
+        "task3": 1
+      },
+      "total_queries": 3,
+      "is_placeholder": true,
+      "placeholder_reasons": [
+        "Ground Truth được đánh dấu là dữ liệu mẫu."
+      ],
+      "issues": [
+        "task1/dev-kis-001: frame range không hợp lệ",
+        "task2/dev-qa-001: frame range không hợp lệ",
+        "task3/dev-trake-001: event 1 có frame range không hợp lệ",
+        "task3/dev-trake-001: event 2 có frame range không hợp lệ"
+      ],
+      "is_usable": false
+    },
+    "per_task": {
+      "task1": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "task2": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "task3": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      }
+    },
+    "qa_diagnostics": {
+      "query_count": 1,
+      "top1_classification_counts": {
+        "no_prediction": 1
+      },
+      "top1_classification_rates": {
+        "no_prediction": 1.0
+      }
+    },
+    "trake_diagnostics": {
+      "query_count": 1,
+      "event_accuracy_at_top1": {
+        "event_1": 0.0,
+        "event_2": 0.0
+      },
+      "mean_correct_events_at_top1": 0.0,
+      "mean_event_accuracy_at_top1": 0.0,
+      "mean_best_correct_events_in_top100": 0.0,
+      "temporal_order_error_count_at_top1": 0,
+      "temporal_order_error_rate_at_top1": 0.0
+    }
+  },
+  "failure_summary": {
+    "total_queries": 3,
+    "failure_stage_counts": {
+      "retrieval_failure": 3
+    },
+    "failure_stage_rates": {
+      "retrieval_failure": 1.0
+    },
+    "top1_failure_counts": {
+      "no_prediction": 3
+    },
+    "top1_failure_rates": {
+      "no_prediction": 1.0
+    },
+    "per_task": {
+      "task1": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "no_prediction": 1
+        },
+        "top1_failure_rates": {
+          "no_prediction": 1.0
+        }
+      },
+      "task2": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "no_prediction": 1
+        },
+        "top1_failure_rates": {
+          "no_prediction": 1.0
+        }
+      },
+      "task3": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "no_prediction": 1
+        },
+        "top1_failure_rates": {
+          "no_prediction": 1.0
+        }
+      }
+    }
+  },
+  "pipeline_errors": [],
+  "queries": [
+    {
+      "query_id": "dev-kis-001",
+      "task_type": "task1",
+      "query": "<mô tả truy vấn>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 0,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "no_prediction",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "top_candidates_beating_gt": [],
+      "top_retrieval_candidates": [],
+      "top_submission_predictions": []
+    },
+    {
+      "query_id": "dev-qa-001",
+      "task_type": "task2",
+      "query": "<mô tả cảnh dùng cho retrieval>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 0,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "no_prediction",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "qa": {
+        "top1_video_match": false,
+        "top1_frame_match": false,
+        "top1_answer_match": false,
+        "classification": "no_prediction"
+      },
+      "top_candidates_beating_gt": [],
+      "top_retrieval_candidates": [],
+      "top_submission_predictions": []
+    },
+    {
+      "query_id": "dev-trake-001",
+      "task_type": "task3",
+      "query": "<context dùng để retrieve video>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 0,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "no_prediction",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "trake": {
+        "event_count": 2,
+        "top1_event_matches": [
+          false,
+          false
+        ],
+        "top1_correct_event_count": 0,
+        "top1_event_accuracy": 0.0,
+        "top1_temporal_order_error": false,
+        "best_correct_event_count": 0,
+        "best_event_accuracy": 0.0
+      },
+      "top_candidates_beating_gt": [],
+      "top_retrieval_candidates": [],
+      "top_submission_predictions": []
+    }
+  ]
+}

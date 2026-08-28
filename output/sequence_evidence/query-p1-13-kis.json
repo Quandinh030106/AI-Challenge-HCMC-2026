@@ -1,0 +1,1074 @@
+{
+  "query_id": "query-p1-13-kis",
+  "query": "Một người đứng dưới nước và rọi đèn. Tiếp theo là cảnh người này kéo lưới cá lúc bình minh, sau đó được một nhóm người khác tiến đến dùng máy quay ghi hình.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "Một người đứng dưới nước và rọi đèn",
+    "là cảnh người này kéo lưới cá lúc bình minh",
+    "được một nhóm người khác tiến đến dùng máy quay ghi hình"
+  ],
+  "markers": [
+    {
+      "marker": "Tiếp theo",
+      "relation": "forward"
+    },
+    {
+      "marker": "sau đó",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L29_V016",
+      "sequence_score": 0.6769167427824437,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.7912771998592895,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6491691536373562,
+        "temporal_alignment_raw": 0.9737537304560343,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.36399752891440273,
+        "object_rrf_delta": 0.1533120864,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 12,
+          "dense_score": 0.27088022232055664,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 73
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 7,
+          "dense_score": 0.3046324849128723,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 39,
+          "dense_score": 0.25674158334732056,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 161,
+          "aligned_keyframe_ordinal": 161
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L29_V007",
+      "sequence_score": 0.666057845811296,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.7706051200908797,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6221496661504109,
+        "temporal_alignment_raw": 0.9332244992256165,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5226194857866236,
+        "object_rrf_delta": 0.22012205411999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 19,
+          "dense_score": 0.2682803273200989,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 50
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 4,
+          "dense_score": 0.3062605857849121,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 44,
+          "dense_score": 0.25584670901298523,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 128
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L29_V021",
+      "sequence_score": 0.6574839231983495,
+      "score_components": {
+        "baseline_rank_score": 0.6777777777777778,
+        "semantic_event_score": 0.8770991488382793,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6266407834159002,
+        "temporal_alignment_raw": 0.9399611751238505,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6293834429118351,
+        "object_rrf_delta": 0.2650899556,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 3,
+          "dense_score": 0.2793765068054199,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 43
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 1,
+          "dense_score": 0.3156512677669525,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 90,
+          "aligned_keyframe_ordinal": 90
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 32,
+          "dense_score": 0.2579183578491211,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 22,
+          "aligned_keyframe_ordinal": 107
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L29_V006",
+      "sequence_score": 0.6376745759389912,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.7868978551336147,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6036876837412516,
+        "temporal_alignment_raw": 0.9055315256118774,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5043746700877163,
+        "object_rrf_delta": 0.21243752184,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 4,
+          "dense_score": 0.2786659896373749,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 327,
+          "aligned_keyframe_ordinal": 20
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 19,
+          "dense_score": 0.30209240317344666,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 32
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 36,
+          "dense_score": 0.2570204734802246,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 29,
+          "aligned_keyframe_ordinal": 175
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L27_V005",
+      "sequence_score": 0.5983454079712459,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.5892973136179659,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3096666932106018,
+        "temporal_alignment_raw": 0.9290000796318054,
+        "event_sparse_score": 0.5843954323759917,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.42118990988000005,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 170,
+          "dense_score": 0.23986616730690002,
+          "sparse_rank": 54,
+          "sparse_score": 5.227073002860841,
+          "raw_peak_keyframe_ordinal": 312,
+          "aligned_keyframe_ordinal": 0
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 51,
+          "dense_score": 0.29276126623153687,
+          "sparse_rank": 58,
+          "sparse_score": 4.419720470463705,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 4,
+          "dense_score": 0.26608309149742126,
+          "sparse_rank": 27,
+          "sparse_score": 3.7645890885142657,
+          "raw_peak_keyframe_ordinal": 45,
+          "aligned_keyframe_ordinal": 45
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L28_V018",
+      "sequence_score": 0.5970226980713903,
+      "score_components": {
+        "baseline_rank_score": 0.5304347826086957,
+        "semantic_event_score": 0.8075282663890259,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.641076922416687,
+        "temporal_alignment_raw": 0.9616153836250305,
+        "event_sparse_score": 0.19182389937106917,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 24,
+          "dense_score": 0.2663901746273041,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 333,
+          "aligned_keyframe_ordinal": 333
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 6,
+          "dense_score": 0.30544453859329224,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 387,
+          "aligned_keyframe_ordinal": 375
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 19,
+          "dense_score": 0.25981974601745605,
+          "sparse_rank": 46,
+          "sparse_score": 3.177249316251601,
+          "raw_peak_keyframe_ordinal": 341,
+          "aligned_keyframe_ordinal": 381
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L28_V010",
+      "sequence_score": 0.5804474863004891,
+      "score_components": {
+        "baseline_rank_score": 0.5350877192982456,
+        "semantic_event_score": 0.7415724372246112,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6472410493426852,
+        "temporal_alignment_raw": 0.970861574014028,
+        "event_sparse_score": 0.20538720538720537,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 10,
+          "dense_score": 0.2728476822376251,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 33,
+          "aligned_keyframe_ordinal": 33
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 70,
+          "dense_score": 0.28359243273735046,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 329,
+          "aligned_keyframe_ordinal": 34
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 9,
+          "dense_score": 0.2619432806968689,
+          "sparse_rank": 39,
+          "sparse_score": 3.1813489205371677,
+          "raw_peak_keyframe_ordinal": 186,
+          "aligned_keyframe_ordinal": 186
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L28_V005",
+      "sequence_score": 0.546148539061051,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.6399825391461079,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3147980703247918,
+        "temporal_alignment_raw": 0.9443942109743754,
+        "event_sparse_score": 0.1737891737891738,
+        "object_signal": 0.5222857834905739,
+        "object_rrf_delta": 0.21998150208,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 1,
+          "dense_score": 0.2908902168273926,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 384,
+          "aligned_keyframe_ordinal": 80
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 28,
+          "dense_score": 0.30048587918281555,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 312,
+          "aligned_keyframe_ordinal": 312
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 209,
+          "dense_score": 0.24067506194114685,
+          "sparse_rank": 57,
+          "sparse_score": 3.1475471495920666,
+          "raw_peak_keyframe_ordinal": 408,
+          "aligned_keyframe_ordinal": 408
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L29_V005",
+      "sequence_score": 0.5305420088874669,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.7387314000217226,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3273199399312337,
+        "temporal_alignment_raw": 0.9819598197937012,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5206928710673129,
+        "object_rrf_delta": 0.21931058343999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 39,
+          "dense_score": 0.2607170343399048,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 208,
+          "aligned_keyframe_ordinal": 51
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 39,
+          "dense_score": 0.2944699823856354,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 72,
+          "aligned_keyframe_ordinal": 72
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 2,
+          "dense_score": 0.2724061608314514,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 286,
+          "aligned_keyframe_ordinal": 286
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L29_V013",
+      "sequence_score": 0.5187843706805945,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.6364093737587714,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32496706644694007,
+        "temporal_alignment_raw": 0.9749011993408203,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.495150484538953,
+        "object_rrf_delta": 0.20855238795999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 31,
+          "dense_score": 0.26396435499191284,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 69,
+          "aligned_keyframe_ordinal": 69
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 10,
+          "dense_score": 0.3042304515838623,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 70,
+          "aligned_keyframe_ordinal": 70
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 106,
+          "dense_score": 0.24836379289627075,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 355
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L29_V012",
+      "sequence_score": 0.5138989046422942,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.599743477725129,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32187900278303355,
+        "temporal_alignment_raw": 0.9656370083491007,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5075310117968013,
+        "object_rrf_delta": 0.21376694111999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 45,
+          "dense_score": 0.2598798871040344,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 51
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 5,
+          "dense_score": 0.30593472719192505,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 72,
+          "aligned_keyframe_ordinal": 72
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 158,
+          "dense_score": 0.2447332739830017,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 187
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L29_V022",
+      "sequence_score": 0.5132467845568024,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.5714208360407191,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32006365060806274,
+        "temporal_alignment_raw": 0.9601909518241882,
+        "event_sparse_score": 0.3177083333333333,
+        "object_signal": 0.3192344289498961,
+        "object_rrf_delta": 0.13445832036000002,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 102,
+          "dense_score": 0.2494412362575531,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 20,
+          "aligned_keyframe_ordinal": 20
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 16,
+          "dense_score": 0.30277127027511597,
+          "sparse_rank": 4,
+          "sparse_score": 6.725485913701711,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 32
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 54,
+          "dense_score": 0.2543320655822754,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 29,
+          "aligned_keyframe_ordinal": 123
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L29_V010",
+      "sequence_score": 0.512015768576102,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.6550511890492277,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3187764750586616,
+        "temporal_alignment_raw": 0.9563294251759847,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.53463119300307,
+        "object_rrf_delta": 0.225181264,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 73,
+          "dense_score": 0.25435537099838257,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 83,
+          "aligned_keyframe_ordinal": 83
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 9,
+          "dense_score": 0.30450159311294556,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 69,
+          "aligned_keyframe_ordinal": 86
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 38,
+          "dense_score": 0.2568519115447998,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 66,
+          "aligned_keyframe_ordinal": 125
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L28_V002",
+      "sequence_score": 0.5091127637520267,
+      "score_components": {
+        "baseline_rank_score": 0.8026315789473685,
+        "semantic_event_score": 0.659096832478737,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1752873563218391,
+        "object_signal": 0.3332399184016274,
+        "object_rrf_delta": 0.1403572912,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 22,
+          "dense_score": 0.267220139503479,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 292,
+          "aligned_keyframe_ordinal": 292
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 11,
+          "dense_score": 0.3041488230228424,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 361,
+          "aligned_keyframe_ordinal": 361
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 103,
+          "dense_score": 0.24850857257843018,
+          "sparse_rank": 56,
+          "sparse_score": 3.1521166698792884,
+          "raw_peak_keyframe_ordinal": 404,
+          "aligned_keyframe_ordinal": 404
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L27_V011",
+      "sequence_score": 0.5067396463472394,
+      "score_components": {
+        "baseline_rank_score": 0.7093023255813954,
+        "semantic_event_score": 0.5619306685216076,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.30648824903700084,
+        "temporal_alignment_raw": 0.9194647471110026,
+        "event_sparse_score": 0.47052791153914747,
+        "object_signal": 0.7321457099669303,
+        "object_rrf_delta": 0.3083723856,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 7,
+          "dense_score": 0.2762349843978882,
+          "sparse_rank": 24,
+          "sparse_score": 6.54920656490117,
+          "raw_peak_keyframe_ordinal": 96,
+          "aligned_keyframe_ordinal": 96
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 53,
+          "dense_score": 0.29200536012649536,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 199
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 199,
+          "dense_score": 0.24193400144577026,
+          "sparse_rank": 29,
+          "sparse_score": 3.563828725281367,
+          "raw_peak_keyframe_ordinal": 235,
+          "aligned_keyframe_ordinal": 235
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L29_V019",
+      "sequence_score": 0.5066249838879745,
+      "score_components": {
+        "baseline_rank_score": 0.7922077922077922,
+        "semantic_event_score": 0.6982988229976183,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3024980690744188,
+        "temporal_alignment_raw": 0.9074942072232565,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5330480303860216,
+        "object_rrf_delta": 0.22451445187999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 6,
+          "dense_score": 0.2781617045402527,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 276,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 23,
+          "dense_score": 0.3018510341644287,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 77,
+          "aligned_keyframe_ordinal": 77
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 80,
+          "dense_score": 0.25052767992019653,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 127
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L29_V003",
+      "sequence_score": 0.5037116865856945,
+      "score_components": {
+        "baseline_rank_score": 0.7349397590361446,
+        "semantic_event_score": 0.6501691759685112,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3145805795987447,
+        "temporal_alignment_raw": 0.9437417387962341,
+        "event_sparse_score": 0.22101449275362317,
+        "object_signal": 0.5143555821214298,
+        "object_rrf_delta": 0.21664138128,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 16,
+          "dense_score": 0.2697516083717346,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 76,
+          "aligned_keyframe_ordinal": 62
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 22,
+          "dense_score": 0.3019917607307434,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 63,
+          "aligned_keyframe_ordinal": 63
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 91,
+          "dense_score": 0.24972884356975555,
+          "sparse_rank": 32,
+          "sparse_score": 3.335759379160239,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 302
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L29_V004",
+      "sequence_score": 0.4986554589743982,
+      "score_components": {
+        "baseline_rank_score": 0.8472222222222222,
+        "semantic_event_score": 0.629328214565222,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32165763775507605,
+        "temporal_alignment_raw": 0.9649729132652283,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5099447566091821,
+        "object_rrf_delta": 0.21478358608,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 76,
+          "dense_score": 0.25402864813804626,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 88,
+          "aligned_keyframe_ordinal": 70
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 12,
+          "dense_score": 0.30335503816604614,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 43,
+          "dense_score": 0.2561276853084564,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 383
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L28_V014",
+      "sequence_score": 0.4983160800997169,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.5740548728451954,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3248908585972256,
+        "temporal_alignment_raw": 0.9746725757916769,
+        "event_sparse_score": 0.19934640522875816,
+        "object_signal": 0.3786739270307801,
+        "object_rrf_delta": 0.15949363719999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 2,
+          "dense_score": 0.28119802474975586,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 90,
+          "aligned_keyframe_ordinal": 90
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 52,
+          "dense_score": 0.2926639914512634,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 410,
+          "aligned_keyframe_ordinal": 94
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 255,
+          "dense_score": 0.2381557822227478,
+          "sparse_rank": 42,
+          "sparse_score": 3.1813489205371677,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 364
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L29_V017",
+      "sequence_score": 0.4975807112912851,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.6481778570013864,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.32508553398980033,
+        "temporal_alignment_raw": 0.975256601969401,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.5006238151813153,
+        "object_rrf_delta": 0.21085769959999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Một người đứng dưới nước và rọi đèn",
+          "query_en": "A man standing underwater and lighting a lamp",
+          "dense_rank": 30,
+          "dense_score": 0.2641528844833374,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 85
+        },
+        {
+          "event_index": 2,
+          "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+          "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+          "dense_rank": 8,
+          "dense_score": 0.30461931228637695,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 88
+        },
+        {
+          "event_index": 3,
+          "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+          "query_en": "And then another group of people came up to me with a camera.",
+          "dense_rank": 105,
+          "dense_score": 0.2483946830034256,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 170
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "Một người đứng dưới nước và rọi đèn",
+      "query_en": "A man standing underwater and lighting a lamp",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "là cảnh người này kéo lưới cá lúc bình minh",
+      "query_en": "This is the scene of this man pulling a fishing net at dawn.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "được một nhóm người khác tiến đến dùng máy quay ghi hình",
+      "query_en": "And then another group of people came up to me with a camera.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

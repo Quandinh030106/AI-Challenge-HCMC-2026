@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-19-kis",
+  "query": "Con lân do hai người điều khiển đang đứng thẳng và xoay vòng trên đỉnh cột. Sau vài giây nghỉ, con lân bất ngờ nhảy qua hai chiếc cột kế bên, chúi đầu xuống ngoạm lấy quả bí đỏ kèm bông hoa màu vàng. Cảnh quay kết thúc khi con lân tiếp tục nhảy sang các cột tiếp theo.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L24_V026",
+      "coarse_mapped_frame": "3596",
+      "best_actual_frame": "3596",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V026"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L24_V018",
+      "coarse_mapped_frame": "14326",
+      "best_actual_frame": "14326",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V018"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L24_V026",
+      "coarse_mapped_frame": "3720",
+      "best_actual_frame": "3720",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V026"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L24_V021",
+      "coarse_mapped_frame": "3800",
+      "best_actual_frame": "3800",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V021"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L24_V020",
+      "coarse_mapped_frame": "4712",
+      "best_actual_frame": "4712",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L24_V020"
+    }
+  ],
+  "status": "completed"
+}

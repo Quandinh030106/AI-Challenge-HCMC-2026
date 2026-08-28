@@ -1,0 +1,848 @@
+{
+  "query_id": "query-p1-5-kis",
+  "query": "Đoạn clip bắt đầu bằng việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn. Đoạn clip kết thúc với khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+    "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa"
+  ],
+  "markers": [
+    {
+      "marker": "Đoạn clip bắt đầu bằng",
+      "relation": "forward"
+    },
+    {
+      "marker": "Đoạn clip kết thúc với",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L26_V269",
+      "sequence_score": 0.7280383020272426,
+      "score_components": {
+        "baseline_rank_score": 0.5596330275229358,
+        "semantic_event_score": 0.8870389884088514,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 5,
+          "dense_score": 0.32359984517097473,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 13,
+          "dense_score": 0.29341867566108704,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 95,
+          "aligned_keyframe_ordinal": 95
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L26_V294",
+      "sequence_score": 0.705171568627451,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.872140522875817,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 12,
+          "dense_score": 0.3179803192615509,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 8,
+          "dense_score": 0.30002468824386597,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 103
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L26_V206",
+      "sequence_score": 0.5524020522388058,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.8177083333333333,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 1,
+          "dense_score": 0.34797751903533936,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 81,
+          "aligned_keyframe_ordinal": 81
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 36,
+          "dense_score": 0.2842032015323639,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 105,
+          "aligned_keyframe_ordinal": 105
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L26_V214",
+      "sequence_score": 0.5339571805006587,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.7470289855072464,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 9,
+          "dense_score": 0.31876635551452637,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 40,
+          "dense_score": 0.2837508022785187,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 103
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L26_V313",
+      "sequence_score": 0.5250685505436171,
+      "score_components": {
+        "baseline_rank_score": 0.6421052631578947,
+        "semantic_event_score": 0.5980857520815501,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49100229144096375,
+        "temporal_alignment_raw": 0.9820045828819275,
+        "event_sparse_score": 0.4357142857142857,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 121,
+          "dense_score": 0.3025178909301758,
+          "sparse_rank": 10,
+          "sparse_score": 25.714260062827986,
+          "raw_peak_keyframe_ordinal": 144,
+          "aligned_keyframe_ordinal": 110
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 11,
+          "dense_score": 0.2954345643520355,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 137,
+          "aligned_keyframe_ordinal": 137
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L26_V065",
+      "sequence_score": 0.523575114322164,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.7466786087475743,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4850662499666214,
+        "temporal_alignment_raw": 0.9701324999332428,
+        "event_sparse_score": 0.0,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 27,
+          "dense_score": 0.3144465982913971,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 99,
+          "aligned_keyframe_ordinal": 99
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 17,
+          "dense_score": 0.29059135913848877,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 98,
+          "aligned_keyframe_ordinal": 100
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L26_V076",
+      "sequence_score": 0.5204666597586111,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.6415329768270944,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4742137938737869,
+        "temporal_alignment_raw": 0.9484275877475739,
+        "event_sparse_score": 0.1918238993710692,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 6,
+          "dense_score": 0.32044410705566406,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 80,
+          "aligned_keyframe_ordinal": 72
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 110,
+          "dense_score": 0.27560436725616455,
+          "sparse_rank": 99,
+          "sparse_score": 2.7988857935342235,
+          "raw_peak_keyframe_ordinal": 80,
+          "aligned_keyframe_ordinal": 80
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L26_V379",
+      "sequence_score": 0.516542767962525,
+      "score_components": {
+        "baseline_rank_score": 0.40397350993377484,
+        "semantic_event_score": 0.790955091714105,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.23461538461538461,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 42,
+          "dense_score": 0.31136125326156616,
+          "sparse_rank": 70,
+          "sparse_score": 17.279715172053802,
+          "raw_peak_keyframe_ordinal": 80,
+          "aligned_keyframe_ordinal": 80
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 2,
+          "dense_score": 0.3108217120170593,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 109,
+          "aligned_keyframe_ordinal": 109
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L26_V172",
+      "sequence_score": 0.5017779919986279,
+      "score_components": {
+        "baseline_rank_score": 0.5213675213675214,
+        "semantic_event_score": 0.6532758286489629,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.26521739130434785,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 7,
+          "dense_score": 0.31907469034194946,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 88,
+          "aligned_keyframe_ordinal": 88
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 94,
+          "dense_score": 0.2770466208457947,
+          "sparse_rank": 55,
+          "sparse_score": 2.82636071191277,
+          "raw_peak_keyframe_ordinal": 115,
+          "aligned_keyframe_ordinal": 115
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L27_V006",
+      "sequence_score": 0.49339723502749283,
+      "score_components": {
+        "baseline_rank_score": 0.3609467455621302,
+        "semantic_event_score": 0.674614448051948,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48407620191574097,
+        "temporal_alignment_raw": 0.9681524038314819,
+        "event_sparse_score": 0.4621212121212121,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 94,
+          "dense_score": 0.30437803268432617,
+          "sparse_rank": 6,
+          "sparse_score": 28.489504738329416,
+          "raw_peak_keyframe_ordinal": 71,
+          "aligned_keyframe_ordinal": 71
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 4,
+          "dense_score": 0.30791428685188293,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 64,
+          "aligned_keyframe_ordinal": 150
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L26_V480",
+      "sequence_score": 0.48053934571175955,
+      "score_components": {
+        "baseline_rank_score": 0.5083333333333333,
+        "semantic_event_score": 0.6795755968169761,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 85,
+          "dense_score": 0.3050415515899658,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 118,
+          "aligned_keyframe_ordinal": 118
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 5,
+          "dense_score": 0.3052811026573181,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 140,
+          "aligned_keyframe_ordinal": 140
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L26_V128",
+      "sequence_score": 0.47162130069419067,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.5616368286445013,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.25630252100840334,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 195,
+          "dense_score": 0.2960251569747925,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 96,
+          "aligned_keyframe_ordinal": 96
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 9,
+          "dense_score": 0.2976144552230835,
+          "sparse_rank": 59,
+          "sparse_score": 2.8159946374470377,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 120
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L26_V179",
+      "sequence_score": 0.45629757343783806,
+      "score_components": {
+        "baseline_rank_score": 0.5169491525423728,
+        "semantic_event_score": 0.6070904421207118,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4718707352876663,
+        "temporal_alignment_raw": 0.9437414705753326,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 19,
+          "dense_score": 0.3158268332481384,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 101,
+          "aligned_keyframe_ordinal": 101
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 78,
+          "dense_score": 0.2779514193534851,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 97,
+          "aligned_keyframe_ordinal": 108
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L26_V275",
+      "sequence_score": 0.45543426836075523,
+      "score_components": {
+        "baseline_rank_score": 0.6224489795918368,
+        "semantic_event_score": 0.5198149081412929,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 13,
+          "dense_score": 0.31776660680770874,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 80,
+          "aligned_keyframe_ordinal": 80
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 239,
+          "dense_score": 0.27128657698631287,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 117,
+          "aligned_keyframe_ordinal": 117
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L26_V042",
+      "sequence_score": 0.45320848762821,
+      "score_components": {
+        "baseline_rank_score": 0.6777777777777778,
+        "semantic_event_score": 0.5380139099220371,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.45019403100013733,
+        "temporal_alignment_raw": 0.9003880620002747,
+        "event_sparse_score": 0.2772727272727273,
+        "object_signal": -0.780152365625,
+        "object_rrf_delta": -0.009985950280000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 3,
+          "dense_score": 0.330707311630249,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 80
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 506,
+          "dense_score": 0.2575284242630005,
+          "sparse_rank": 50,
+          "sparse_score": 2.8473235128855445,
+          "raw_peak_keyframe_ordinal": 33,
+          "aligned_keyframe_ordinal": 86
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L26_V305",
+      "sequence_score": 0.4519312859976785,
+      "score_components": {
+        "baseline_rank_score": 0.5126050420168067,
+        "semantic_event_score": 0.5045864045864046,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49952197074890137,
+        "temporal_alignment_raw": 0.9990439414978027,
+        "event_sparse_score": 0.23106060606060605,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 270,
+          "dense_score": 0.29154980182647705,
+          "sparse_rank": 72,
+          "sparse_score": 17.12379339895862,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 9
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 14,
+          "dense_score": 0.2925773561000824,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 96,
+          "aligned_keyframe_ordinal": 96
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L26_V439",
+      "sequence_score": 0.4445634751268554,
+      "score_components": {
+        "baseline_rank_score": 0.5648148148148148,
+        "semantic_event_score": 0.5220017072129748,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 11,
+          "dense_score": 0.31804871559143066,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 104,
+          "aligned_keyframe_ordinal": 104
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 270,
+          "dense_score": 0.269413560628891,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 108,
+          "aligned_keyframe_ordinal": 108
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L26_V440",
+      "sequence_score": 0.4435655229631776,
+      "score_components": {
+        "baseline_rank_score": 0.42657342657342656,
+        "semantic_event_score": 0.6108361254949741,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 136,
+          "dense_score": 0.30068227648735046,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 100,
+          "aligned_keyframe_ordinal": 100
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 7,
+          "dense_score": 0.30013617873191833,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 137,
+          "aligned_keyframe_ordinal": 137
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L26_V357",
+      "sequence_score": 0.4414266814739962,
+      "score_components": {
+        "baseline_rank_score": 0.6853932584269663,
+        "semantic_event_score": 0.5886948529411765,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": -0.945208521875,
+        "object_rrf_delta": -0.01209866908,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 4,
+          "dense_score": 0.3273947834968567,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 212,
+          "dense_score": 0.27162492275238037,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 102,
+          "aligned_keyframe_ordinal": 102
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L26_V203",
+      "sequence_score": 0.4405947378366718,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.5658627087198516,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48036958277225494,
+        "temporal_alignment_raw": 0.9607391655445099,
+        "event_sparse_score": 0.0,
+        "object_signal": -1.0,
+        "object_rrf_delta": -0.0128,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+          "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+          "dense_rank": 234,
+          "dense_score": 0.293783962726593,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 138,
+          "aligned_keyframe_ordinal": 87
+        },
+        {
+          "event_index": 2,
+          "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+          "query_en": "Slow-motion view of the stove on the fireplace.",
+          "dense_rank": 6,
+          "dense_score": 0.30048179626464844,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 125
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "việc đậu hà lan được bỏ vào với mực đang được xào trên chảo, bên cạnh là đĩa hành tây và ớt đỏ thái lát chuẩn bị cho vào món ăn",
+      "query_en": "the peas are poured into the dish with ink being scratched on the pan, besides a plate of onion and a slice of red chili prepared for the dish.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "khung quay chậm (slow motion) cảnh lắc chảo trên bếp lửa",
+      "query_en": "Slow-motion view of the stove on the fireplace.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

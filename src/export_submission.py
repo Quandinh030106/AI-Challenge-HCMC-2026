@@ -14,9 +14,14 @@ from src.utils import load_config, normalize_query_item
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
+from src.search.sequence_search import rerank_sequence_aware_kis
+from src.search.temporal_refiner import TemporalRefiner
 from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx, generate_diversity_top100_kis
-from src.tasks.task2_vqa import solve_task2
+from src.tasks.task2_vqa import (
+    build_task2_top100_predictions,
+    solve_task2,
+)
 from src.tasks.task3_trake import solve_task3
 
 
@@ -37,6 +42,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
     query_processor = QueryProcessor()
+    temporal_refiner = TemporalRefiner(config, dense_searcher)
     
     keyframes_dir = config["data"].get("keyframes_dir")
     metadata_dir = config["data"].get("metadata_dir")
@@ -99,9 +105,27 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
                 dense_weight=intent["dense_weight"], 
                 sparse_weight=intent["sparse_weight"]
             )
+            fused, _ = rerank_sequence_aware_kis(
+                query_text=query_text,
+                fused_candidates=fused,
+                dense_searcher=dense_searcher,
+                sparse_searcher=sparse_searcher,
+                query_processor=query_processor,
+                config=config,
+                pre_object_candidates=fused,
+                query_id=query_id,
+            )
             
-            top100_preds = generate_diversity_top100_kis(
+            coarse_top100 = generate_diversity_top100_kis(
                 fused, keyframes_dir, metadata_dir=map_keyframes_dir, total_preds=100
+            )
+            top100_preds, _ = temporal_refiner.refine_kis_predictions(
+                query_id=query_id,
+                query_text=query_text,
+                prompt_ensemble=q_info["prompt_ensemble"],
+                coarse_predictions=coarse_top100,
+                fused_candidates=fused,
+                query_processor=query_processor,
             )
 
             submission_json["task1"][query_id] = top100_preds
@@ -146,12 +170,33 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
                 sparse_weight=intent["sparse_weight"]
             )
             
-            ans_res = solve_task2(query_text, question, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
-            
-            top100_preds = [{"video_id": ans_res["video_id"], "frame_id": ans_res["frame_id"], "answer": ans_res["answer"]}]
-            for cand in fused[1:]:
-                top100_preds.append({"video_id": cand["video_id"], "frame_id": "0000", "answer": ans_res["answer"]})
-            top100_preds = top100_preds[:100]
+            ans_res = solve_task2(
+                query_text,
+                question,
+                fused,
+                keyframes_dir,
+                model_id=config["models"]["vlm_model"],
+                metadata_dir=map_keyframes_dir,
+                ocr_dir=config["data"].get("metadata_dir"),
+                qa_config=config.get("search", {}).get("qa_evidence", {}),
+                temporal_refiner=temporal_refiner,
+                query_processor=query_processor,
+                query_id=query_id,
+            )
+
+            promoted_idx = int(ans_res.get("promoted_idx", 0) or 0)
+            if 0 < promoted_idx < len(fused):
+                promoted_candidate = fused.pop(promoted_idx)
+                fused.insert(0, promoted_candidate)
+
+            top100_preds = build_task2_top100_predictions(
+                fused_candidates=fused,
+                answer_result=ans_res,
+                keyframes_dir=keyframes_dir,
+                metadata_dir=map_keyframes_dir,
+                total_preds=100,
+                qa_config=config.get("search", {}).get("qa_evidence", {}),
+            )
             submission_json["task2"][query_id] = top100_preds
             
             for rank, pred in enumerate(top100_preds):
@@ -193,12 +238,22 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
                 sparse_weight=intent["sparse_weight"]
             )
             
-            align_res = solve_task3(events, fused, keyframes_dir, dense_searcher)
-            
-            top100_preds = [{"video_id": align_res["video_id"], "frame_ids": align_res["frame_ids"]}]
-            for cand in fused[1:]:
-                top100_preds.append({"video_id": cand["video_id"], "frame_ids": ["0000"] * len(events)})
-            top100_preds = top100_preds[:100]
+            align_res = solve_task3(
+                events, fused, keyframes_dir, dense_searcher,
+                metadata_dir=map_keyframes_dir, query_processor=query_processor,
+                config=config, temporal_refiner=temporal_refiner, query_id=query_id,
+            )
+
+            top100_preds = []
+
+            if (
+                align_res.get("video_id") not in {None, "none"}
+                and len(align_res.get("frame_ids", [])) == len(events)
+            ):
+                top100_preds.append({
+                    "video_id": align_res["video_id"],
+                    "frame_ids": align_res["frame_ids"],
+                })
             submission_json["task3"][query_id] = top100_preds
             
             for rank, pred in enumerate(top100_preds):

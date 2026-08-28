@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-14-kis",
+  "query": "Người đầu bếp lần lượt đặt các miếng nguyên liệu dạng thanh và những lát cắt hình hoa vào một đĩa đang được hấp trong nồi. Các nguyên liệu được dùng đũa sắp xếp xen kẽ xung quanh phần thức ăn đã có sẵn trên đĩa. Sau đó, đầu bếp dùng muỗng lấy thêm một loại nguyên liệu mềm từ tô thủy tinh. Phần nguyên liệu này được đặt vào giữa đĩa, xung quanh là các miếng dạng thanh và hình hoa đã được sắp xếp trước đó.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L26_V027",
+      "coarse_mapped_frame": "5321",
+      "best_actual_frame": "5321",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V027"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L26_V414",
+      "coarse_mapped_frame": "3072",
+      "best_actual_frame": "3072",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V414"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L26_V027",
+      "coarse_mapped_frame": "5277",
+      "best_actual_frame": "5277",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V027"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L26_V185",
+      "coarse_mapped_frame": "4714",
+      "best_actual_frame": "4714",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V185"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L26_V357",
+      "coarse_mapped_frame": "3711",
+      "best_actual_frame": "3711",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L26_V357"
+    }
+  ],
+  "status": "completed"
+}

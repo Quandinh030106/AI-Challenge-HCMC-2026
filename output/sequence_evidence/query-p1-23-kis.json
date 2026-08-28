@@ -1,0 +1,844 @@
+{
+  "query_id": "query-p1-23-kis",
+  "query": "Hình ảnh giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ. Slide bài giảng Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+    "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây"
+  ],
+  "markers": [
+    {
+      "marker": "Slide bài giảng",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L25_V077",
+      "sequence_score": 0.7127368212311146,
+      "score_components": {
+        "baseline_rank_score": 0.5126050420168067,
+        "semantic_event_score": 0.8673860427591771,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 7,
+          "dense_score": 0.29199907183647156,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 201,
+          "aligned_keyframe_ordinal": 201
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 14,
+          "dense_score": 0.28780269622802734,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 425,
+          "aligned_keyframe_ordinal": 425
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L25_V048",
+      "sequence_score": 0.6932856131386594,
+      "score_components": {
+        "baseline_rank_score": 0.4765625,
+        "semantic_event_score": 0.7879166666666666,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9389987587928772,
+        "temporal_alignment_raw": 0.9389987587928772,
+        "event_sparse_score": 0.20748299319727892,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 15,
+          "dense_score": 0.28818491101264954,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 255,
+          "aligned_keyframe_ordinal": 68
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 20,
+          "dense_score": 0.28530916571617126,
+          "sparse_rank": 87,
+          "sparse_score": 20.732283588981517,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 120
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L25_V084",
+      "sequence_score": 0.6872097542018848,
+      "score_components": {
+        "baseline_rank_score": 0.4326241134751773,
+        "semantic_event_score": 0.8356164383561644,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 13,
+          "dense_score": 0.2893714904785156,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 233,
+          "aligned_keyframe_ordinal": 233
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 13,
+          "dense_score": 0.2892320156097412,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 526,
+          "aligned_keyframe_ordinal": 526
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L25_V030",
+      "sequence_score": 0.530083933122679,
+      "score_components": {
+        "baseline_rank_score": 0.5398230088495575,
+        "semantic_event_score": 0.7746031746031746,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4711725264787674,
+        "temporal_alignment_raw": 0.9423450529575348,
+        "event_sparse_score": 0.190625,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 3,
+          "dense_score": 0.2959270477294922,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 207,
+          "aligned_keyframe_ordinal": 65
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 45,
+          "dense_score": 0.27535098791122437,
+          "sparse_rank": 100,
+          "sparse_score": 20.171976129595567,
+          "raw_peak_keyframe_ordinal": 156,
+          "aligned_keyframe_ordinal": 156
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L25_V053",
+      "sequence_score": 0.5262291980894921,
+      "score_components": {
+        "baseline_rank_score": 0.61,
+        "semantic_event_score": 0.6934954751131222,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.21180555555555555,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 76,
+          "dense_score": 0.2706512212753296,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 49,
+          "aligned_keyframe_ordinal": 49
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 5,
+          "dense_score": 0.29981529712677,
+          "sparse_rank": 84,
+          "sparse_score": 20.92737240373679,
+          "raw_peak_keyframe_ordinal": 232,
+          "aligned_keyframe_ordinal": 232
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L25_V013",
+      "sequence_score": 0.5244253782083971,
+      "score_components": {
+        "baseline_rank_score": 0.5754716981132075,
+        "semantic_event_score": 0.7171621621621622,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1918238993710692,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 14,
+          "dense_score": 0.2890250086784363,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 171,
+          "aligned_keyframe_ordinal": 171
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 40,
+          "dense_score": 0.27783986926078796,
+          "sparse_rank": 99,
+          "sparse_score": 20.171976129595567,
+          "raw_peak_keyframe_ordinal": 279,
+          "aligned_keyframe_ordinal": 279
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L25_V015",
+      "sequence_score": 0.5233184443015628,
+      "score_components": {
+        "baseline_rank_score": 0.5700934579439252,
+        "semantic_event_score": 0.6925933786078099,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.26521739130434785,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 92,
+          "dense_score": 0.26414740085601807,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 79,
+          "aligned_keyframe_ordinal": 79
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 2,
+          "dense_score": 0.3029215335845947,
+          "sparse_rank": 55,
+          "sparse_score": 23.566780439581247,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L25_V071",
+      "sequence_score": 0.5232627024433626,
+      "score_components": {
+        "baseline_rank_score": 0.5596330275229358,
+        "semantic_event_score": 0.7877869897959184,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 38,
+          "dense_score": 0.28193652629852295,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 159,
+          "aligned_keyframe_ordinal": 159
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 4,
+          "dense_score": 0.30158230662345886,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 215,
+          "aligned_keyframe_ordinal": 215
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L25_V074",
+      "sequence_score": 0.5181447390783377,
+      "score_components": {
+        "baseline_rank_score": 0.46564885496183206,
+        "semantic_event_score": 0.8386644219977553,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48943760991096497,
+        "temporal_alignment_raw": 0.9788752198219299,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 21,
+          "dense_score": 0.2864375114440918,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 241,
+          "aligned_keyframe_ordinal": 241
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 6,
+          "dense_score": 0.2973676919937134,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 200,
+          "aligned_keyframe_ordinal": 498
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L25_V004",
+      "sequence_score": 0.5176665417388582,
+      "score_components": {
+        "baseline_rank_score": 0.4295774647887324,
+        "semantic_event_score": 0.7910809906291834,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.1942675159235669,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 12,
+          "dense_score": 0.2896929979324341,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 140,
+          "aligned_keyframe_ordinal": 140
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 23,
+          "dense_score": 0.28366243839263916,
+          "sparse_rank": 97,
+          "sparse_score": 20.21973168886442,
+          "raw_peak_keyframe_ordinal": 231,
+          "aligned_keyframe_ordinal": 231
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L25_V044",
+      "sequence_score": 0.5155953463492577,
+      "score_components": {
+        "baseline_rank_score": 0.49193548387096775,
+        "semantic_event_score": 0.7362652608213096,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.21328671328671328,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 46,
+          "dense_score": 0.2791416049003601,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 87,
+          "aligned_keyframe_ordinal": 87
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 8,
+          "dense_score": 0.2927272319793701,
+          "sparse_rank": 83,
+          "sparse_score": 20.92737240373679,
+          "raw_peak_keyframe_ordinal": 130,
+          "aligned_keyframe_ordinal": 130
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L25_V067",
+      "sequence_score": 0.5140277725312056,
+      "score_components": {
+        "baseline_rank_score": 0.5980392156862745,
+        "semantic_event_score": 0.7400735294117646,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4826524704694748,
+        "temporal_alignment_raw": 0.9653049409389496,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 20,
+          "dense_score": 0.2866222858428955,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 226,
+          "aligned_keyframe_ordinal": 4
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 25,
+          "dense_score": 0.28258904814720154,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 11,
+          "aligned_keyframe_ordinal": 11
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L25_V005",
+      "sequence_score": 0.5132019811882873,
+      "score_components": {
+        "baseline_rank_score": 0.4621212121212121,
+        "semantic_event_score": 0.8192591292134832,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 4,
+          "dense_score": 0.2950598895549774,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 246,
+          "aligned_keyframe_ordinal": 246
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 29,
+          "dense_score": 0.28206801414489746,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 343,
+          "aligned_keyframe_ordinal": 343
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L25_V050",
+      "sequence_score": 0.5113682678873855,
+      "score_components": {
+        "baseline_rank_score": 0.45864661654135336,
+        "semantic_event_score": 0.7285970726318696,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4984447956085205,
+        "temporal_alignment_raw": 0.996889591217041,
+        "event_sparse_score": 0.2629310344827586,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 42,
+          "dense_score": 0.2810901403427124,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 100,
+          "aligned_keyframe_ordinal": 100
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 11,
+          "dense_score": 0.2898842394351959,
+          "sparse_rank": 56,
+          "sparse_score": 23.566780439581247,
+          "raw_peak_keyframe_ordinal": 1,
+          "aligned_keyframe_ordinal": 105
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L25_V023",
+      "sequence_score": 0.5112176245423473,
+      "score_components": {
+        "baseline_rank_score": 0.5446428571428571,
+        "semantic_event_score": 0.6821789321789322,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47253991663455963,
+        "temporal_alignment_raw": 0.9450798332691193,
+        "event_sparse_score": 0.2675438596491228,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 94,
+          "dense_score": 0.26308155059814453,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 394,
+          "aligned_keyframe_ordinal": 77
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 3,
+          "dense_score": 0.3017180562019348,
+          "sparse_rank": 54,
+          "sparse_score": 23.942712826243923,
+          "raw_peak_keyframe_ordinal": 117,
+          "aligned_keyframe_ordinal": 117
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L25_V083",
+      "sequence_score": 0.5089409060228223,
+      "score_components": {
+        "baseline_rank_score": 0.4236111111111111,
+        "semantic_event_score": 0.7696568702877365,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.45683249831199646,
+        "temporal_alignment_raw": 0.9136649966239929,
+        "event_sparse_score": 0.24796747967479674,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 37,
+          "dense_score": 0.28205859661102295,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 199,
+          "aligned_keyframe_ordinal": 199
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 7,
+          "dense_score": 0.2959100902080536,
+          "sparse_rank": 63,
+          "sparse_score": 23.48013534333922,
+          "raw_peak_keyframe_ordinal": 18,
+          "aligned_keyframe_ordinal": 267
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L25_V086",
+      "sequence_score": 0.5035764788880085,
+      "score_components": {
+        "baseline_rank_score": 0.48412698412698413,
+        "semantic_event_score": 0.7171565276828435,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4675016701221466,
+        "temporal_alignment_raw": 0.9350033402442932,
+        "event_sparse_score": 0.2147887323943662,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 35,
+          "dense_score": 0.28233790397644043,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 290,
+          "aligned_keyframe_ordinal": 160
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 17,
+          "dense_score": 0.28621816635131836,
+          "sparse_rank": 82,
+          "sparse_score": 21.33248818021211,
+          "raw_peak_keyframe_ordinal": 80,
+          "aligned_keyframe_ordinal": 194
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L25_V075",
+      "sequence_score": 0.5009524863073839,
+      "score_components": {
+        "baseline_rank_score": 0.5350877192982456,
+        "semantic_event_score": 0.6567287784679089,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48969846963882446,
+        "temporal_alignment_raw": 0.9793969392776489,
+        "event_sparse_score": 0.23461538461538461,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 78,
+          "dense_score": 0.2701524496078491,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 432,
+          "aligned_keyframe_ordinal": 253
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 10,
+          "dense_score": 0.2904926538467407,
+          "sparse_rank": 70,
+          "sparse_score": 23.388228771248187,
+          "raw_peak_keyframe_ordinal": 13,
+          "aligned_keyframe_ordinal": 338
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L25_V056",
+      "sequence_score": 0.5008398380027065,
+      "score_components": {
+        "baseline_rank_score": 0.4728682170542636,
+        "semantic_event_score": 0.7019867549668874,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4789469540119171,
+        "temporal_alignment_raw": 0.9578939080238342,
+        "event_sparse_score": 0.23828125,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 91,
+          "dense_score": 0.26464229822158813,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 389,
+          "aligned_keyframe_ordinal": 38
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 1,
+          "dense_score": 0.30471500754356384,
+          "sparse_rank": 68,
+          "sparse_score": 23.392112945726506,
+          "raw_peak_keyframe_ordinal": 120,
+          "aligned_keyframe_ordinal": 120
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L25_V065",
+      "sequence_score": 0.49931520735031565,
+      "score_components": {
+        "baseline_rank_score": 0.3388888888888889,
+        "semantic_event_score": 0.7782622739018088,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4961022436618805,
+        "temporal_alignment_raw": 0.992204487323761,
+        "event_sparse_score": 0.2364341085271318,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+          "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+          "dense_rank": 26,
+          "dense_score": 0.2851282060146332,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 177,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+          "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+          "dense_rank": 12,
+          "dense_score": 0.28953585028648376,
+          "sparse_rank": 69,
+          "sparse_score": 23.392112945726506,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 90
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ",
+      "query_en": "The male teacher wears a white shirt, dark tie, stands out on a dark blue background with a blurry texture.",
+      "intent": "OCR_TEXT"
+    },
+    {
+      "event_text": "Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây",
+      "query_en": "White background with purple-pink frames, above a blue title bar containing a landscape and yellow/green arrows. Below is a three-tiered diagram linked by blue arrows pointing downwards: Floor 1: 2 box blocks covered by an orange box block. Floor 2: 1 large blue box block in the center.",
+      "intent": "OCR_TEXT"
+    }
+  ]
+}

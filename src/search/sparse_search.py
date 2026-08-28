@@ -72,8 +72,11 @@ class SparseSearcher:
                 if video_id not in video_texts:
                     video_texts[video_id] = ""
                 video_texts[video_id] += " " + text_content
-            except Exception:
-                pass
+            except Exception as exc:
+                print(
+                    "SparseSearcher: Canh bao bo qua metadata "
+                    f"{file_path}: {exc}"
+                )
                 
         for video_id, text in video_texts.items():
             tokenized_doc = self.preprocess_text(text)

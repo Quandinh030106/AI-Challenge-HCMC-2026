@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-10-kis",
+  "query": "Hành động cắt chùm nho bằng kéo từ giàn nho bằng một chiếc kéo màu đen. Có thể thấy có một sợi dây màu xanh dương được buộc vào cuống của chùm nho này trước khi nó được cắt.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L27_V003",
+      "coarse_mapped_frame": "11376",
+      "best_actual_frame": "11376",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V003"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L29_V013",
+      "coarse_mapped_frame": "14015",
+      "best_actual_frame": "14015",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V013"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L27_V003",
+      "coarse_mapped_frame": "11475",
+      "best_actual_frame": "11475",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V003"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L29_V012",
+      "coarse_mapped_frame": "13905",
+      "best_actual_frame": "13905",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V012"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L27_V011",
+      "coarse_mapped_frame": "5326",
+      "best_actual_frame": "5326",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V011"
+    }
+  ],
+  "status": "completed"
+}

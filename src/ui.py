@@ -1,12 +1,15 @@
 import streamlit as st
 import os
-import glob
 import numpy as np
+import pandas as pd
 from PIL import Image
-from src.utils import load_config
+
+from src.utils import load_config, get_keyframe_path_by_index
+
 from src.search.dense_search import DenseSearcher
 from src.search.sparse_search import SparseSearcher
 from src.search.fusion import reciprocal_rank_fusion
+from src.search.sequence_search import rerank_sequence_aware_kis
 from src.preprocessing.query_processor import QueryProcessor
 from src.tasks.task1_kis import solve_task1, get_frame_id_from_idx
 from src.tasks.task2_vqa import solve_task2
@@ -28,7 +31,11 @@ def init_engine():
 
 config, dense_searcher, sparse_searcher, query_processor = init_engine()
 keyframes_dir = config["data"]["keyframes_dir"]
-metadata_dir = config["data"]["metadata_dir"]
+metadata_dir = config["data"].get("metadata_dir")
+map_keyframes_dir = (
+    config["data"].get("map_keyframes_dir")
+    or metadata_dir
+)
 
 st.title("🎬 AI Challenge HCMC 2026 - He Thong Truy Xuat Video")
 st.markdown("*He thong tim kiem video da phuong thuc sieu toc danh cho Vong So Tuyen AIC 2026*")
@@ -45,34 +52,94 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(f"**Device:** `{dense_searcher.device}`")
 st.sidebar.markdown(f"**So video da index:** `{len(dense_searcher.all_video_ids)} videos`")
 
+_FRAME_MAP_CACHE = {}
+
+def get_keyframe_index_from_frame_id(video_id, frame_id):
+    """
+    Reverse mapping:
+        actual video frame_id
+        -> keyframe/vector ordinal (0-based)
+
+    Chỉ trả về ordinal khi frame_id tồn tại chính xác trong Map-Keyframes.
+    Không đoán nearest frame.
+    """
+    try:
+        actual_frame_id = int(frame_id)
+    except (TypeError, ValueError):
+        return None
+
+    if video_id not in _FRAME_MAP_CACHE:
+        if not map_keyframes_dir:
+            return None
+
+        csv_path = os.path.join(
+            map_keyframes_dir,
+            f"{video_id}.csv",
+        )
+
+        if not os.path.isfile(csv_path):
+            return None
+
+        try:
+            df = pd.read_csv(csv_path)
+        except Exception:
+            return None
+
+        normalized_columns = {
+            str(col).strip().lower(): col
+            for col in df.columns
+        }
+
+        if "frame_idx" not in normalized_columns:
+            return None
+
+        values = pd.to_numeric(
+            df[normalized_columns["frame_idx"]],
+            errors="coerce",
+        )
+
+        if values.isna().any():
+            return None
+
+        _FRAME_MAP_CACHE[video_id] = values.to_numpy(
+            dtype=np.int64
+        )
+
+    frame_values = _FRAME_MAP_CACHE[video_id]
+
+    matches = np.flatnonzero(
+        frame_values == actual_frame_id
+    )
+
+    if matches.size == 0:
+        return None
+
+    return int(matches[0])
+
+
 def find_keyframe_image(video_id, frame_id):
-    """Tim duong dan file anh keyframe truc tiep cho moi batch tu L01 den Lxx."""
-    level = video_id.split('_')[0] if '_' in video_id else ""
-    fid_str = f"{int(frame_id):04d}" if str(frame_id).isdigit() else str(frame_id)
-    
-    # Kiem tra truc tiep cac duong dan toi uu
-    direct_candidates = [
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, "keyframes", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, f"{frame_id}.jpg"),
-        os.path.join(keyframes_dir, video_id, f"{frame_id}.jpg")
-    ]
-    for p in direct_candidates:
-        if os.path.exists(p):
-            return p
-            
-    # Fallback tim kiem neu khong dung quy uoc chuan
-    search_paths = [
-        os.path.join(keyframes_dir, "**", video_id, f"{fid_str}.jpg"),
-        os.path.join(keyframes_dir, "**", video_id, f"{frame_id}.jpg")
-    ]
-    for p in search_paths:
-        matches = glob.glob(p, recursive=True)
-        if matches:
-            return matches[0]
-    return None
+    """
+    actual video frame_id
+        -> Map-Keyframes
+        -> keyframe ordinal
+        -> file anh vat ly
+    """
+    keyframe_idx = get_keyframe_index_from_frame_id(
+        video_id,
+        frame_id,
+    )
+
+    if keyframe_idx is None:
+        return None
+
+    try:
+        return get_keyframe_path_by_index(
+            keyframes_dir,
+            video_id,
+            keyframe_idx,
+        )
+    except (IndexError, FileNotFoundError, ValueError):
+        return None
 
 
 # --- TASK 1: TEXTUAL KIS ---
@@ -92,8 +159,23 @@ if "Task 1" in task_mode:
                 dense_weight=intent["dense_weight"], 
                 sparse_weight=intent["sparse_weight"]
             )
+            fused, sequence_trace = rerank_sequence_aware_kis(
+                query_text=query_input,
+                fused_candidates=fused,
+                dense_searcher=dense_searcher,
+                sparse_searcher=sparse_searcher,
+                query_processor=query_processor,
+                config=config,
+                pre_object_candidates=fused,
+                query_id="streamlit_task1",
+            )
             
             st.success(f"Da dich sang English: **{q_info['query_en']}** | Y dinh: `{intent['intent']}`")
+            if sequence_trace.get("applied"):
+                st.info(
+                    "Sequence-aware: %d semantic events"
+                    % len(sequence_trace.get("events", []))
+                )
             
             cols = st.columns(min(top_k, 5))
             for idx, cand in enumerate(fused[:top_k]):
@@ -101,8 +183,19 @@ if "Task 1" in task_mode:
                 dense_info = cand.get("dense_info")
                 
                 best_frame_idx = dense_info["best_frame_idx"] if dense_info else 0
-                frame_id = get_frame_id_from_idx(keyframes_dir, vid, best_frame_idx, metadata_dir=metadata_dir)
-                img_path = find_keyframe_image(vid, frame_id)
+
+                frame_id = get_frame_id_from_idx(
+                    keyframes_dir,
+                    vid,
+                    best_frame_idx,
+                    metadata_dir=map_keyframes_dir,
+                )
+
+                img_path = get_keyframe_path_by_index(
+                    keyframes_dir,
+                    vid,
+                    best_frame_idx,
+                )
                 
                 col = cols[idx % 5]
                 with col:
@@ -131,10 +224,29 @@ elif "Task 2" in task_mode:
             sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
             fused = reciprocal_rank_fusion(dense_res, sparse_res)
             
-            ans_res = solve_task2(query_input, question_input, fused, keyframes_dir, model_id=config["models"]["vlm_model"])
+            ans_res = solve_task2(
+                query_input,
+                question_input,
+                fused,
+                keyframes_dir,
+                model_id=config["models"]["vlm_model"],
+                metadata_dir=map_keyframes_dir,
+                ocr_dir=config["data"].get("metadata_dir"),
+                qa_config=config.get("search", {}).get("qa_evidence", {}),
+                query_processor=query_processor,
+                query_id="streamlit_task2",
+            )
             
             st.success(f"**Dap An Tu VLM:** `{ans_res['answer']}`")
             st.markdown(f"- **Video:** `{ans_res['video_id']}` | **Frame:** `{ans_res['frame_id']}`")
+            st.markdown(
+                "- **Evidence:** `%s` | **Score:** `%s` | **Confidence:** `%s`"
+                % (
+                    ans_res.get("evidence_source"),
+                    ans_res.get("evidence_score"),
+                    ans_res.get("confidence"),
+                )
+            )
             
             img_path = find_keyframe_image(ans_res['video_id'], ans_res['frame_id'])
             if img_path and os.path.exists(img_path):
@@ -158,7 +270,11 @@ elif "Task 3" in task_mode:
             sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
             fused = reciprocal_rank_fusion(dense_res, sparse_res)
             
-            align_res = solve_task3(events_list, fused, keyframes_dir, dense_searcher)
+            align_res = solve_task3(
+                events_list, fused, keyframes_dir, dense_searcher,
+                metadata_dir=map_keyframes_dir, query_processor=query_processor,
+                config=config,
+            )
             vid = align_res["video_id"]
             frame_ids = align_res["frame_ids"]
             
@@ -167,9 +283,15 @@ elif "Task 3" in task_mode:
             
             cols = st.columns(len(events_list))
             for i, ev_name in enumerate(events_list):
-                fid = frame_ids[i] if i < len(frame_ids) else "0000"
+                fid = frame_ids[i] if i < len(frame_ids) else None
+
                 with cols[i]:
                     st.markdown(f"**Event {i+1}:** {ev_name}")
+
+                    if fid is None:
+                        st.warning("Không có frame hợp lệ để hiển thị.")
+                        continue
+
                     st.markdown(f"**Frame:** `{fid}`")
                     img_path = find_keyframe_image(vid, fid)
                     if img_path and os.path.exists(img_path):

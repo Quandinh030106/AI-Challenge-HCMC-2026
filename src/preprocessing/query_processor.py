@@ -95,7 +95,11 @@ class QueryProcessor:
                     tokens = self.model.generate(**inputs, **gen_kwargs)
                 translated = self.tokenizer.batch_decode(tokens, skip_special_tokens=True)[0]
                 translated = self.clean_translated_text(translated)
-            except Exception:
+            except Exception as exc:
+                print(
+                    "QueryProcessor: Canh bao dich that bai, "
+                    f"fallback ve query goc: {exc}"
+                )
                 translated = ""
                 
         if not translated or len(translated.split()) < 2:
@@ -110,8 +114,27 @@ class QueryProcessor:
         - OCR_TEXT: Co chua ten rieng, ma hieu, tu viet tat hoac tu chi dan bien hieu (Dense 0.4, Sparse 0.6).
         """
         text_lower = text_vi.lower()
-        VN_UPPER = 'A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ'
-        VN_LOWER = 'a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ'
+        VN_UPPER = (
+            "A-Z"
+            "Đ"
+            "ÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶ"
+            "ÈÉẺẼẸÊỀẾỂỄỆ"
+            "ÌÍỈĨỊ"
+            "ÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢ"
+            "ÙÚỦŨỤƯỪỨỬỮỰ"
+            "ỲÝỶỸỴ"
+        )
+
+        VN_LOWER = (
+            "a-z"
+            "đ"
+            "àáảãạâầấẩẫậăằắẳẵặ"
+            "èéẻẽẹêềếểễệ"
+            "ìíỉĩị"
+            "òóỏõọôồốổỗộơờớởỡợ"
+            "ùúủũụưừứửữự"
+            "ỳýỷỹỵ"
+        )
         
         # 1. Tu khoa OCR chi dan tong quat ro rang
         generic_ocr_keywords = [

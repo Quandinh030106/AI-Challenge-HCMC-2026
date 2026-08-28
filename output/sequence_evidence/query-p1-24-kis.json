@@ -1,0 +1,1074 @@
+{
+  "query_id": "query-p1-24-kis",
+  "query": "Đoạn clip được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình. Đầu tiên là một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách. Ngay sau cảnh này, người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+    "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+    "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện"
+  ],
+  "markers": [
+    {
+      "marker": "Đầu tiên là",
+      "relation": "forward"
+    },
+    {
+      "marker": "Ngay sau cảnh này",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L29_V001",
+      "sequence_score": 0.7748835067814385,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.7280242905242905,
+        "event_coverage": 0.6666666666666666,
+        "temporal_consistency": 0.6659238073560927,
+        "temporal_alignment_raw": 0.998885711034139,
+        "event_sparse_score": 0.9058823529411765,
+        "object_signal": 0.6533215978657307,
+        "object_rrf_delta": 0.48643411388,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 3,
+          "dense_score": 0.3066537380218506,
+          "sparse_rank": 1,
+          "sparse_score": 32.45203024209186,
+          "raw_peak_keyframe_ordinal": 140,
+          "aligned_keyframe_ordinal": 140
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 17,
+          "dense_score": 0.2785183787345886,
+          "sparse_rank": 25,
+          "sparse_score": 14.007883812570011,
+          "raw_peak_keyframe_ordinal": 480,
+          "aligned_keyframe_ordinal": 177
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 84,
+          "dense_score": 0.2742936313152313,
+          "sparse_rank": 1,
+          "sparse_score": 38.984477211180526,
+          "raw_peak_keyframe_ordinal": 366,
+          "aligned_keyframe_ordinal": 366
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L27_V012",
+      "sequence_score": 0.6010101028420961,
+      "score_components": {
+        "baseline_rank_score": 0.953125,
+        "semantic_event_score": 0.5589733496710241,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.2940681179364522,
+        "temporal_alignment_raw": 0.8822043538093567,
+        "event_sparse_score": 0.8652629902629903,
+        "object_signal": 0.9077982911471068,
+        "object_rrf_delta": 0.67590610624,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 198,
+          "dense_score": 0.2670082151889801,
+          "sparse_rank": 12,
+          "sparse_score": 15.828490621867758,
+          "raw_peak_keyframe_ordinal": 245,
+          "aligned_keyframe_ordinal": 24
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 14,
+          "dense_score": 0.2790117859840393,
+          "sparse_rank": 6,
+          "sparse_score": 14.79842856484926,
+          "raw_peak_keyframe_ordinal": 31,
+          "aligned_keyframe_ordinal": 31
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 39,
+          "dense_score": 0.28027838468551636,
+          "sparse_rank": 14,
+          "sparse_score": 17.145467018202726,
+          "raw_peak_keyframe_ordinal": 250,
+          "aligned_keyframe_ordinal": 250
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L29_V014",
+      "sequence_score": 0.5723806495707103,
+      "score_components": {
+        "baseline_rank_score": 0.8970588235294118,
+        "semantic_event_score": 0.6569370172311348,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.311631613307529,
+        "temporal_alignment_raw": 0.934894839922587,
+        "event_sparse_score": 0.623890878705491,
+        "object_signal": 0.4017456632428497,
+        "object_rrf_delta": 0.29912189699999997,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 6,
+          "dense_score": 0.301808625459671,
+          "sparse_rank": 29,
+          "sparse_score": 15.027312382948516,
+          "raw_peak_keyframe_ordinal": 278,
+          "aligned_keyframe_ordinal": 278
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 42,
+          "dense_score": 0.26268112659454346,
+          "sparse_rank": 16,
+          "sparse_score": 14.185821084975732,
+          "raw_peak_keyframe_ordinal": 392,
+          "aligned_keyframe_ordinal": 323
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 76,
+          "dense_score": 0.2752079963684082,
+          "sparse_rank": 99,
+          "sparse_score": 6.796360484619895,
+          "raw_peak_keyframe_ordinal": 130,
+          "aligned_keyframe_ordinal": 359
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L27_V013",
+      "sequence_score": 0.5488896111538093,
+      "score_components": {
+        "baseline_rank_score": 0.782051282051282,
+        "semantic_event_score": 0.45278613199665835,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3125026888317532,
+        "temporal_alignment_raw": 0.9375080664952596,
+        "event_sparse_score": 0.9840416453319679,
+        "object_signal": 0.8939456123985785,
+        "object_rrf_delta": 0.66559201968,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 700,
+          "dense_score": 0.24629485607147217,
+          "sparse_rank": 3,
+          "sparse_score": 22.39849134978901,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 10,
+          "dense_score": 0.2803000807762146,
+          "sparse_rank": 1,
+          "sparse_score": 23.540733445559674,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 90,
+          "dense_score": 0.27371954917907715,
+          "sparse_rank": 2,
+          "sparse_score": 34.39595134687687,
+          "raw_peak_keyframe_ordinal": 256,
+          "aligned_keyframe_ordinal": 256
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L27_V008",
+      "sequence_score": 0.543248829207767,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.4948687077170049,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.29149543576770354,
+        "temporal_alignment_raw": 0.8744863073031107,
+        "event_sparse_score": 0.4620207291440168,
+        "object_signal": 0.8284193679610907,
+        "object_rrf_delta": 0.6168041015200001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 93,
+          "dense_score": 0.27559930086135864,
+          "sparse_rank": 86,
+          "sparse_score": 10.661528207277257,
+          "raw_peak_keyframe_ordinal": 249,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 8,
+          "dense_score": 0.2808307409286499,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 263,
+          "dense_score": 0.26141780614852905,
+          "sparse_rank": 3,
+          "sparse_score": 24.288897522738576,
+          "raw_peak_keyframe_ordinal": 22,
+          "aligned_keyframe_ordinal": 32
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L27_V006",
+      "sequence_score": 0.5270100142322198,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.5618299336780957,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3161098692152235,
+        "temporal_alignment_raw": 0.9483296076456705,
+        "event_sparse_score": 0.3151903651903652,
+        "object_signal": 0.8205572929062296,
+        "object_rrf_delta": 0.6109503512000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 680,
+          "dense_score": 0.24989479780197144,
+          "sparse_rank": 96,
+          "sparse_score": 9.872951171743342,
+          "raw_peak_keyframe_ordinal": 31,
+          "aligned_keyframe_ordinal": 24
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 11,
+          "dense_score": 0.2802256941795349,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 31,
+          "aligned_keyframe_ordinal": 31
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 22,
+          "dense_score": 0.28507015109062195,
+          "sparse_rank": 50,
+          "sparse_score": 11.241768189461613,
+          "raw_peak_keyframe_ordinal": 126,
+          "aligned_keyframe_ordinal": 126
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L27_V004",
+      "sequence_score": 0.5206988660138596,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.3617215049907358,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.29650000731150306,
+        "temporal_alignment_raw": 0.8895000219345093,
+        "event_sparse_score": 0.6619226190476191,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.74455538508,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 278,
+          "dense_score": 0.2636091709136963,
+          "sparse_rank": 52,
+          "sparse_score": 12.698962413281253,
+          "raw_peak_keyframe_ordinal": 171,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 20,
+          "dense_score": 0.27676308155059814,
+          "sparse_rank": 4,
+          "sparse_score": 15.085927918770174,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 369,
+          "dense_score": 0.2576119303703308,
+          "sparse_rank": 65,
+          "sparse_score": 9.05644426411277,
+          "raw_peak_keyframe_ordinal": 22,
+          "aligned_keyframe_ordinal": 32
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L29_V011",
+      "sequence_score": 0.5086542751849265,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.42988102579915716,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.30326807498931885,
+        "temporal_alignment_raw": 0.9098042249679565,
+        "event_sparse_score": 0.6994610709780988,
+        "object_signal": 0.6984063153127656,
+        "object_rrf_delta": 0.5200021830400001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 128,
+          "dense_score": 0.27256152033805847,
+          "sparse_rank": 16,
+          "sparse_score": 15.181838634558181,
+          "raw_peak_keyframe_ordinal": 220,
+          "aligned_keyframe_ordinal": 220
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 692,
+          "dense_score": 0.23771034181118011,
+          "sparse_rank": 8,
+          "sparse_score": 14.326560627621069,
+          "raw_peak_keyframe_ordinal": 403,
+          "aligned_keyframe_ordinal": 235
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 9,
+          "dense_score": 0.29564979672431946,
+          "sparse_rank": 93,
+          "sparse_score": 6.857909452911734,
+          "raw_peak_keyframe_ordinal": 322,
+          "aligned_keyframe_ordinal": 322
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L27_V015",
+      "sequence_score": 0.5062423318691266,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.5034179500927518,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.30564505524105495,
+        "temporal_alignment_raw": 0.9169351657231649,
+        "event_sparse_score": 0.4313131313131313,
+        "object_signal": 0.9028365802065526,
+        "object_rrf_delta": 0.67221183764,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 685,
+          "dense_score": 0.24875545501708984,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 56,
+          "aligned_keyframe_ordinal": 56
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 6,
+          "dense_score": 0.28144097328186035,
+          "sparse_rank": 30,
+          "sparse_score": 13.610732809793763,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 250
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 61,
+          "dense_score": 0.2770853638648987,
+          "sparse_rank": 39,
+          "sparse_score": 12.041897445475467,
+          "raw_peak_keyframe_ordinal": 233,
+          "aligned_keyframe_ordinal": 256
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L28_V014",
+      "sequence_score": 0.4981980941288344,
+      "score_components": {
+        "baseline_rank_score": 0.6703296703296703,
+        "semantic_event_score": 0.6907450257413573,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3258415857950846,
+        "temporal_alignment_raw": 0.9775247573852539,
+        "event_sparse_score": 0.4136574780456379,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 5,
+          "dense_score": 0.30469340085983276,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 275,
+          "aligned_keyframe_ordinal": 275
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 81,
+          "dense_score": 0.2545927166938782,
+          "sparse_rank": 53,
+          "sparse_score": 11.803002120759313,
+          "raw_peak_keyframe_ordinal": 199,
+          "aligned_keyframe_ordinal": 287
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 27,
+          "dense_score": 0.2839340269565582,
+          "sparse_rank": 27,
+          "sparse_score": 13.433663143153465,
+          "raw_peak_keyframe_ordinal": 289,
+          "aligned_keyframe_ordinal": 289
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L28_V019",
+      "sequence_score": 0.493992998637078,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.44692481795786215,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3333333333333333,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.29901960784313725,
+        "object_signal": 0.39392264295890655,
+        "object_rrf_delta": 0.29329722512,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 19,
+          "dense_score": 0.2910636365413666,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 337,
+          "aligned_keyframe_ordinal": 337
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 210,
+          "dense_score": 0.24740217626094818,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 407,
+          "aligned_keyframe_ordinal": 407
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 118,
+          "dense_score": 0.2712755799293518,
+          "sparse_rank": 8,
+          "sparse_score": 17.82742109450626,
+          "raw_peak_keyframe_ordinal": 408,
+          "aligned_keyframe_ordinal": 408
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L27_V011",
+      "sequence_score": 0.48321411941774234,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.41681923691449557,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.31657764646742076,
+        "temporal_alignment_raw": 0.9497329394022623,
+        "event_sparse_score": 0.3580404846113327,
+        "object_signal": 0.8217539714849551,
+        "object_rrf_delta": 0.6118413446800001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 679,
+          "dense_score": 0.24995765089988708,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 141,
+          "aligned_keyframe_ordinal": 25
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 4,
+          "dense_score": 0.2819322943687439,
+          "sparse_rank": 77,
+          "sparse_score": 10.81697638366685,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 32
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 224,
+          "dense_score": 0.2633994221687317,
+          "sparse_rank": 37,
+          "sparse_score": 12.175970050516062,
+          "raw_peak_keyframe_ordinal": 37,
+          "aligned_keyframe_ordinal": 37
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L27_V009",
+      "sequence_score": 0.47899267074210145,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.5659191751818099,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3143396311336093,
+        "temporal_alignment_raw": 0.943018893400828,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8579861370170081,
+        "object_rrf_delta": 0.6388181986400001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 153,
+          "dense_score": 0.27019453048706055,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 221,
+          "aligned_keyframe_ordinal": 221
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 15,
+          "dense_score": 0.27877485752105713,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 261
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 42,
+          "dense_score": 0.2798472046852112,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 325,
+          "aligned_keyframe_ordinal": 325
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L27_V002",
+      "sequence_score": 0.46067194705863684,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.46884806015240804,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.2984257075521681,
+        "temporal_alignment_raw": 0.8952771226565043,
+        "event_sparse_score": 0.16266666666666665,
+        "object_signal": 0.8707970348375579,
+        "object_rrf_delta": 0.6483566216000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 239,
+          "dense_score": 0.26534929871559143,
+          "sparse_rank": 65,
+          "sparse_score": 11.704751464132752,
+          "raw_peak_keyframe_ordinal": 189,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 5,
+          "dense_score": 0.28156253695487976,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 171,
+          "dense_score": 0.2663622498512268,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 280,
+          "aligned_keyframe_ordinal": 280
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L30_V045",
+      "sequence_score": 0.4598892068651228,
+      "score_components": {
+        "baseline_rank_score": 0.6421052631578947,
+        "semantic_event_score": 0.6443800322061192,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.29340000285042656,
+        "temporal_alignment_raw": 0.8802000085512797,
+        "event_sparse_score": 0.2747747747747748,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 15,
+          "dense_score": 0.29329612851142883,
+          "sparse_rank": 14,
+          "sparse_score": 15.772271446894209,
+          "raw_peak_keyframe_ordinal": 48,
+          "aligned_keyframe_ordinal": 18
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 30,
+          "dense_score": 0.2661091089248657,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 59,
+          "aligned_keyframe_ordinal": 19
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 78,
+          "dense_score": 0.2750535011291504,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 23,
+          "aligned_keyframe_ordinal": 23
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L30_V015",
+      "sequence_score": 0.45896099284063374,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.39383889588130533,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3129692210091485,
+        "temporal_alignment_raw": 0.9389076630274454,
+        "event_sparse_score": 0.1955128205128205,
+        "object_signal": 0.6672055584241375,
+        "object_rrf_delta": 0.4967714914800001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 173,
+          "dense_score": 0.26885226368904114,
+          "sparse_rank": 44,
+          "sparse_score": 13.275935511459167,
+          "raw_peak_keyframe_ordinal": 67,
+          "aligned_keyframe_ordinal": 67
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 16,
+          "dense_score": 0.27862417697906494,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 3,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 461,
+          "dense_score": 0.2544625401496887,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 10,
+          "aligned_keyframe_ordinal": 85
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L27_V005",
+      "sequence_score": 0.4494877105111198,
+      "score_components": {
+        "baseline_rank_score": 0.7011494252873564,
+        "semantic_event_score": 0.40748291268922676,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.31573981046676636,
+        "temporal_alignment_raw": 0.9472194314002991,
+        "event_sparse_score": 0.2785388127853881,
+        "object_signal": 0.9026286426332003,
+        "object_rrf_delta": 0.6720570166000002,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 725,
+          "dense_score": 0.24237529933452606,
+          "sparse_rank": 13,
+          "sparse_score": 15.780805937691438,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 9,
+          "dense_score": 0.28074461221694946,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 174,
+          "dense_score": 0.2662368714809418,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 115,
+          "aligned_keyframe_ordinal": 115
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L27_V007",
+      "sequence_score": 0.44694844190611915,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.39462794205687857,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.3302256133821275,
+        "temporal_alignment_raw": 0.9906768401463827,
+        "event_sparse_score": 0.1737891737891738,
+        "object_signal": 0.9948507599611438,
+        "object_rrf_delta": 0.74072149068,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 710,
+          "dense_score": 0.24469634890556335,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 47,
+          "aligned_keyframe_ordinal": 47
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 2,
+          "dense_score": 0.28777366876602173,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 129
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 445,
+          "dense_score": 0.25498148798942566,
+          "sparse_rank": 57,
+          "sparse_score": 10.070259931119937,
+          "raw_peak_keyframe_ordinal": 149,
+          "aligned_keyframe_ordinal": 149
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L30_V074",
+      "sequence_score": 0.44316494897455755,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.40453249897399407,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.30987660090128577,
+        "temporal_alignment_raw": 0.9296298027038574,
+        "event_sparse_score": 0.1831831831831832,
+        "object_signal": 0.16498343846751085,
+        "object_rrf_delta": 0.12283930756000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 386,
+          "dense_score": 0.258883535861969,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 54,
+          "aligned_keyframe_ordinal": 54
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 1,
+          "dense_score": 0.2993375360965729,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 90,
+          "aligned_keyframe_ordinal": 90
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 734,
+          "dense_score": 0.2404167354106903,
+          "sparse_rank": 51,
+          "sparse_score": 11.141534911916956,
+          "raw_peak_keyframe_ordinal": 35,
+          "aligned_keyframe_ordinal": 93
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L27_V010",
+      "sequence_score": 0.44190354005188237,
+      "score_components": {
+        "baseline_rank_score": 0.7176470588235294,
+        "semantic_event_score": 0.47106123103324143,
+        "event_coverage": 0.3333333333333333,
+        "temporal_consistency": 0.2966179980172051,
+        "temporal_alignment_raw": 0.8898539940516154,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9179278521591323,
+        "object_rrf_delta": 0.68344812544,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+          "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+          "dense_rank": 166,
+          "dense_score": 0.2692885100841522,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 51,
+          "aligned_keyframe_ordinal": 23
+        },
+        {
+          "event_index": 2,
+          "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+          "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+          "dense_rank": 7,
+          "dense_score": 0.28099119663238525,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+          "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+          "dense_rank": 202,
+          "dense_score": 0.2651013433933258,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 34,
+          "aligned_keyframe_ordinal": 34
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "được cắt từ một phóng sự về một nhóm các nghệ nhân làm nghề đan lát các sản phẩm thủ công từ cây lục bình",
+      "query_en": "was cut from a reporter about a group of craftsmen who made handmade pieces of greenwood.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "một cảnh lia cam duy nhất từ trái sang phải, theo thứ tự ta thấy 4 sản phẩm: túi xách, chậu hoa, bộ ấm tách trà và túi xách",
+      "query_en": "A single orange scene from left to right, in order, we see four products: bags, flower pots, tea cup warmers, and bags.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "người phụ nữ bên trái lấy một tách trà trong bộ ấm tách và nâng niu trong khi nghe người phụ nữ bên phải trò chuyện",
+      "query_en": "The woman on the left takes a cup of tea in the warm cup and lifts the nipple while the woman on her right talks",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

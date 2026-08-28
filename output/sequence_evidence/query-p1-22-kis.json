@@ -1,0 +1,14 @@
+{
+  "query_id": "query-p1-22-kis",
+  "query": "Người phụ nữ mặc áo dài màu hồng, đeo kính đang giảng giải về các trường hợp sử dụng khác nhau của động từ 'remember' dựa trên mốc thời gian của hành động được nhắc tới.",
+  "mode": "single_scene",
+  "reason": "no_strong_temporal_marker",
+  "events": [
+    "Người phụ nữ mặc áo dài màu hồng, đeo kính đang giảng giải về các trường hợp sử dụng khác nhau của động từ 'remember' dựa trên mốc thời gian của hành động được nhắc tới."
+  ],
+  "markers": [],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [],
+  "applied": false
+}

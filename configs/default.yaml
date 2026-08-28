@@ -33,3 +33,74 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+
+  # Prompt 5: cac gia tri nay la baseline de ablation, KHONG phai weight toi uu.
+  sequence_aware:
+    enabled: true
+    min_event_words: 4
+    max_events: 4
+    event_top_k_videos: 100
+    candidate_pool_size: 100
+    coverage_rank_threshold: 20
+    rank_decay: 60.0
+    temporal_min_gap: 1
+
+    baseline_weight: 0.20
+    semantic_weight: 0.30
+    coverage_weight: 0.20
+    temporal_weight: 0.15
+    event_sparse_weight: 0.10
+    object_weight: 0.05
+
+    log_evidence: true
+    log_dir: "output/sequence_evidence"
+
+  # Prompt 6: raw-video refinement chi cho Textual KIS.
+  temporal_refinement:
+    enabled: true
+    top_predictions: 5
+    coarse_window_seconds: 5.0
+    coarse_sample_fps: 4.0
+    fine_window_seconds: 0.75
+    # 0/null nghia la decode frame-by-frame theo native FPS cua video.
+    fine_sample_fps: 0
+    batch_size: 8
+    log_evidence: true
+    log_dir: "output/temporal_refinement"
+
+  # Prompt 7: baseline de ablation, KHONG phai weight da toi uu.
+  qa_evidence:
+    candidate_video_count: 5
+    evidence_frame_budget: 6
+    temporal_nms_distance: 1
+    evidence_dense_weight: 0.65
+    evidence_ocr_weight: 0.35
+    candidate_retrieval_weight: 0.40
+    candidate_evidence_weight: 0.30
+    candidate_confidence_weight: 0.30
+    consensus_confidence_threshold: 0.65
+    consensus_min_candidates: 2
+    max_new_tokens: 120
+
+    # Prompt 8: TRAKE video-level rerank + time-aware alignment.
+  # Baseline de ablation, KHONG phai weight da toi uu.
+  trake_alignment:
+    min_event_gap_seconds: 1.0
+    rank_decay: 60.0
+    video_retrieval_weight: 0.35
+    event_matching_weight: 0.45
+    sequence_consistency_weight: 0.20
+    coarse_pool_size: 150
+    raw_refine:
+      enabled: true
+      candidate_limit: 10
+      fine_window_seconds: 1.5
+      fine_sample_fps: 0
+    log_evidence: true
+    log_dir: "output/trake_evidence"
+
+
+  kis_ocr_boost:
+    enabled: false
+    weight: 0.35
+    apply_only_ocr_intent: true

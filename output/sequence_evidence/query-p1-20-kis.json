@@ -1,0 +1,844 @@
+{
+  "query_id": "query-p1-20-kis",
+  "query": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng. Sau đó ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+    "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao"
+  ],
+  "markers": [
+    {
+      "marker": "Sau đó",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L28_V008",
+      "sequence_score": 0.9468186481091272,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.9765625,
+        "event_coverage": 1.0,
+        "temporal_consistency": 1.0,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6893731268731269,
+        "object_signal": 0.6982517084362878,
+        "object_rrf_delta": 0.31851578388,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 1,
+          "dense_score": 0.2916257381439209,
+          "sparse_rank": 44,
+          "sparse_score": 7.966883065078446,
+          "raw_peak_keyframe_ordinal": 274,
+          "aligned_keyframe_ordinal": 274
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 4,
+          "dense_score": 0.2933597266674042,
+          "sparse_rank": 17,
+          "sparse_score": 15.508385628516741,
+          "raw_peak_keyframe_ordinal": 304,
+          "aligned_keyframe_ordinal": 304
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L28_V010",
+      "sequence_score": 0.8887992060348829,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.9040976460331299,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9424017667770386,
+        "temporal_alignment_raw": 0.9424017667770386,
+        "event_sparse_score": 0.6738117984236924,
+        "object_signal": 0.303553474304508,
+        "object_rrf_delta": 0.13846951127999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 14,
+          "dense_score": 0.2671823501586914,
+          "sparse_rank": 46,
+          "sparse_score": 7.942850015913459,
+          "raw_peak_keyframe_ordinal": 472,
+          "aligned_keyframe_ordinal": 110
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 2,
+          "dense_score": 0.2959587574005127,
+          "sparse_rank": 19,
+          "sparse_score": 15.429512620062196,
+          "raw_peak_keyframe_ordinal": 119,
+          "aligned_keyframe_ordinal": 119
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L27_V004",
+      "sequence_score": 0.7136045109740693,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.8081196581196581,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4702562689781189,
+        "temporal_alignment_raw": 0.9405125379562378,
+        "event_sparse_score": 0.7942708333333333,
+        "object_signal": 0.48857792619467,
+        "object_rrf_delta": 0.22287060563999994,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 30,
+          "dense_score": 0.26288333535194397,
+          "sparse_rank": 36,
+          "sparse_score": 8.779789116144228,
+          "raw_peak_keyframe_ordinal": 148,
+          "aligned_keyframe_ordinal": 47
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 5,
+          "dense_score": 0.29294049739837646,
+          "sparse_rank": 4,
+          "sparse_score": 23.130601945845754,
+          "raw_peak_keyframe_ordinal": 108,
+          "aligned_keyframe_ordinal": 108
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L28_V019",
+      "sequence_score": 0.6555233952550028,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.672316384180791,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.611808300395257,
+        "object_signal": 0.8167211151668249,
+        "object_rrf_delta": 0.3725570064,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 117,
+          "dense_score": 0.24788740277290344,
+          "sparse_rank": 55,
+          "sparse_score": 7.926927497763835,
+          "raw_peak_keyframe_ordinal": 94,
+          "aligned_keyframe_ordinal": 94
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 1,
+          "dense_score": 0.2991384267807007,
+          "sparse_rank": 28,
+          "sparse_score": 14.119372421557523,
+          "raw_peak_keyframe_ordinal": 462,
+          "aligned_keyframe_ordinal": 462
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L28_V005",
+      "sequence_score": 0.6285939905506096,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.6417953667953669,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6775449444635291,
+        "object_signal": 0.5235519678882754,
+        "object_rrf_delta": 0.23882442884,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 88,
+          "dense_score": 0.2537117004394531,
+          "sparse_rank": 63,
+          "sparse_score": 7.83334843700478,
+          "raw_peak_keyframe_ordinal": 30,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 10,
+          "dense_score": 0.28922268748283386,
+          "sparse_rank": 11,
+          "sparse_score": 15.999093267691348,
+          "raw_peak_keyframe_ordinal": 408,
+          "aligned_keyframe_ordinal": 408
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L21_V026",
+      "sequence_score": 0.6054507716225271,
+      "score_components": {
+        "baseline_rank_score": 0.9242424242424242,
+        "semantic_event_score": 0.6880483080779309,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7837558870132625,
+        "object_rrf_delta": 0.35751952728,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 7,
+          "dense_score": 0.272427499294281,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 63,
+          "aligned_keyframe_ordinal": 63
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 71,
+          "dense_score": 0.26664650440216064,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 64,
+          "aligned_keyframe_ordinal": 64
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L27_V015",
+      "sequence_score": 0.6030228431639596,
+      "score_components": {
+        "baseline_rank_score": 0.8133333333333334,
+        "semantic_event_score": 0.5183882783882784,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49740542471408844,
+        "temporal_alignment_raw": 0.9948108494281769,
+        "event_sparse_score": 0.9384615384615385,
+        "object_signal": 0.3276545085508455,
+        "object_rrf_delta": 0.14946348339999999,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 213,
+          "dense_score": 0.23630841076374054,
+          "sparse_rank": 5,
+          "sparse_score": 13.324906340253264,
+          "raw_peak_keyframe_ordinal": 175,
+          "aligned_keyframe_ordinal": 107
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 15,
+          "dense_score": 0.2867588698863983,
+          "sparse_rank": 5,
+          "sparse_score": 20.617060566347917,
+          "raw_peak_keyframe_ordinal": 159,
+          "aligned_keyframe_ordinal": 159
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L28_V013",
+      "sequence_score": 0.5869078627449444,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.6104501014572957,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6378700128700129,
+        "object_signal": 0.3241068643175286,
+        "object_rrf_delta": 0.14784518348,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 79,
+          "dense_score": 0.25509095191955566,
+          "sparse_rank": 51,
+          "sparse_score": 7.934878863342104,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 43
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 18,
+          "dense_score": 0.28513017296791077,
+          "sparse_rank": 24,
+          "sparse_score": 15.403399597602563,
+          "raw_peak_keyframe_ordinal": 97,
+          "aligned_keyframe_ordinal": 97
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L30_V019",
+      "sequence_score": 0.5831895139800379,
+      "score_components": {
+        "baseline_rank_score": 0.7625,
+        "semantic_event_score": 0.52371099695586,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6879967274427303,
+        "object_signal": 0.5955308429801359,
+        "object_rrf_delta": 0.27165844492,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 13,
+          "dense_score": 0.26751136779785156,
+          "sparse_rank": 9,
+          "sparse_score": 11.975556163709815,
+          "raw_peak_keyframe_ordinal": 34,
+          "aligned_keyframe_ordinal": 34
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 228,
+          "dense_score": 0.23628756403923035,
+          "sparse_rank": 64,
+          "sparse_score": 8.359967545797913,
+          "raw_peak_keyframe_ordinal": 53,
+          "aligned_keyframe_ordinal": 53
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L29_V016",
+      "sequence_score": 0.5640796583511669,
+      "score_components": {
+        "baseline_rank_score": 0.5980392156862745,
+        "semantic_event_score": 0.7955623306233062,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4957321137189865,
+        "temporal_alignment_raw": 0.991464227437973,
+        "event_sparse_score": 0.31443298969072164,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 22,
+          "dense_score": 0.26385971903800964,
+          "sparse_rank": 37,
+          "sparse_score": 8.771861920472391,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 12,
+          "dense_score": 0.2888823449611664,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 57,
+          "aligned_keyframe_ordinal": 557
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L30_V033",
+      "sequence_score": 0.5615887105506012,
+      "score_components": {
+        "baseline_rank_score": 0.6161616161616161,
+        "semantic_event_score": 0.7162878787878788,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.4847002368191449,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 6,
+          "dense_score": 0.27472230792045593,
+          "sparse_rank": 82,
+          "sparse_score": 5.393134810298667,
+          "raw_peak_keyframe_ordinal": 47,
+          "aligned_keyframe_ordinal": 47
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 60,
+          "dense_score": 0.27103516459465027,
+          "sparse_rank": 53,
+          "sparse_score": 9.419828675787542,
+          "raw_peak_keyframe_ordinal": 220,
+          "aligned_keyframe_ordinal": 220
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L22_V016",
+      "sequence_score": 0.5378951448872623,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.5967617908407382,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4772825092077255,
+        "temporal_alignment_raw": 0.954565018415451,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.8407227203157355,
+        "object_rrf_delta": 0.38350562276,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 17,
+          "dense_score": 0.2655258774757385,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 243,
+          "aligned_keyframe_ordinal": 243
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 92,
+          "dense_score": 0.2613523602485657,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 143,
+          "aligned_keyframe_ordinal": 282
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L28_V022",
+      "sequence_score": 0.5309687608707456,
+      "score_components": {
+        "baseline_rank_score": 0.6354166666666666,
+        "semantic_event_score": 0.5610755372259605,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.6056276636962418,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 211,
+          "dense_score": 0.2366189807653427,
+          "sparse_rank": 56,
+          "sparse_score": 7.926927497763835,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 8,
+          "dense_score": 0.2907011806964874,
+          "sparse_rank": 29,
+          "sparse_score": 14.119372421557523,
+          "raw_peak_keyframe_ordinal": 179,
+          "aligned_keyframe_ordinal": 179
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L22_V012",
+      "sequence_score": 0.525288545523543,
+      "score_components": {
+        "baseline_rank_score": 0.6931818181818182,
+        "semantic_event_score": 0.6552063789868667,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.46687351167201996,
+        "temporal_alignment_raw": 0.9337470233440399,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.401184828806327,
+        "object_rrf_delta": 0.18300520956,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 5,
+          "dense_score": 0.2749231457710266,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 208,
+          "aligned_keyframe_ordinal": 208
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 104,
+          "dense_score": 0.25934574007987976,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 73,
+          "aligned_keyframe_ordinal": 218
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L28_V020",
+      "sequence_score": 0.5142583683862754,
+      "score_components": {
+        "baseline_rank_score": 0.3546511627906977,
+        "semantic_event_score": 0.6945695695695695,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.5995726495726497,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 48,
+          "dense_score": 0.26021552085876465,
+          "sparse_rank": 57,
+          "sparse_score": 7.9189958330542085,
+          "raw_peak_keyframe_ordinal": 35,
+          "aligned_keyframe_ordinal": 35
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 14,
+          "dense_score": 0.28775304555892944,
+          "sparse_rank": 30,
+          "sparse_score": 14.095557299939816,
+          "raw_peak_keyframe_ordinal": 256,
+          "aligned_keyframe_ordinal": 256
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L27_V008",
+      "sequence_score": 0.5017894488802231,
+      "score_components": {
+        "baseline_rank_score": 0.3765432098765432,
+        "semantic_event_score": 0.5431762545899633,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4391445368528366,
+        "temporal_alignment_raw": 0.8782890737056732,
+        "event_sparse_score": 0.9765625,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 16,
+          "dense_score": 0.26695865392684937,
+          "sparse_rank": 4,
+          "sparse_score": 14.602960657145832,
+          "raw_peak_keyframe_ordinal": 86,
+          "aligned_keyframe_ordinal": 86
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 155,
+          "dense_score": 0.25301435589790344,
+          "sparse_rank": 1,
+          "sparse_score": 28.59259935362349,
+          "raw_peak_keyframe_ordinal": 23,
+          "aligned_keyframe_ordinal": 126
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L27_V005",
+      "sequence_score": 0.49790184143677974,
+      "score_components": {
+        "baseline_rank_score": 0.4959349593495935,
+        "semantic_event_score": 0.6172619047619048,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.48213374614715576,
+        "temporal_alignment_raw": 0.9642674922943115,
+        "event_sparse_score": 0.41216216216216217,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 10,
+          "dense_score": 0.2704334259033203,
+          "sparse_rank": 14,
+          "sparse_score": 10.606550754545697,
+          "raw_peak_keyframe_ordinal": 55,
+          "aligned_keyframe_ordinal": 55
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 108,
+          "dense_score": 0.25896164774894714,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 23,
+          "aligned_keyframe_ordinal": 154
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L29_V012",
+      "sequence_score": 0.49464299562230013,
+      "score_components": {
+        "baseline_rank_score": 0.5304347826086957,
+        "semantic_event_score": 0.6116341370072713,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4818006604909897,
+        "temporal_alignment_raw": 0.9636013209819794,
+        "event_sparse_score": 0.3279569892473118,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 135,
+          "dense_score": 0.24580809473991394,
+          "sparse_rank": 33,
+          "sparse_score": 8.802755597674961,
+          "raw_peak_keyframe_ordinal": 328,
+          "aligned_keyframe_ordinal": 85
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 7,
+          "dense_score": 0.2908519208431244,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 161,
+          "aligned_keyframe_ordinal": 161
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L29_V009",
+      "sequence_score": 0.49293317375517476,
+      "score_components": {
+        "baseline_rank_score": 0.5446428571428571,
+        "semantic_event_score": 0.5798237702074516,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.3505747126436782,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 143,
+          "dense_score": 0.24451224505901337,
+          "sparse_rank": 27,
+          "sparse_score": 8.88095028825056,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 11,
+          "dense_score": 0.2890941798686981,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 317,
+          "aligned_keyframe_ordinal": 317
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L29_V004",
+      "sequence_score": 0.4926126698262962,
+      "score_components": {
+        "baseline_rank_score": 0.5041322314049587,
+        "semantic_event_score": 0.6070904421207118,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.3465909090909091,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+          "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+          "dense_rank": 78,
+          "dense_score": 0.2551777958869934,
+          "sparse_rank": 28,
+          "sparse_score": 8.8338676532687,
+          "raw_peak_keyframe_ordinal": 432,
+          "aligned_keyframe_ordinal": 432
+        },
+        {
+          "event_index": 2,
+          "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+          "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+          "dense_rank": 19,
+          "dense_score": 0.2847698926925659,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 517,
+          "aligned_keyframe_ordinal": 517
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "Ba người đang đi bộ xuống một con dốc trong cơn mưa, có 2 người cầm dù, trong đó người cầm dù đi sau lại mặc một chiếc áo mưa có in hình con gấu ở sau lưng",
+      "query_en": "Three people were walking down a slope in the rain, two people were holding an umbrella, one of whom was walking behind wearing a bear-shaped raincoat on his back.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "ta thấy nhiều người đang cùng nhau bước về hướng một căn nhà thông qua một con đường đất, bên cạnh là một cái ao",
+      "query_en": "I see a lot of people walking together towards a house through a dirt road, next to a pond.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

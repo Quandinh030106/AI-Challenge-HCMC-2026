@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-11-kis",
+  "query": "Cảnh quay chậm tại vị trí vạch đích của cuộc đua xe đạp. Góc máy sát mặt đường bắt trọn khoảnh khắc về đích theo thứ tự nhất, nhì, ba lần lượt là 1 tay đua áo vàng quần đen, 1 tay đua áo xanh dương quần đen và 1 tay đua áo xanh dương quần đỏ",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L23_V005",
+      "coarse_mapped_frame": "4250",
+      "best_actual_frame": "4250",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L23_V005"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L23_V004",
+      "coarse_mapped_frame": "5500",
+      "best_actual_frame": "5500",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L23_V004"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L23_V005",
+      "coarse_mapped_frame": "4247",
+      "best_actual_frame": "4247",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L23_V005"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L23_V002",
+      "coarse_mapped_frame": "10614",
+      "best_actual_frame": "10614",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L23_V002"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L23_V014",
+      "coarse_mapped_frame": "5875",
+      "best_actual_frame": "5875",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L23_V014"
+    }
+  ],
+  "status": "completed"
+}

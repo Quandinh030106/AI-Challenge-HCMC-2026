@@ -1,0 +1,848 @@
+{
+  "query_id": "query-p1-6-kis",
+  "query": "Mẩu tin bắt đầu với hình ảnh nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười. Tiếp theo có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+    "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh"
+  ],
+  "markers": [
+    {
+      "marker": "Mẩu tin bắt đầu với",
+      "relation": "forward"
+    },
+    {
+      "marker": "Tiếp theo",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L27_V001",
+      "sequence_score": 0.7206293616622068,
+      "score_components": {
+        "baseline_rank_score": 0.33516483516483514,
+        "semantic_event_score": 0.804861111111111,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.991685152053833,
+        "temporal_alignment_raw": 0.991685152053833,
+        "event_sparse_score": 0.6338528848783156,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 12,
+          "dense_score": 0.25741472840309143,
+          "sparse_rank": 99,
+          "sparse_score": 17.84170660447377,
+          "raw_peak_keyframe_ordinal": 254,
+          "aligned_keyframe_ordinal": 121
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 20,
+          "dense_score": 0.25823089480400085,
+          "sparse_rank": 9,
+          "sparse_score": 22.17945224215742,
+          "raw_peak_keyframe_ordinal": 175,
+          "aligned_keyframe_ordinal": 175
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L28_V009",
+      "sequence_score": 0.6967555679846619,
+      "score_components": {
+        "baseline_rank_score": 0.3128205128205128,
+        "semantic_event_score": 0.8478764478764479,
+        "event_coverage": 1.0,
+        "temporal_consistency": 0.9754136502742767,
+        "temporal_alignment_raw": 0.9754136502742767,
+        "event_sparse_score": 0.33516483516483514,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 14,
+          "dense_score": 0.2562665343284607,
+          "sparse_rank": 31,
+          "sparse_score": 28.640866265860097,
+          "raw_peak_keyframe_ordinal": 388,
+          "aligned_keyframe_ordinal": 130
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 10,
+          "dense_score": 0.2659642696380615,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 165,
+          "aligned_keyframe_ordinal": 165
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L25_V035",
+      "sequence_score": 0.581503511105188,
+      "score_components": {
+        "baseline_rank_score": 0.8356164383561644,
+        "semantic_event_score": 0.6663865546218488,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7892851409480094,
+        "object_rrf_delta": 0.45826365327999996,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 8,
+          "dense_score": 0.25904810428619385,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 73,
+          "aligned_keyframe_ordinal": 73
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 80,
+          "dense_score": 0.23917710781097412,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 84,
+          "aligned_keyframe_ordinal": 84
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L25_V023",
+      "sequence_score": 0.5683412259478606,
+      "score_components": {
+        "baseline_rank_score": 0.7011494252873564,
+        "semantic_event_score": 0.6197549882629108,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.26521739130434785,
+        "object_signal": 0.8132621056216277,
+        "object_rrf_delta": 0.47218482176,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 4,
+          "dense_score": 0.2617217004299164,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 92,
+          "aligned_keyframe_ordinal": 92
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 153,
+          "dense_score": 0.22296473383903503,
+          "sparse_rank": 55,
+          "sparse_score": 11.448021947985026,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 340
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L30_V017",
+      "sequence_score": 0.5661042538532691,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.5350172215843858,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.49473096430301666,
+        "temporal_alignment_raw": 0.9894619286060333,
+        "event_sparse_score": 0.20333333333333334,
+        "object_signal": 0.6848903039253791,
+        "object_rrf_delta": 0.3976513892,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 1,
+          "dense_score": 0.2815342843532562,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 68,
+          "aligned_keyframe_ordinal": 68
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 811,
+          "dense_score": 0.1837979406118393,
+          "sparse_rank": 90,
+          "sparse_score": 9.80922384228812,
+          "raw_peak_keyframe_ordinal": 0,
+          "aligned_keyframe_ordinal": 132
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L28_V019",
+      "sequence_score": 0.5585142087380557,
+      "score_components": {
+        "baseline_rank_score": 0.648936170212766,
+        "semantic_event_score": 0.6553156987939597,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4554537236690521,
+        "temporal_alignment_raw": 0.9109074473381042,
+        "event_sparse_score": 0.6381420650695679,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 83,
+          "dense_score": 0.2481786608695984,
+          "sparse_rank": 19,
+          "sparse_score": 29.010826015781863,
+          "raw_peak_keyframe_ordinal": 236,
+          "aligned_keyframe_ordinal": 236
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 9,
+          "dense_score": 0.2661670446395874,
+          "sparse_rank": 61,
+          "sparse_score": 11.168207641687903,
+          "raw_peak_keyframe_ordinal": 146,
+          "aligned_keyframe_ordinal": 418
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L28_V017",
+      "sequence_score": 0.5507037632344745,
+      "score_components": {
+        "baseline_rank_score": 0.6421052631578947,
+        "semantic_event_score": 0.6196078431372549,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47439810633659363,
+        "temporal_alignment_raw": 0.9487962126731873,
+        "event_sparse_score": 0.6524064171122994,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 195,
+          "dense_score": 0.23792001605033875,
+          "sparse_rank": 17,
+          "sparse_score": 29.010826015781863,
+          "raw_peak_keyframe_ordinal": 198,
+          "aligned_keyframe_ordinal": 32
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 1,
+          "dense_score": 0.28110045194625854,
+          "sparse_rank": 59,
+          "sparse_score": 11.168207641687903,
+          "raw_peak_keyframe_ordinal": 153,
+          "aligned_keyframe_ordinal": 153
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L27_V008",
+      "sequence_score": 0.5495405956073044,
+      "score_components": {
+        "baseline_rank_score": 0.37888198757763975,
+        "semantic_event_score": 0.6887096774193548,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.9215129486597001,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 95,
+          "dense_score": 0.24741941690444946,
+          "sparse_rank": 2,
+          "sparse_score": 58.24930767636981,
+          "raw_peak_keyframe_ordinal": 107,
+          "aligned_keyframe_ordinal": 107
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 2,
+          "dense_score": 0.274087131023407,
+          "sparse_rank": 11,
+          "sparse_score": 18.492893321153236,
+          "raw_peak_keyframe_ordinal": 281,
+          "aligned_keyframe_ordinal": 281
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L28_V006",
+      "sequence_score": 0.4924616068974261,
+      "score_components": {
+        "baseline_rank_score": 0.3177083333333333,
+        "semantic_event_score": 0.6834733893557423,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.46690961718559265,
+        "temporal_alignment_raw": 0.9338192343711853,
+        "event_sparse_score": 0.5384148084619783,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 93,
+          "dense_score": 0.24745336174964905,
+          "sparse_rank": 28,
+          "sparse_score": 28.681452719893755,
+          "raw_peak_keyframe_ordinal": 395,
+          "aligned_keyframe_ordinal": 395
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 3,
+          "dense_score": 0.27329736948013306,
+          "sparse_rank": 99,
+          "sparse_score": 9.685511053019235,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 425
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L28_V015",
+      "sequence_score": 0.49201869722714736,
+      "score_components": {
+        "baseline_rank_score": 0.305,
+        "semantic_event_score": 0.7642569124423964,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4686554968357086,
+        "temporal_alignment_raw": 0.9373109936714172,
+        "event_sparse_score": 0.31443298969072164,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 2,
+          "dense_score": 0.26812419295310974,
+          "sparse_rank": 37,
+          "sparse_score": 28.56007405482402,
+          "raw_peak_keyframe_ordinal": 218,
+          "aligned_keyframe_ordinal": 218
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 52,
+          "dense_score": 0.24590802192687988,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 64,
+          "aligned_keyframe_ordinal": 378
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L29_V011",
+      "sequence_score": 0.48801615185769875,
+      "score_components": {
+        "baseline_rank_score": 0.43884892086330934,
+        "semantic_event_score": 0.6608507241418634,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.26991150442477874,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 19,
+          "dense_score": 0.25488609075546265,
+          "sparse_rank": 53,
+          "sparse_score": 24.598709963522285,
+          "raw_peak_keyframe_ordinal": 321,
+          "aligned_keyframe_ordinal": 321
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 51,
+          "dense_score": 0.24598249793052673,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 394,
+          "aligned_keyframe_ordinal": 394
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L28_V011",
+      "sequence_score": 0.48002740955023887,
+      "score_components": {
+        "baseline_rank_score": 0.3096446700507614,
+        "semantic_event_score": 0.7171982489055659,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.469947949051857,
+        "temporal_alignment_raw": 0.939895898103714,
+        "event_sparse_score": 0.324468085106383,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 5,
+          "dense_score": 0.26025691628456116,
+          "sparse_rank": 34,
+          "sparse_score": 28.56007405482402,
+          "raw_peak_keyframe_ordinal": 331,
+          "aligned_keyframe_ordinal": 201
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 63,
+          "dense_score": 0.2429792284965515,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 280,
+          "aligned_keyframe_ordinal": 280
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L28_V012",
+      "sequence_score": 0.46062065605747887,
+      "score_components": {
+        "baseline_rank_score": 0.30808080808080807,
+        "semantic_event_score": 0.6396641042780749,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.32105263157894737,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 127,
+          "dense_score": 0.24507518112659454,
+          "sparse_rank": 35,
+          "sparse_score": 28.56007405482402,
+          "raw_peak_keyframe_ordinal": 151,
+          "aligned_keyframe_ordinal": 151
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 4,
+          "dense_score": 0.27248334884643555,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 181,
+          "aligned_keyframe_ordinal": 181
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L28_V014",
+      "sequence_score": 0.4583609480862022,
+      "score_components": {
+        "baseline_rank_score": 0.3065326633165829,
+        "semantic_event_score": 0.6342786069651741,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.3177083333333333,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 15,
+          "dense_score": 0.2559491991996765,
+          "sparse_rank": 36,
+          "sparse_score": 28.56007405482402,
+          "raw_peak_keyframe_ordinal": 222,
+          "aligned_keyframe_ordinal": 222
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 74,
+          "dense_score": 0.2401386797428131,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 412,
+          "aligned_keyframe_ordinal": 412
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L28_V001",
+      "sequence_score": 0.4552806728757598,
+      "score_components": {
+        "baseline_rank_score": 0.324468085106383,
+        "semantic_event_score": 0.5360252734416481,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47993674874305725,
+        "temporal_alignment_raw": 0.9598734974861145,
+        "event_sparse_score": 0.5758896151053015,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 198,
+          "dense_score": 0.2378392219543457,
+          "sparse_rank": 21,
+          "sparse_score": 29.01079667382175,
+          "raw_peak_keyframe_ordinal": 55,
+          "aligned_keyframe_ordinal": 2
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 13,
+          "dense_score": 0.26338934898376465,
+          "sparse_rank": 93,
+          "sparse_score": 9.786398795368168,
+          "raw_peak_keyframe_ordinal": 13,
+          "aligned_keyframe_ordinal": 13
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L30_V033",
+      "sequence_score": 0.4448594065110919,
+      "score_components": {
+        "baseline_rank_score": 0.3333333333333333,
+        "semantic_event_score": 0.5208988764044944,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.46923076923076923,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 207,
+          "dense_score": 0.23709523677825928,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 39,
+          "aligned_keyframe_ordinal": 39
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 15,
+          "dense_score": 0.2612975835800171,
+          "sparse_rank": 5,
+          "sparse_score": 23.87428734590769,
+          "raw_peak_keyframe_ordinal": 222,
+          "aligned_keyframe_ordinal": 222
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L30_V083",
+      "sequence_score": 0.4308892216598216,
+      "score_components": {
+        "baseline_rank_score": 0.4357142857142857,
+        "semantic_event_score": 0.5205503308951585,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.42377011477947235,
+        "temporal_alignment_raw": 0.8475402295589447,
+        "event_sparse_score": 0.24015748031496062,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 6,
+          "dense_score": 0.2599371075630188,
+          "sparse_rank": 67,
+          "sparse_score": 22.984217545585643,
+          "raw_peak_keyframe_ordinal": 79,
+          "aligned_keyframe_ordinal": 44
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 462,
+          "dense_score": 0.20546287298202515,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 4,
+          "aligned_keyframe_ordinal": 50
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L28_V016",
+      "sequence_score": 0.42054693470707427,
+      "score_components": {
+        "baseline_rank_score": 0.30198019801980197,
+        "semantic_event_score": 0.5218743923779895,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.487257182598114,
+        "temporal_alignment_raw": 0.974514365196228,
+        "event_sparse_score": 0.305,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 218,
+          "dense_score": 0.2364744246006012,
+          "sparse_rank": 40,
+          "sparse_score": 28.281233839004983,
+          "raw_peak_keyframe_ordinal": 272,
+          "aligned_keyframe_ordinal": 272
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 14,
+          "dense_score": 0.26283302903175354,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 121,
+          "aligned_keyframe_ordinal": 368
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L30_V088",
+      "sequence_score": 0.41826728169329397,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.6811506250758588,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.46900443732738495,
+        "temporal_alignment_raw": 0.9380088746547699,
+        "event_sparse_score": 0.4357142857142857,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 17,
+          "dense_score": 0.25525063276290894,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 43
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 47,
+          "dense_score": 0.24770909547805786,
+          "sparse_rank": 10,
+          "sparse_score": 21.02533858559398,
+          "raw_peak_keyframe_ordinal": 12,
+          "aligned_keyframe_ordinal": 85
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L29_V016",
+      "sequence_score": 0.41623461793746735,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.7072899962994943,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.5,
+        "temporal_alignment_raw": 1.0,
+        "event_sparse_score": 0.2904761904761905,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": false
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+          "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+          "dense_rank": 7,
+          "dense_score": 0.2593349814414978,
+          "sparse_rank": 45,
+          "sparse_score": 25.37652121085895,
+          "raw_peak_keyframe_ordinal": 200,
+          "aligned_keyframe_ordinal": 200
+        },
+        {
+          "event_index": 2,
+          "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+          "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+          "dense_rank": 61,
+          "dense_score": 0.24365320801734924,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 424,
+          "aligned_keyframe_ordinal": 424
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "nột người đàn ông mặc vest xanh đậm, sơ mi trắng và cà vạt, đang ngồi trên một chiếc ghế lớn. Ông cầm bằng hai tay một khối đá quý thô khá lớn, đưa lên gần mặt để quan sát. Bên phải là một phụ nữ mặc trang phục công sở màu đen và khăn trùm đầu màu hồng tím, đang đứng cạnh và mỉm cười",
+      "query_en": "He was wearing a dark blue vest, a white shirt and a tie, sitting on a large chair. He was holding with his two hands a rather large rough gemstone, brought up close to his face to observe.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "có hình ảnh toàn cảnh từ trên cao của một mỏ đá quý lộ thiên quy mô lớn với hố khai thác sâu nhiều tầng và hệ thống đường vận chuyển bao quanh",
+      "query_en": "There's a panoramic view from above of a massive open pit mine with a multi-storey deep mine and a transportation system surrounding it.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

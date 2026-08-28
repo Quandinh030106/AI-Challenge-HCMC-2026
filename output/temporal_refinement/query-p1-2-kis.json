@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-2-kis",
+  "query": "Đoạn phim bắt đầu bằng một bản đồ, trên đó một loại công trình thủy lợi lần lượt xuất hiện bốn lần. Sau đó chuyển sang cảnh một con đập được quay từ trên cao, tiếp đến là cảnh cận con đập dưới trời mưa.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L28_V008",
+      "coarse_mapped_frame": "9315",
+      "best_actual_frame": "9315",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V008"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L27_V016",
+      "coarse_mapped_frame": "3150",
+      "best_actual_frame": "3150",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L27_V016"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L28_V008",
+      "coarse_mapped_frame": "9371",
+      "best_actual_frame": "9371",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V008"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L29_V015",
+      "coarse_mapped_frame": "26607",
+      "best_actual_frame": "26607",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L29_V015"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L28_V006",
+      "coarse_mapped_frame": "24835",
+      "best_actual_frame": "24835",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L28_V006"
+    }
+  ],
+  "status": "completed"
+}

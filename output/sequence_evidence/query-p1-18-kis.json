@@ -1,0 +1,1304 @@
+{
+  "query_id": "query-p1-18-kis",
+  "query": "Cảnh quay cho thấy hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng, sau đó đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và kết thúc bằng việc thả một cọng ngò lên trên cùng. Cảnh quay tiếp theo là cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt.",
+  "mode": "multi_event",
+  "reason": "strong_temporal_structure",
+  "events": [
+    "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+    "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+    "việc thả một cọng ngò lên trên cùng",
+    "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt"
+  ],
+  "markers": [
+    {
+      "marker": "sau đó",
+      "relation": "forward"
+    },
+    {
+      "marker": "kết thúc bằng",
+      "relation": "forward"
+    },
+    {
+      "marker": "Cảnh quay tiếp theo là",
+      "relation": "forward"
+    }
+  ],
+  "coordinate_system": "keyframe_ordinal_0_based",
+  "weights_are_configurable_not_claimed_optimal": true,
+  "top_candidates": [
+    {
+      "rank": 1,
+      "video_id": "L26_V179",
+      "sequence_score": 0.46069050347859464,
+      "score_components": {
+        "baseline_rank_score": 0.782051282051282,
+        "semantic_event_score": 0.4650463637608092,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23116910085082054,
+        "temporal_alignment_raw": 0.9246764034032822,
+        "event_sparse_score": 0.46162162162162157,
+        "object_signal": 0.6785762130062031,
+        "object_rrf_delta": 0.31282057436,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 43,
+          "dense_score": 0.2928916811943054,
+          "sparse_rank": 14,
+          "sparse_score": 21.288898960641504,
+          "raw_peak_keyframe_ordinal": 24,
+          "aligned_keyframe_ordinal": 24
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 304,
+          "dense_score": 0.28797397017478943,
+          "sparse_rank": 88,
+          "sparse_score": 10.316558959463153,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 65
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 222,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 75
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 9,
+          "dense_score": 0.31135228276252747,
+          "sparse_rank": 40,
+          "sparse_score": 7.185340790178652,
+          "raw_peak_keyframe_ordinal": 104,
+          "aligned_keyframe_ordinal": 104
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "video_id": "L26_V235",
+      "sequence_score": 0.44737974237510936,
+      "score_components": {
+        "baseline_rank_score": 0.3279569892473118,
+        "semantic_event_score": 0.5783382752109518,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.4756254628300667,
+        "temporal_alignment_raw": 0.9512509256601334,
+        "event_sparse_score": 0.3694304253785148,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 12,
+          "dense_score": 0.29667627811431885,
+          "sparse_rank": 13,
+          "sparse_score": 22.209445396600387,
+          "raw_peak_keyframe_ordinal": 65,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 209,
+          "dense_score": 0.2914213538169861,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 165,
+          "dense_score": 0.26465943455696106,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 54,
+          "aligned_keyframe_ordinal": 54
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 3,
+          "dense_score": 0.3164852261543274,
+          "sparse_rank": 35,
+          "sparse_score": 7.568985747815802,
+          "raw_peak_keyframe_ordinal": 60,
+          "aligned_keyframe_ordinal": 60
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "video_id": "L26_V027",
+      "sequence_score": 0.44657602585982864,
+      "score_components": {
+        "baseline_rank_score": 1.0,
+        "semantic_event_score": 0.43534808797626656,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.21644487977027893,
+        "temporal_alignment_raw": 0.8657795190811157,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.670097350028136,
+        "object_rrf_delta": 0.30891185676,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 95,
+          "dense_score": 0.29039686918258667,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 5
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 1,
+          "dense_score": 0.3266534209251404,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 99,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 386,
+          "dense_score": 0.2617473006248474,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 4,
+          "aligned_keyframe_ordinal": 91
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 229,
+          "dense_score": 0.29597926139831543,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 92
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "video_id": "L26_V134",
+      "sequence_score": 0.44480921737890056,
+      "score_components": {
+        "baseline_rank_score": 0.7530864197530864,
+        "semantic_event_score": 0.5744529740647504,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23531340062618256,
+        "temporal_alignment_raw": 0.9412536025047302,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7311806222986161,
+        "object_rrf_delta": 0.33707096984,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 64,
+          "dense_score": 0.2915348410606384,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 106,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 85,
+          "dense_score": 0.2960148751735687,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 77
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 92,
+          "dense_score": 0.2654639482498169,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 78
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 2,
+          "dense_score": 0.32260748744010925,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 127,
+          "aligned_keyframe_ordinal": 127
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "video_id": "L26_V447",
+      "sequence_score": 0.4387640964545669,
+      "score_components": {
+        "baseline_rank_score": 0.8714285714285714,
+        "semantic_event_score": 0.47072245033197824,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23472130298614502,
+        "temporal_alignment_raw": 0.9388852119445801,
+        "event_sparse_score": 0.15885416666666666,
+        "object_signal": 0.44336069909341497,
+        "object_rrf_delta": 0.20438728307999998,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 271,
+          "dense_score": 0.2864823639392853,
+          "sparse_rank": 36,
+          "sparse_score": 14.575653943310488,
+          "raw_peak_keyframe_ordinal": 97,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 6,
+          "dense_score": 0.3116888403892517,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 140,
+          "aligned_keyframe_ordinal": 30
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 32,
+          "dense_score": 0.2657312750816345,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 51
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 488,
+          "dense_score": 0.2816590666770935,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 77,
+          "aligned_keyframe_ordinal": 77
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "video_id": "L26_V010",
+      "sequence_score": 0.4256356945523921,
+      "score_components": {
+        "baseline_rank_score": 0.9838709677419355,
+        "semantic_event_score": 0.3706228961059787,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.21532483398914337,
+        "temporal_alignment_raw": 0.8612993359565735,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7075181414767971,
+        "object_rrf_delta": 0.32616267288,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 357,
+          "dense_score": 0.2842983603477478,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 4,
+          "dense_score": 0.3147408366203308,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 46,
+          "aligned_keyframe_ordinal": 46
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 364,
+          "dense_score": 0.26237952709198,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 3,
+          "aligned_keyframe_ordinal": 89
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 195,
+          "dense_score": 0.29801392555236816,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 97
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "video_id": "L26_V185",
+      "sequence_score": 0.3972930489381099,
+      "score_components": {
+        "baseline_rank_score": 0.8840579710144928,
+        "semantic_event_score": 0.46234485561963706,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9273789972066879,
+        "event_sparse_score": 0.4502353820287689,
+        "object_signal": 0.735089196928865,
+        "object_rrf_delta": 0.33887280512,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 50,
+          "dense_score": 0.292444109916687,
+          "sparse_rank": 15,
+          "sparse_score": 21.288898960641504,
+          "raw_peak_keyframe_ordinal": 103,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 21,
+          "dense_score": 0.30406177043914795,
+          "sparse_rank": 99,
+          "sparse_score": 9.853822832276855,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 499,
+          "dense_score": 0.2587389349937439,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 50
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 81,
+          "dense_score": 0.3008631467819214,
+          "sparse_rank": 41,
+          "sparse_score": 7.185340790178652,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 74
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "video_id": "L26_V211",
+      "sequence_score": 0.39476669191759794,
+      "score_components": {
+        "baseline_rank_score": 0.6931818181818182,
+        "semantic_event_score": 0.4526632672738192,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.21440017595887184,
+        "temporal_alignment_raw": 0.8576007038354874,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7634264341051553,
+        "object_rrf_delta": 0.35193614368,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 65,
+          "dense_score": 0.29150933027267456,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 82,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 3,
+          "dense_score": 0.317843496799469,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 12
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 241,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 97
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 342,
+          "dense_score": 0.2929011881351471,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 98
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "video_id": "L26_V346",
+      "sequence_score": 0.38899990271613794,
+      "score_components": {
+        "baseline_rank_score": 0.7721518987341772,
+        "semantic_event_score": 0.3734582547938967,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23574671149253845,
+        "temporal_alignment_raw": 0.9429868459701538,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7434007961450542,
+        "object_rrf_delta": 0.34270441488000003,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 110,
+          "dense_score": 0.28989505767822266,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 183,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 343,
+          "dense_score": 0.2871127426624298,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 11,
+          "dense_score": 0.2683815658092499,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 66
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 430,
+          "dense_score": 0.29074934124946594,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 70
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "video_id": "L26_V466",
+      "sequence_score": 0.37992940160566835,
+      "score_components": {
+        "baseline_rank_score": 0.9682539682539683,
+        "semantic_event_score": 0.4652278006309316,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9280634075403214,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.9342053553119047,
+        "object_rrf_delta": 0.43066445628,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 29,
+          "dense_score": 0.2941448390483856,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 73,
+          "aligned_keyframe_ordinal": 73
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 37,
+          "dense_score": 0.30131831765174866,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 141,
+          "aligned_keyframe_ordinal": 78
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 155,
+          "dense_score": 0.26492318511009216,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 115
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 172,
+          "dense_score": 0.2995275855064392,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 140
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "video_id": "L26_V017",
+      "sequence_score": 0.37495789996179785,
+      "score_components": {
+        "baseline_rank_score": 0.7261904761904762,
+        "semantic_event_score": 0.37097681322991877,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.2223898358643055,
+        "temporal_alignment_raw": 0.889559343457222,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.7013657075016229,
+        "object_rrf_delta": 0.32332642855999993,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 352,
+          "dense_score": 0.28436779975891113,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 7,
+          "dense_score": 0.3111088275909424,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 64,
+          "aligned_keyframe_ordinal": 64
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 359,
+          "dense_score": 0.2624833285808563,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 3,
+          "aligned_keyframe_ordinal": 74
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 158,
+          "dense_score": 0.3004199266433716,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 78
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "video_id": "L26_V336",
+      "sequence_score": 0.3719606274786862,
+      "score_components": {
+        "baseline_rank_score": 0.7439024390243902,
+        "semantic_event_score": 0.3469650022171031,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9998909533023834,
+        "event_sparse_score": 0.7478723021707001,
+        "object_signal": 0.8860681758321441,
+        "object_rrf_delta": 0.40847343360000005,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 280,
+          "dense_score": 0.28632092475891113,
+          "sparse_rank": 46,
+          "sparse_score": 13.959797388459751,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 22
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 38,
+          "dense_score": 0.301055908203125,
+          "sparse_rank": 2,
+          "sparse_score": 24.14846274608155,
+          "raw_peak_keyframe_ordinal": 32,
+          "aligned_keyframe_ordinal": 32
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 136,
+          "dense_score": 0.2652415931224823,
+          "sparse_rank": 54,
+          "sparse_score": 4.555409774936473,
+          "raw_peak_keyframe_ordinal": 83,
+          "aligned_keyframe_ordinal": 83
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 162,
+          "dense_score": 0.3000578284263611,
+          "sparse_rank": 8,
+          "sparse_score": 18.826955169937285,
+          "raw_peak_keyframe_ordinal": 98,
+          "aligned_keyframe_ordinal": 98
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "video_id": "L26_V324",
+      "sequence_score": 0.3712899225713405,
+      "score_components": {
+        "baseline_rank_score": 0.9104477611940298,
+        "semantic_event_score": 0.3157417100108395,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.872983768582344,
+        "event_sparse_score": 0.4473683505549177,
+        "object_signal": 0.9948204454758194,
+        "object_rrf_delta": 0.45860773952000006,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 242,
+          "dense_score": 0.28700101375579834,
+          "sparse_rank": 65,
+          "sparse_score": 10.076958129954324,
+          "raw_peak_keyframe_ordinal": 156,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 23,
+          "dense_score": 0.3035714030265808,
+          "sparse_rank": 7,
+          "sparse_score": 20.28479070650958,
+          "raw_peak_keyframe_ordinal": 83,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 273,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 27
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 367,
+          "dense_score": 0.2929011881351471,
+          "sparse_rank": 96,
+          "sparse_score": 4.188446512076734,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 53
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "video_id": "L26_V333",
+      "sequence_score": 0.36438000298311124,
+      "score_components": {
+        "baseline_rank_score": 0.9384615384615385,
+        "semantic_event_score": 0.23532145306445773,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9214222729206085,
+        "event_sparse_score": 0.8901689708141322,
+        "object_signal": 0.3414872458010602,
+        "object_rrf_delta": 0.15742408048,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 258,
+          "dense_score": 0.2868102490901947,
+          "sparse_rank": 33,
+          "sparse_score": 15.094179056294752,
+          "raw_peak_keyframe_ordinal": 85,
+          "aligned_keyframe_ordinal": 85
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 136,
+          "dense_score": 0.2934115529060364,
+          "sparse_rank": 3,
+          "sparse_score": 24.14462458458207,
+          "raw_peak_keyframe_ordinal": 107,
+          "aligned_keyframe_ordinal": 91
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 554,
+          "dense_score": 0.2587389349937439,
+          "sparse_rank": 3,
+          "sparse_score": 11.979611342680066,
+          "raw_peak_keyframe_ordinal": 94,
+          "aligned_keyframe_ordinal": 94
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 120,
+          "dense_score": 0.3008631467819214,
+          "sparse_rank": 3,
+          "sparse_score": 28.4483890718488,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 110
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "video_id": "L26_V313",
+      "sequence_score": 0.36211717609007815,
+      "score_components": {
+        "baseline_rank_score": 0.6559139784946236,
+        "semantic_event_score": 0.48483081542423295,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23656757175922394,
+        "temporal_alignment_raw": 0.9462702870368958,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 5,
+          "dense_score": 0.298676460981369,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 143,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 120,
+          "dense_score": 0.29452210664749146,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 269,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 52
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 68,
+          "dense_score": 0.30330049991607666,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 143,
+          "aligned_keyframe_ordinal": 143
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "video_id": "L26_V449",
+      "sequence_score": 0.3557488336938234,
+      "score_components": {
+        "baseline_rank_score": 0.5545454545454546,
+        "semantic_event_score": 0.5343431222108798,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.23024537414312363,
+        "temporal_alignment_raw": 0.9209814965724945,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 67,
+          "dense_score": 0.29149383306503296,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 3
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 459,
+          "dense_score": 0.2812836766242981,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 10,
+          "aligned_keyframe_ordinal": 4
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 24,
+          "dense_score": 0.26612919569015503,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 15,
+          "dense_score": 0.30969667434692383,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 9,
+          "aligned_keyframe_ordinal": 9
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "video_id": "L26_V249",
+      "sequence_score": 0.35517500942834423,
+      "score_components": {
+        "baseline_rank_score": 0.3567251461988304,
+        "semantic_event_score": 0.40861016341418976,
+        "event_coverage": 0.25,
+        "temporal_consistency": 0.21898336336016655,
+        "temporal_alignment_raw": 0.8759334534406662,
+        "event_sparse_score": 0.7839942666029622,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 11,
+          "dense_score": 0.2967270314693451,
+          "sparse_rank": 78,
+          "sparse_score": 8.966706100556348,
+          "raw_peak_keyframe_ordinal": 127,
+          "aligned_keyframe_ordinal": 6
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 161,
+          "dense_score": 0.2926449477672577,
+          "sparse_rank": 10,
+          "sparse_score": 18.721937205451926,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 517,
+          "dense_score": 0.2587389349937439,
+          "sparse_rank": 5,
+          "sparse_score": 9.938201106110617,
+          "raw_peak_keyframe_ordinal": 63,
+          "aligned_keyframe_ordinal": 63
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 95,
+          "dense_score": 0.3008631467819214,
+          "sparse_rank": 9,
+          "sparse_score": 18.552621093714414,
+          "raw_peak_keyframe_ordinal": 7,
+          "aligned_keyframe_ordinal": 139
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "video_id": "L26_V218",
+      "sequence_score": 0.34864279458045083,
+      "score_components": {
+        "baseline_rank_score": 0.0,
+        "semantic_event_score": 0.5914410854915486,
+        "event_coverage": 0.5,
+        "temporal_consistency": 0.47473645955324173,
+        "temporal_alignment_raw": 0.9494729191064835,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.0,
+        "object_rrf_delta": 0.0,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 14,
+          "dense_score": 0.2963660955429077,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 152,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 119,
+          "dense_score": 0.29453128576278687,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 244,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 96
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 1,
+          "dense_score": 0.3243753910064697,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 125,
+          "aligned_keyframe_ordinal": 125
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "video_id": "L26_V172",
+      "sequence_score": 0.3392647054132378,
+      "score_components": {
+        "baseline_rank_score": 0.7922077922077922,
+        "semantic_event_score": 0.48920068152801,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9412354379892349,
+        "event_sparse_score": 0.0,
+        "object_signal": 0.6812588502655264,
+        "object_rrf_delta": 0.31405725804000006,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 33,
+          "dense_score": 0.29361486434936523,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 153,
+          "aligned_keyframe_ordinal": 7
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 77,
+          "dense_score": 0.2964475452899933,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 8,
+          "aligned_keyframe_ordinal": 8
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 217,
+          "dense_score": 0.26352182030677795,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 5,
+          "aligned_keyframe_ordinal": 37
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 36,
+          "dense_score": 0.30769044160842896,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 97,
+          "aligned_keyframe_ordinal": 97
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "video_id": "L26_V439",
+      "sequence_score": 0.33503686898381324,
+      "score_components": {
+        "baseline_rank_score": 0.8591549295774648,
+        "semantic_event_score": 0.37735294356106774,
+        "event_coverage": 0.0,
+        "temporal_consistency": 0.0,
+        "temporal_alignment_raw": 0.9461559355258942,
+        "event_sparse_score": 0.0,
+        "object_signal": 1.0,
+        "object_rrf_delta": 0.4609954908000001,
+        "raw_peak_order_error": true
+      },
+      "event_evidence": [
+        {
+          "event_index": 1,
+          "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+          "query_en": "The act of presenting the food after the process is complete.",
+          "dense_rank": 108,
+          "dense_score": 0.29000523686408997,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 104,
+          "aligned_keyframe_ordinal": 22
+        },
+        {
+          "event_index": 2,
+          "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+          "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+          "dense_rank": 26,
+          "dense_score": 0.3033442795276642,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 43,
+          "aligned_keyframe_ordinal": 43
+        },
+        {
+          "event_index": 3,
+          "event_text": "việc thả một cọng ngò lên trên cùng",
+          "query_en": "It's like dropping a stick up top.",
+          "dense_rank": 128,
+          "dense_score": 0.2653518319129944,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 6,
+          "aligned_keyframe_ordinal": 104
+        },
+        {
+          "event_index": 4,
+          "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+          "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+          "dense_rank": 482,
+          "dense_score": 0.28235936164855957,
+          "sparse_rank": null,
+          "sparse_score": null,
+          "raw_peak_keyframe_ordinal": 4,
+          "aligned_keyframe_ordinal": 129
+        }
+      ]
+    }
+  ],
+  "applied": true,
+  "weights": {
+    "baseline": 0.2,
+    "semantic": 0.3,
+    "coverage": 0.2,
+    "temporal": 0.15,
+    "event_sparse": 0.1,
+    "object": 0.05
+  },
+  "coverage_rank_threshold": 20,
+  "rank_decay": 60.0,
+  "temporal_min_gap": 1,
+  "event_queries": [
+    {
+      "event_text": "hành động trình bày món ăn sau khi hoàn thành giai đoạn chế biến. Bún được cho đầu tiên vào một chén rỗng",
+      "query_en": "The act of presenting the food after the process is complete.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "đầu bếp lần lượt cho từng vá nước dùng cùng các nguyên liệu như thịt gà, cà rốt, sả, nấm mèo vào chén bún, và",
+      "query_en": "the cook, in turn, adds each watercolor with ingredients such as chicken, carrots, duckling, cat mushrooms to the bowl, and",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "việc thả một cọng ngò lên trên cùng",
+      "query_en": "It's like dropping a stick up top.",
+      "intent": "VISUAL_SCENE"
+    },
+    {
+      "event_text": "cảnh zoom xa dần chén bún, ta thấy bên cạnh chén bún còn có 1 chén nước chấm nhỏ với 2 miếng ớt",
+      "query_en": "And the zoom is moving away from the glass, and you see next to the glass there's a little drop of water with two peppers.",
+      "intent": "VISUAL_SCENE"
+    }
+  ]
+}

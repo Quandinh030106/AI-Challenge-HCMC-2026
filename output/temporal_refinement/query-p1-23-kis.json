@@ -1,0 +1,59 @@
+{
+  "query_id": "query-p1-23-kis",
+  "query": "Hình ảnh giáo viên nam mặc sơ mi trắng, thắt cà vạt tối màu, nổi bật trên phông nền xanh dương đậm có hoa văn mờ. Slide bài giảng Nền trắng với khung viền màu hồng tím, phía trên có thanh tiêu đề xanh dương chứa họa tiết địa cầu và mũi tên vàng/xanh ngọc. Bên dưới là sơ đồ 3 tầng được liên kết bởi các mũi tên xanh ngọc trỏ xuống: Tầng 1: 2 khối hộp được bao bởi 1 khối hộp cam. Tầng 2: 1 khối hộp lớn màu xanh dương đậm ở chính giữa. Tầng 3: 2 khối hộp được bao bởi 1 khối hộp xanh lá cây.",
+  "enabled": true,
+  "coordinate_system": "actual_raw_video_frame_ordinal_0_based",
+  "refinements": [
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 1,
+      "video_id": "L25_V077",
+      "coarse_mapped_frame": "43407",
+      "best_actual_frame": "43407",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V077"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 2,
+      "video_id": "L25_V048",
+      "coarse_mapped_frame": "8699",
+      "best_actual_frame": "8699",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V048"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 3,
+      "video_id": "L25_V077",
+      "coarse_mapped_frame": "43558",
+      "best_actual_frame": "43558",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V077"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 4,
+      "video_id": "L25_V084",
+      "coarse_mapped_frame": "33997",
+      "best_actual_frame": "33997",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V084"
+    },
+    {
+      "status": "fallback_coarse",
+      "prediction_rank": 5,
+      "video_id": "L25_V030",
+      "coarse_mapped_frame": "14399",
+      "best_actual_frame": "14399",
+      "score": null,
+      "error_type": "TemporalRefinementError",
+      "error": "Raw video not found for L25_V030"
+    }
+  ],
+  "status": "completed"
+}

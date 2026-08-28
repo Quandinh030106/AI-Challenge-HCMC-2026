@@ -1,0 +1,1743 @@
+{
+  "ground_truth": {
+    "source": "data\\dev\\local_val_gt.json",
+    "counts": {
+      "task1": 1,
+      "task2": 1,
+      "task3": 1
+    },
+    "total_queries": 3,
+    "is_placeholder": true,
+    "placeholder_reasons": [
+      "Ground Truth được đánh dấu là dữ liệu mẫu."
+    ],
+    "issues": [
+      "task1/dev-kis-001: frame range không hợp lệ",
+      "task2/dev-qa-001: frame range không hợp lệ",
+      "task3/dev-trake-001: event 1 có frame range không hợp lệ",
+      "task3/dev-trake-001: event 2 có frame range không hợp lệ"
+    ],
+    "is_usable": false
+  },
+  "benchmark_claim_allowed": false,
+  "metrics": {
+    "query_count": 3,
+    "Final_Score": 0.0,
+    "R@1": 0.0,
+    "R@5": 0.0,
+    "R@20": 0.0,
+    "R@50": 0.0,
+    "R@100": 0.0,
+    "Video Recall@1": 0.0,
+    "Video Recall@5": 0.0,
+    "Video Recall@20": 0.0,
+    "Frame Recall@1": 0.0,
+    "Frame Recall@5": 0.0,
+    "Frame Recall@20": 0.0,
+    "ground_truth": {
+      "source": "data\\dev\\local_val_gt.json",
+      "counts": {
+        "task1": 1,
+        "task2": 1,
+        "task3": 1
+      },
+      "total_queries": 3,
+      "is_placeholder": true,
+      "placeholder_reasons": [
+        "Ground Truth được đánh dấu là dữ liệu mẫu."
+      ],
+      "issues": [
+        "task1/dev-kis-001: frame range không hợp lệ",
+        "task2/dev-qa-001: frame range không hợp lệ",
+        "task3/dev-trake-001: event 1 có frame range không hợp lệ",
+        "task3/dev-trake-001: event 2 có frame range không hợp lệ"
+      ],
+      "is_usable": false
+    },
+    "per_task": {
+      "task1": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "task2": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "task3": {
+        "query_count": 1,
+        "Final_Score": 0.0,
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0,
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0,
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      }
+    },
+    "qa_diagnostics": {
+      "query_count": 1,
+      "top1_classification_counts": {
+        "wrong_video": 1
+      },
+      "top1_classification_rates": {
+        "wrong_video": 1.0
+      }
+    },
+    "trake_diagnostics": {
+      "query_count": 1,
+      "event_accuracy_at_top1": {
+        "event_1": 0.0,
+        "event_2": 0.0
+      },
+      "mean_correct_events_at_top1": 0.0,
+      "mean_event_accuracy_at_top1": 0.0,
+      "mean_best_correct_events_in_top100": 0.0,
+      "temporal_order_error_count_at_top1": 0,
+      "temporal_order_error_rate_at_top1": 0.0
+    }
+  },
+  "failure_summary": {
+    "total_queries": 3,
+    "failure_stage_counts": {
+      "retrieval_failure": 3
+    },
+    "failure_stage_rates": {
+      "retrieval_failure": 1.0
+    },
+    "top1_failure_counts": {
+      "wrong_video": 3
+    },
+    "top1_failure_rates": {
+      "wrong_video": 1.0
+    },
+    "per_task": {
+      "task1": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "wrong_video": 1
+        },
+        "top1_failure_rates": {
+          "wrong_video": 1.0
+        }
+      },
+      "task2": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "wrong_video": 1
+        },
+        "top1_failure_rates": {
+          "wrong_video": 1.0
+        }
+      },
+      "task3": {
+        "total_queries": 1,
+        "failure_stage_counts": {
+          "retrieval_failure": 1
+        },
+        "failure_stage_rates": {
+          "retrieval_failure": 1.0
+        },
+        "top1_failure_counts": {
+          "wrong_video": 1
+        },
+        "top1_failure_rates": {
+          "wrong_video": 1.0
+        }
+      }
+    }
+  },
+  "pipeline_errors": [],
+  "queries": [
+    {
+      "query_id": "dev-kis-001",
+      "task_type": "task1",
+      "query": "<mô tả truy vấn>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 100,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "wrong_video",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "top_candidates_beating_gt": [
+        {
+          "video_id": "L25_V023",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 1,
+            "dense_score": 0.2954595386981964,
+            "dense_best_keyframe_idx": 12,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.012295081967213115,
+            "post_object_rrf_score": 0.012295081967213115,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.012295081967213115,
+            "final_dense_score": 0.2954595386981964,
+            "final_best_keyframe_idx": 12
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V006",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 2,
+            "dense_score": 0.2944944202899933,
+            "dense_best_keyframe_idx": 167,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.012096774193548387,
+            "post_object_rrf_score": 0.012096774193548387,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.012096774193548387,
+            "final_dense_score": 0.2944944202899933,
+            "final_best_keyframe_idx": 167
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V062",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": 3,
+            "dense_score": 0.29285097122192383,
+            "dense_best_keyframe_idx": 31,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011904761904761904,
+            "post_object_rrf_score": 0.011904761904761904,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.011904761904761904,
+            "final_dense_score": 0.29285097122192383,
+            "final_best_keyframe_idx": 31
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V071",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": 4,
+            "dense_score": 0.2880946695804596,
+            "dense_best_keyframe_idx": 224,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.01171875,
+            "post_object_rrf_score": 0.01171875,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.01171875,
+            "final_dense_score": 0.2880946695804596,
+            "final_best_keyframe_idx": 224
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V075",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": 5,
+            "dense_score": 0.2876169681549072,
+            "dense_best_keyframe_idx": 293,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011538461538461539,
+            "post_object_rrf_score": 0.011538461538461539,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.011538461538461539,
+            "final_dense_score": 0.2876169681549072,
+            "final_best_keyframe_idx": 293
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V044",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": 38,
+            "dense_score": 0.27378031611442566,
+            "dense_best_keyframe_idx": 168,
+            "sparse_rank": 7,
+            "sparse_score": 4.6820576434006,
+            "base_rrf_score": 0.011384404508071886,
+            "post_object_rrf_score": 0.011384404508071886,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27378031611442566,
+            "final_best_keyframe_idx": 168
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V041",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": 6,
+            "dense_score": 0.2873857617378235,
+            "dense_best_keyframe_idx": 177,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011363636363636364,
+            "post_object_rrf_score": 0.011363636363636364,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2873857617378235,
+            "final_best_keyframe_idx": 177
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V015",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": 7,
+            "dense_score": 0.2850542664527893,
+            "dense_best_keyframe_idx": 137,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011194029850746268,
+            "post_object_rrf_score": 0.011194029850746268,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2850542664527893,
+            "final_best_keyframe_idx": 137
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V068",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": 8,
+            "dense_score": 0.2850222587585449,
+            "dense_best_keyframe_idx": 34,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011029411764705881,
+            "post_object_rrf_score": 0.011029411764705881,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2850222587585449,
+            "final_best_keyframe_idx": 34
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V079",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": 9,
+            "dense_score": 0.28461819887161255,
+            "dense_best_keyframe_idx": 29,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.010869565217391304,
+            "post_object_rrf_score": 0.010869565217391304,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.28461819887161255,
+            "final_best_keyframe_idx": 29
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_retrieval_candidates": [
+        {
+          "video_id": "L25_V023",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 1,
+            "dense_score": 0.2954595386981964,
+            "dense_best_keyframe_idx": 12,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.012295081967213115,
+            "post_object_rrf_score": 0.012295081967213115,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.012295081967213115,
+            "final_dense_score": 0.2954595386981964,
+            "final_best_keyframe_idx": 12
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V006",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 2,
+            "dense_score": 0.2944944202899933,
+            "dense_best_keyframe_idx": 167,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.012096774193548387,
+            "post_object_rrf_score": 0.012096774193548387,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.012096774193548387,
+            "final_dense_score": 0.2944944202899933,
+            "final_best_keyframe_idx": 167
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V062",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": 3,
+            "dense_score": 0.29285097122192383,
+            "dense_best_keyframe_idx": 31,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011904761904761904,
+            "post_object_rrf_score": 0.011904761904761904,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.011904761904761904,
+            "final_dense_score": 0.29285097122192383,
+            "final_best_keyframe_idx": 31
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V071",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": 4,
+            "dense_score": 0.2880946695804596,
+            "dense_best_keyframe_idx": 224,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.01171875,
+            "post_object_rrf_score": 0.01171875,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.01171875,
+            "final_dense_score": 0.2880946695804596,
+            "final_best_keyframe_idx": 224
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V075",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": 5,
+            "dense_score": 0.2876169681549072,
+            "dense_best_keyframe_idx": 293,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011538461538461539,
+            "post_object_rrf_score": 0.011538461538461539,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": 5.0,
+            "boosted_score": 0.011538461538461539,
+            "final_dense_score": 0.2876169681549072,
+            "final_best_keyframe_idx": 293
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V044",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": 38,
+            "dense_score": 0.27378031611442566,
+            "dense_best_keyframe_idx": 168,
+            "sparse_rank": 7,
+            "sparse_score": 4.6820576434006,
+            "base_rrf_score": 0.011384404508071886,
+            "post_object_rrf_score": 0.011384404508071886,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27378031611442566,
+            "final_best_keyframe_idx": 168
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V041",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": 6,
+            "dense_score": 0.2873857617378235,
+            "dense_best_keyframe_idx": 177,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011363636363636364,
+            "post_object_rrf_score": 0.011363636363636364,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2873857617378235,
+            "final_best_keyframe_idx": 177
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V015",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": 7,
+            "dense_score": 0.2850542664527893,
+            "dense_best_keyframe_idx": 137,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011194029850746268,
+            "post_object_rrf_score": 0.011194029850746268,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2850542664527893,
+            "final_best_keyframe_idx": 137
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V068",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": 8,
+            "dense_score": 0.2850222587585449,
+            "dense_best_keyframe_idx": 34,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.011029411764705881,
+            "post_object_rrf_score": 0.011029411764705881,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2850222587585449,
+            "final_best_keyframe_idx": 34
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V079",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": 9,
+            "dense_score": 0.28461819887161255,
+            "dense_best_keyframe_idx": 29,
+            "sparse_rank": null,
+            "sparse_score": null,
+            "base_rrf_score": 0.010869565217391304,
+            "post_object_rrf_score": 0.010869565217391304,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.28461819887161255,
+            "final_best_keyframe_idx": 29
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_submission_predictions": [
+        {
+          "video_id": "L25_V023",
+          "frame_id": "1629"
+        },
+        {
+          "video_id": "L25_V006",
+          "frame_id": "14513"
+        },
+        {
+          "video_id": "L25_V023",
+          "frame_id": "1479"
+        },
+        {
+          "video_id": "L25_V062",
+          "frame_id": "4500"
+        },
+        {
+          "video_id": "L25_V071",
+          "frame_id": "19950"
+        },
+        {
+          "video_id": "L25_V075",
+          "frame_id": "31500"
+        },
+        {
+          "video_id": "L25_V044",
+          "frame_id": "14850"
+        },
+        {
+          "video_id": "L25_V041",
+          "frame_id": "16469"
+        },
+        {
+          "video_id": "L25_V015",
+          "frame_id": "11362"
+        },
+        {
+          "video_id": "L25_V068",
+          "frame_id": "4950"
+        }
+      ]
+    },
+    {
+      "query_id": "dev-qa-001",
+      "task_type": "task2",
+      "query": "<mô tả cảnh dùng cho retrieval>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 100,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "wrong_video",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "qa": {
+        "top1_video_match": false,
+        "top1_frame_match": false,
+        "top1_answer_match": false,
+        "classification": "wrong_video"
+      },
+      "top_candidates_beating_gt": [
+        {
+          "video_id": "L29_V002",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 44,
+            "dense_score": 0.27743154764175415,
+            "dense_best_keyframe_idx": 157,
+            "sparse_rank": 1,
+            "sparse_score": 8.553444511231694,
+            "base_rrf_score": 0.013682219419924339,
+            "post_object_rrf_score": 0.013682219419924339,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27743154764175415,
+            "final_best_keyframe_idx": 157
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L29_V001",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 40,
+            "dense_score": 0.27769380807876587,
+            "dense_best_keyframe_idx": 42,
+            "sparse_rank": 35,
+            "sparse_score": 1.4791054492410776,
+            "base_rrf_score": 0.01031578947368421,
+            "post_object_rrf_score": 0.01031578947368421,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27769380807876587,
+            "final_best_keyframe_idx": 42
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V085",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 2,
+            "sparse_score": 7.352425281025892,
+            "base_rrf_score": 0.009677419354838708,
+            "post_object_rrf_score": 0.009677419354838708,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25246280431747437,
+            "final_best_keyframe_idx": 18
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L26_V322",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 3,
+            "sparse_score": 6.026016957803375,
+            "base_rrf_score": 0.009523809523809523,
+            "post_object_rrf_score": 0.009523809523809523,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25950250029563904,
+            "final_best_keyframe_idx": 3
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L26_V342",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 4,
+            "sparse_score": 5.671478128525601,
+            "base_rrf_score": 0.009375,
+            "post_object_rrf_score": 0.009375,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2564798593521118,
+            "final_best_keyframe_idx": 4
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V071",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 5,
+            "sparse_score": 4.98570074417938,
+            "base_rrf_score": 0.009230769230769232,
+            "post_object_rrf_score": 0.009230769230769232,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2519734799861908,
+            "final_best_keyframe_idx": 25
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V024",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 6,
+            "sparse_score": 4.97764466376243,
+            "base_rrf_score": 0.00909090909090909,
+            "post_object_rrf_score": 0.00909090909090909,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.24165043234825134,
+            "final_best_keyframe_idx": 45
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V057",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 7,
+            "sparse_score": 4.897588167480991,
+            "base_rrf_score": 0.008955223880597014,
+            "post_object_rrf_score": 0.008955223880597014,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25622060894966125,
+            "final_best_keyframe_idx": 43
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V073",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 8,
+            "sparse_score": 4.733259069190304,
+            "base_rrf_score": 0.008823529411764706,
+            "post_object_rrf_score": 0.008823529411764706,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25331586599349976,
+            "final_best_keyframe_idx": 5
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V048",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 9,
+            "sparse_score": 4.60809399391552,
+            "base_rrf_score": 0.008695652173913044,
+            "post_object_rrf_score": 0.008695652173913044,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.26059964299201965,
+            "final_best_keyframe_idx": 107
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_retrieval_candidates": [
+        {
+          "video_id": "L29_V002",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 44,
+            "dense_score": 0.27743154764175415,
+            "dense_best_keyframe_idx": 157,
+            "sparse_rank": 1,
+            "sparse_score": 8.553444511231694,
+            "base_rrf_score": 0.013682219419924339,
+            "post_object_rrf_score": 0.013682219419924339,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27743154764175415,
+            "final_best_keyframe_idx": 157
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L29_V001",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 40,
+            "dense_score": 0.27769380807876587,
+            "dense_best_keyframe_idx": 42,
+            "sparse_rank": 35,
+            "sparse_score": 1.4791054492410776,
+            "base_rrf_score": 0.01031578947368421,
+            "post_object_rrf_score": 0.01031578947368421,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.27769380807876587,
+            "final_best_keyframe_idx": 42
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V085",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 2,
+            "sparse_score": 7.352425281025892,
+            "base_rrf_score": 0.009677419354838708,
+            "post_object_rrf_score": 0.009677419354838708,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25246280431747437,
+            "final_best_keyframe_idx": 18
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L26_V322",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 3,
+            "sparse_score": 6.026016957803375,
+            "base_rrf_score": 0.009523809523809523,
+            "post_object_rrf_score": 0.009523809523809523,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25950250029563904,
+            "final_best_keyframe_idx": 3
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L26_V342",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 4,
+            "sparse_score": 5.671478128525601,
+            "base_rrf_score": 0.009375,
+            "post_object_rrf_score": 0.009375,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2564798593521118,
+            "final_best_keyframe_idx": 4
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V071",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 5,
+            "sparse_score": 4.98570074417938,
+            "base_rrf_score": 0.009230769230769232,
+            "post_object_rrf_score": 0.009230769230769232,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2519734799861908,
+            "final_best_keyframe_idx": 25
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V024",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 6,
+            "sparse_score": 4.97764466376243,
+            "base_rrf_score": 0.00909090909090909,
+            "post_object_rrf_score": 0.00909090909090909,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.24165043234825134,
+            "final_best_keyframe_idx": 45
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V057",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 7,
+            "sparse_score": 4.897588167480991,
+            "base_rrf_score": 0.008955223880597014,
+            "post_object_rrf_score": 0.008955223880597014,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25622060894966125,
+            "final_best_keyframe_idx": 43
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V073",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 8,
+            "sparse_score": 4.733259069190304,
+            "base_rrf_score": 0.008823529411764706,
+            "post_object_rrf_score": 0.008823529411764706,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.25331586599349976,
+            "final_best_keyframe_idx": 5
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L30_V048",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": null,
+            "dense_score": null,
+            "dense_best_keyframe_idx": null,
+            "sparse_rank": 9,
+            "sparse_score": 4.60809399391552,
+            "base_rrf_score": 0.008695652173913044,
+            "post_object_rrf_score": 0.008695652173913044,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.26059964299201965,
+            "final_best_keyframe_idx": 107
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_submission_predictions": [
+        {
+          "video_id": "L29_V002",
+          "frame_id": "19214",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L29_V001",
+          "frame_id": "861",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L29_V002",
+          "frame_id": "19239",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L30_V085",
+          "frame_id": "3870",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L26_V322",
+          "frame_id": "83",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L26_V342",
+          "frame_id": "78",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L30_V071",
+          "frame_id": "726",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L30_V024",
+          "frame_id": "579",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L30_V057",
+          "frame_id": "4064",
+          "answer": "Không rõ"
+        },
+        {
+          "video_id": "L30_V073",
+          "frame_id": "575",
+          "answer": "Không rõ"
+        }
+      ]
+    },
+    {
+      "query_id": "dev-trake-001",
+      "task_type": "task3",
+      "query": "<context dùng để retrieve video>",
+      "gt_video": "<VIDEO_ID>",
+      "gt_video_rank": null,
+      "video_rank_source": "retrieval_trace",
+      "best_gt_frame_candidate_rank": null,
+      "first_fully_correct_rank": null,
+      "prediction_count": 100,
+      "invalid_prediction_count": 0,
+      "top1_failure_type": "wrong_video",
+      "failure_stage": "retrieval_failure",
+      "final_score": 0.0,
+      "r_at_k": {
+        "R@1": 0.0,
+        "R@5": 0.0,
+        "R@20": 0.0,
+        "R@50": 0.0,
+        "R@100": 0.0
+      },
+      "video_recall": {
+        "Video Recall@1": 0.0,
+        "Video Recall@5": 0.0,
+        "Video Recall@20": 0.0
+      },
+      "frame_recall": {
+        "Frame Recall@1": 0.0,
+        "Frame Recall@5": 0.0,
+        "Frame Recall@20": 0.0
+      },
+      "trake": {
+        "event_count": 2,
+        "top1_event_matches": [
+          false,
+          false
+        ],
+        "top1_correct_event_count": 0,
+        "top1_event_accuracy": 0.0,
+        "top1_temporal_order_error": false,
+        "best_correct_event_count": 0,
+        "best_event_accuracy": 0.0
+      },
+      "top_candidates_beating_gt": [
+        {
+          "video_id": "L25_V050",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 2,
+            "dense_score": 0.30561575293540955,
+            "dense_best_keyframe_idx": 29,
+            "sparse_rank": 12,
+            "sparse_score": 0.5891990637719704,
+            "base_rrf_score": 0.015568996415770609,
+            "post_object_rrf_score": 0.015568996415770609,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.30561575293540955,
+            "final_best_keyframe_idx": 29
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V006",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 3,
+            "dense_score": 0.30153805017471313,
+            "dense_best_keyframe_idx": 118,
+            "sparse_rank": 21,
+            "sparse_score": 0.5880682231282671,
+            "base_rrf_score": 0.014991181657848324,
+            "post_object_rrf_score": 0.014991181657848324,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.30153805017471313,
+            "final_best_keyframe_idx": 118
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V071",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": 1,
+            "dense_score": 0.3070825934410095,
+            "dense_best_keyframe_idx": 207,
+            "sparse_rank": 34,
+            "sparse_score": 0.5875044290495125,
+            "base_rrf_score": 0.014954656435298221,
+            "post_object_rrf_score": 0.014954656435298221,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.3070825934410095,
+            "final_best_keyframe_idx": 207
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V043",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": 10,
+            "dense_score": 0.296658456325531,
+            "dense_best_keyframe_idx": 101,
+            "sparse_rank": 10,
+            "sparse_score": 0.5897661165973889,
+            "base_rrf_score": 0.014285714285714285,
+            "post_object_rrf_score": 0.014285714285714285,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.296658456325531,
+            "final_best_keyframe_idx": 101
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V049",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": 4,
+            "dense_score": 0.3000483810901642,
+            "dense_best_keyframe_idx": 412,
+            "sparse_rank": 46,
+            "sparse_score": 0.5869417149791636,
+            "base_rrf_score": 0.014077240566037735,
+            "post_object_rrf_score": 0.014077240566037735,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.3000483810901642,
+            "final_best_keyframe_idx": 412
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V074",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": 8,
+            "dense_score": 0.298385351896286,
+            "dense_best_keyframe_idx": 69,
+            "sparse_rank": 36,
+            "sparse_score": 0.5875044290495125,
+            "base_rrf_score": 0.013633578431372547,
+            "post_object_rrf_score": 0.013633578431372547,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.298385351896286,
+            "final_best_keyframe_idx": 69
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V026",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": 9,
+            "dense_score": 0.2980245351791382,
+            "dense_best_keyframe_idx": 19,
+            "sparse_rank": 41,
+            "sparse_score": 0.5869417149791636,
+            "base_rrf_score": 0.01334481274214378,
+            "post_object_rrf_score": 0.01334481274214378,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2980245351791382,
+            "final_best_keyframe_idx": 19
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V032",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": 14,
+            "dense_score": 0.2944891154766083,
+            "dense_best_keyframe_idx": 106,
+            "sparse_rank": 18,
+            "sparse_score": 0.5886331003276792,
+            "base_rrf_score": 0.01334026334026334,
+            "post_object_rrf_score": 0.01334026334026334,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2944891154766083,
+            "final_best_keyframe_idx": 106
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V004",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": 22,
+            "dense_score": 0.29219985008239746,
+            "dense_best_keyframe_idx": 209,
+            "sparse_rank": 8,
+            "sparse_score": 0.5897661165973889,
+            "base_rrf_score": 0.01282281205164993,
+            "post_object_rrf_score": 0.01282281205164993,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.29219985008239746,
+            "final_best_keyframe_idx": 209
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V061",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": 21,
+            "dense_score": 0.292391836643219,
+            "dense_best_keyframe_idx": 448,
+            "sparse_rank": 25,
+            "sparse_score": 0.5880682231282671,
+            "base_rrf_score": 0.012200435729847494,
+            "post_object_rrf_score": 0.012200435729847494,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.292391836643219,
+            "final_best_keyframe_idx": 448
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_retrieval_candidates": [
+        {
+          "video_id": "L25_V050",
+          "final_video_rank": 1,
+          "score_components": {
+            "dense_rank": 2,
+            "dense_score": 0.30561575293540955,
+            "dense_best_keyframe_idx": 29,
+            "sparse_rank": 12,
+            "sparse_score": 0.5891990637719704,
+            "base_rrf_score": 0.015568996415770609,
+            "post_object_rrf_score": 0.015568996415770609,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.30561575293540955,
+            "final_best_keyframe_idx": 29
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V006",
+          "final_video_rank": 2,
+          "score_components": {
+            "dense_rank": 3,
+            "dense_score": 0.30153805017471313,
+            "dense_best_keyframe_idx": 118,
+            "sparse_rank": 21,
+            "sparse_score": 0.5880682231282671,
+            "base_rrf_score": 0.014991181657848324,
+            "post_object_rrf_score": 0.014991181657848324,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.30153805017471313,
+            "final_best_keyframe_idx": 118
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V071",
+          "final_video_rank": 3,
+          "score_components": {
+            "dense_rank": 1,
+            "dense_score": 0.3070825934410095,
+            "dense_best_keyframe_idx": 207,
+            "sparse_rank": 34,
+            "sparse_score": 0.5875044290495125,
+            "base_rrf_score": 0.014954656435298221,
+            "post_object_rrf_score": 0.014954656435298221,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.3070825934410095,
+            "final_best_keyframe_idx": 207
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V043",
+          "final_video_rank": 4,
+          "score_components": {
+            "dense_rank": 10,
+            "dense_score": 0.296658456325531,
+            "dense_best_keyframe_idx": 101,
+            "sparse_rank": 10,
+            "sparse_score": 0.5897661165973889,
+            "base_rrf_score": 0.014285714285714285,
+            "post_object_rrf_score": 0.014285714285714285,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.296658456325531,
+            "final_best_keyframe_idx": 101
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V049",
+          "final_video_rank": 5,
+          "score_components": {
+            "dense_rank": 4,
+            "dense_score": 0.3000483810901642,
+            "dense_best_keyframe_idx": 412,
+            "sparse_rank": 46,
+            "sparse_score": 0.5869417149791636,
+            "base_rrf_score": 0.014077240566037735,
+            "post_object_rrf_score": 0.014077240566037735,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.3000483810901642,
+            "final_best_keyframe_idx": 412
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V074",
+          "final_video_rank": 6,
+          "score_components": {
+            "dense_rank": 8,
+            "dense_score": 0.298385351896286,
+            "dense_best_keyframe_idx": 69,
+            "sparse_rank": 36,
+            "sparse_score": 0.5875044290495125,
+            "base_rrf_score": 0.013633578431372547,
+            "post_object_rrf_score": 0.013633578431372547,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.298385351896286,
+            "final_best_keyframe_idx": 69
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V026",
+          "final_video_rank": 7,
+          "score_components": {
+            "dense_rank": 9,
+            "dense_score": 0.2980245351791382,
+            "dense_best_keyframe_idx": 19,
+            "sparse_rank": 41,
+            "sparse_score": 0.5869417149791636,
+            "base_rrf_score": 0.01334481274214378,
+            "post_object_rrf_score": 0.01334481274214378,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2980245351791382,
+            "final_best_keyframe_idx": 19
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V032",
+          "final_video_rank": 8,
+          "score_components": {
+            "dense_rank": 14,
+            "dense_score": 0.2944891154766083,
+            "dense_best_keyframe_idx": 106,
+            "sparse_rank": 18,
+            "sparse_score": 0.5886331003276792,
+            "base_rrf_score": 0.01334026334026334,
+            "post_object_rrf_score": 0.01334026334026334,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.2944891154766083,
+            "final_best_keyframe_idx": 106
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V004",
+          "final_video_rank": 9,
+          "score_components": {
+            "dense_rank": 22,
+            "dense_score": 0.29219985008239746,
+            "dense_best_keyframe_idx": 209,
+            "sparse_rank": 8,
+            "sparse_score": 0.5897661165973889,
+            "base_rrf_score": 0.01282281205164993,
+            "post_object_rrf_score": 0.01282281205164993,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.29219985008239746,
+            "final_best_keyframe_idx": 209
+          },
+          "sequence_event_evidence": []
+        },
+        {
+          "video_id": "L25_V061",
+          "final_video_rank": 10,
+          "score_components": {
+            "dense_rank": 21,
+            "dense_score": 0.292391836643219,
+            "dense_best_keyframe_idx": 448,
+            "sparse_rank": 25,
+            "sparse_score": 0.5880682231282671,
+            "base_rrf_score": 0.012200435729847494,
+            "post_object_rrf_score": 0.012200435729847494,
+            "object_or_other_delta": 0.0,
+            "sequence_score": null,
+            "sequence_score_components": null,
+            "vlm_score": null,
+            "boosted_score": null,
+            "final_dense_score": 0.292391836643219,
+            "final_best_keyframe_idx": 448
+          },
+          "sequence_event_evidence": []
+        }
+      ],
+      "top_submission_predictions": [
+        {
+          "video_id": "L25_V050",
+          "frame_ids": [
+            "21147",
+            "39253"
+          ]
+        },
+        {
+          "video_id": "L25_V006",
+          "frame_ids": [
+            "6162",
+            "26652"
+          ]
+        },
+        {
+          "video_id": "L25_V071",
+          "frame_ids": [
+            "5758",
+            "24231"
+          ]
+        },
+        {
+          "video_id": "L25_V043",
+          "frame_ids": [
+            "662",
+            "41899"
+          ]
+        },
+        {
+          "video_id": "L25_V049",
+          "frame_ids": [
+            "703",
+            "13060"
+          ]
+        },
+        {
+          "video_id": "L25_V074",
+          "frame_ids": [
+            "53675",
+            "54575"
+          ]
+        },
+        {
+          "video_id": "L25_V026",
+          "frame_ids": [
+            "23149",
+            "39801"
+          ]
+        },
+        {
+          "video_id": "L25_V032",
+          "frame_ids": [
+            "6491",
+            "39915"
+          ]
+        },
+        {
+          "video_id": "L25_V004",
+          "frame_ids": [
+            "2219",
+            "22799"
+          ]
+        },
+        {
+          "video_id": "L25_V061",
+          "frame_ids": [
+            "959",
+            "31779"
+          ]
+        }
+      ]
+    }
+  ]
+}
