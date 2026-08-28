@@ -129,10 +129,40 @@ class LLMQueryParser:
         json_match = re.search(r'\{.*\}', cleaned_text, re.DOTALL)
         if json_match:
             json_str = json_match.group(0)
-            schema = json.loads(json_str)
-            return self._normalize_schema(schema, query_vi, task_type)
+            schema = self._safe_load_json(json_str)
+            if schema:
+                return self._normalize_schema(schema, query_vi, task_type)
 
-        raise ValueError("Failed to locate JSON object in LLM output.")
+        # Fallback schema if LLM JSON parsing fails
+        fallback_schema = {
+            "intent": "VISUAL_SCENE",
+            "golden_english_prompts": [query_vi],
+            "bm25_keywords": [query_vi],
+            "openimages_classes": [],
+            "vlm_question": query_vi if task_type == "qa" else ""
+        }
+        return self._normalize_schema(fallback_schema, query_vi, task_type)
+
+    def _safe_load_json(self, json_str: str) -> dict:
+        """Safely parses JSON string with control-character unescaping and fallback recovery."""
+        try:
+            return json.loads(json_str, strict=False)
+        except Exception:
+            pass
+
+        try:
+            cleaned = json_str.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+            return json.loads(cleaned, strict=False)
+        except Exception:
+            pass
+
+        try:
+            cleaned = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', json_str)
+            return json.loads(cleaned, strict=False)
+        except Exception:
+            pass
+
+        return {}
 
     def _normalize_schema(self, schema, query_vi, task_type):
         """Enforces field type validity, 100% Vietnamese BM25 keyword & VQA question purity, and OCR weight boosting."""
