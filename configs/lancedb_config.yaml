@@ -30,8 +30,8 @@ search_weights:
 # 4. Cấu hình thẩm định thị giác sâu (Deep Visual Verification)
 vlm_verification:
   enabled: true                                 # Bật chế độ VLM thẩm định lại Top ứng viên
-  top_k_verify: 5                               # Số lượng video ứng viên hàng đầu được VLM kiểm tra
-  thumbnail_max_size: 448                       # Độ phân giải ảnh thumbnail nạp vào VLM (448x448)
+  top_k_verify: 15                              # Số lượng video ứng viên hàng đầu được VLM kiểm tra
+  thumbnail_max_size: 896                       # Độ phân giải ảnh HD siêu nét (896x896)
   min_pixels: 100352                            # 128 * 28 * 28
-  max_pixels: 301056                            # 384 * 28 * 28
+  max_pixels: 802816                            # 1024 * 28 * 28
   top1_promotion_threshold: 35.0                # Điểm tự tin tối thiểu để thăng hạng video lên TOP 1

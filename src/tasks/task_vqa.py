@@ -143,7 +143,7 @@ class VisualVQASolver:
         for p in image_paths:
             try:
                 img = Image.open(p).convert("RGB")
-                img.thumbnail((784, 784))
+                img.thumbnail((896, 896))
                 pil_images.append(img)
                 content_items.append({"type": "image", "image": img})
             except Exception:
