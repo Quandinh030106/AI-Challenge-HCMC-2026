@@ -80,8 +80,10 @@ class TextualKISSolver:
             prompt_directional = (
                 f"Nhiệm vụ: Quan sát khung ảnh HD và đánh giá mức độ trùng khớp với mô tả sau:\n"
                 f"'{query_text}'\n"
-                f"Yêu cầu: Đánh giá xem ảnh có chứa ĐỦ CÁC VẬT THỂ/HÀNH ĐỘNG chính trong mô tả hay không.\n"
-                f"Trả lời duy nhất một số điểm từ 0 đến 100 thể hiện mức độ chính xác của hình ảnh so với mô tả."
+                f"Yêu cầu: Đánh giá xem ảnh có chứa ĐỦ 100% CÁC VẬT THỂ và HÀNH ĐỘNG chính trong mô tả hay không.\n"
+                f"Nếu thiếu BẤT KỲ vật thể/chi tiết quan trọng nào (khớp 1 phần), BẮT BUỘC trừ điểm nghiêm khắc và chấm dưới 30 điểm.\n"
+                f"Chỉ chấm trên 80 điểm nếu TẤT CẢ yếu tố đều xuất hiện rõ ràng.\n"
+                f"Trả lời duy nhất một số điểm từ 0 đến 100."
             )
 
             messages = [{"role": "user", "content": [{"type": "image", "image": img}, {"type": "text", "text": prompt_directional}]}]

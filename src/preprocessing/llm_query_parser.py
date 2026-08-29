@@ -11,14 +11,15 @@ class LLMQueryParser:
     Dynamically extracts search schemas (intent, CLIP prompts, BM25 keywords, OpenImages classes, VQA question).
     Enforces 100% Vietnamese BM25 keyword & VQA question purity, physical OpenImages object filtering, and OCR weight boosting.
     """
-    def __init__(self, model_id="Qwen/Qwen2.5-7B-Instruct"):
+    def __init__(self, model_id: str = "Qwen/Qwen2.5-7B-Instruct", lora_adapter_path: str = None):
         self.model_id = model_id
+        self.lora_adapter_path = lora_adapter_path
         self.model = None
         self.tokenizer = None
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def load_model(self):
-        """Loads Qwen2.5-7B-Instruct model strictly on GPU (4-bit NF4 or Dual-GPU FP16)."""
+        """Loads Qwen2.5-7B-Instruct model with optional LoRA specialized adapter on GPU."""
         if self.model is not None:
             return
 
@@ -39,6 +40,16 @@ class LLMQueryParser:
                 device_map="cuda:0" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
+
+            # Attach fine-tuned LoRA Adapter if provided
+            if self.lora_adapter_path and os.path.exists(self.lora_adapter_path):
+                try:
+                    from peft import PeftModel
+                    self.model = PeftModel.from_pretrained(self.model, self.lora_adapter_path)
+                    print(f"[INFO] LLMQueryParser: Successfully attached Specialized LoRA Adapter from '{self.lora_adapter_path}'.")
+                except Exception as peft_err:
+                    print(f"[WARNING] LLMQueryParser: Failed to attach LoRA adapter ({peft_err}). Using base model.")
+
             self.model.eval()
             print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")
         except Exception as e:

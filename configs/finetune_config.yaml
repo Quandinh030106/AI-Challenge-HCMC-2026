@@ -1,0 +1,49 @@
+# ==============================================================================
+# AIC 2026 - QLoRA FINE-TUNING CONFIGURATION FOR 2 SPECIALIZED MODELS
+# ==============================================================================
+
+# 1. Cấu hình Huấn luyện Mô hình A: NLP Query Parser (Qwen2.5-7B)
+nlp_finetune:
+  base_model: "Qwen/Qwen2.5-7B-Instruct"
+  output_dir: "/kaggle/working/models/nlp_lora_adapter"
+  data_path: "data/finetune/nlp_train.jsonl"
+  
+  # Tham số QLoRA 4-bit
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  
+  # Siêu tham số Huấn luyện
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  num_epochs: 3
+  max_seq_length: 1024
+  warmup_ratio: 0.05
+  lr_scheduler_type: "cosine"
+  fp16: true
+  logging_steps: 10
+  save_strategy: "epoch"
+
+# 2. Cấu hình Huấn luyện Mô hình B: VLM Visual Verifier (Qwen2.5-VL-7B)
+vlm_finetune:
+  base_model: "Qwen/Qwen2.5-VL-7B-Instruct"
+  output_dir: "/kaggle/working/models/vlm_lora_adapter"
+  data_path: "data/finetune/vlm_train.jsonl"
+  
+  # Tham số QLoRA 4-bit
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  
+  # Siêu tham số Huấn luyện
+  batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 0.0001
+  num_epochs: 3
+  max_pixels: 1048576  # 1024x1024
+  fp16: true
+  logging_steps: 5
+  save_strategy: "epoch"

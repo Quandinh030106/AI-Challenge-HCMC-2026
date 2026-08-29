@@ -124,7 +124,8 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     print("=" * 80)
     
     nlp_model_id = config.get("models", {}).get("nlp_llm", "Qwen/Qwen2.5-7B-Instruct")
-    llm_parser = LLMQueryParser(model_id=nlp_model_id)
+    nlp_lora = config.get("models", {}).get("nlp_lora_adapter", None)
+    llm_parser = LLMQueryParser(model_id=nlp_model_id, lora_adapter_path=nlp_lora)
 
     parsed_schemas = []
     for q_item in tqdm(raw_queries, desc="Phase 1: NLP Parsing"):
@@ -168,7 +169,8 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
             trake_precomputed_preds[qid] = trake_phase2.solve(schema, cands, total_preds=100)
 
     # Unload CLIP from GPU 0
-    searcher.unload()
+    searcher.unload_model()
+    del searcher
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -181,6 +183,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     print("=" * 80)
 
     vlm_model_id = config.get("models", {}).get("vlm_model", "Qwen/Qwen2.5-VL-7B-Instruct")
+    vlm_lora = config.get("models", {}).get("vlm_lora_adapter", None)
     target_vlm_device = "cuda:1" if torch.cuda.device_count() > 1 else ("cuda:0" if torch.cuda.is_available() else "cpu")
     
     # Load VLM on GPU 1
@@ -202,8 +205,18 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
             device_map="auto" if torch.cuda.is_available() else None,
             trust_remote_code=True
         )
+
+        # Attach VLM LoRA Adapter if configured
+        if vlm_lora and os.path.exists(vlm_lora):
+            try:
+                from peft import PeftModel
+                vlm_model = PeftModel.from_pretrained(vlm_model, vlm_lora)
+                print(f"[INFO] Successfully attached Specialized VLM LoRA Adapter from '{vlm_lora}'.")
+            except Exception as peft_vlm_err:
+                print(f"[WARNING] VLM LoRA attachment warning ({peft_vlm_err}). Using base VLM.")
+
         min_pixels = int(config.get("vlm_verification", {}).get("min_pixels", 100352))
-        max_pixels = int(config.get("vlm_verification", {}).get("max_pixels", 301056))
+        max_pixels = int(config.get("vlm_verification", {}).get("max_pixels", 802816))
         vlm_processor = AutoProcessor.from_pretrained(vlm_model_id, min_pixels=min_pixels, max_pixels=max_pixels, trust_remote_code=True)
         vlm_model.eval()
         print("[INFO] Loaded Heavy VLM successfully.")
