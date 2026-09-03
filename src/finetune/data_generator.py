@@ -16,7 +16,7 @@ class FinetuneDataGenerator:
     @staticmethod
     def create_sample_nlp_data(output_path: str = "data/finetune/nlp_train.jsonl"):
         """
-        Creates seed diverse instruction pairs for Model A enforcing Contextual Phrase Translation (CPT).
+        Creates diverse multi-domain instruction pairs for Model A enforcing Contextual Phrase Translation (CPT).
         Covers traffic, sports, cooking, cultural events, agriculture, OCR, etc. to prevent bias.
         """
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -32,6 +32,16 @@ class FinetuneDataGenerator:
             "     + Không dịch thô Word-by-Word máy móc (KHÔNG dịch 'dán niêm phong' thành 'paste seal stamp').\n"
             "     + Không trừu tượng hóa mơ hồ (KHÔNG dịch thành 'two people doing something').\n"
             "     + BẮT BUỘC giữ đúng toàn bộ các danh từ vật thể và hành động thực tế bằng cụm Tiếng Anh tự nhiên.\n"
+            "   - BẢNG NGHĨA DỊCH CHUẨN ĐẶC THÙ:\n"
+            "     + 'đậu hà lan' -> 'snow peas' / 'green peas'\n"
+            "     + 'măng cụt' -> 'mangosteen fruit'\n"
+            "     + 'sầu riêng' -> 'durian fruit'\n"
+            "     + 'bòn bon' -> 'langsat fruit'\n"
+            "     + 'thùng mì tôm' -> 'box of instant noodles'\n"
+            "     + 'dán niêm phong' -> 'sealing with tape'\n"
+            "     + 'mực' (nấu ăn) -> 'squid' / 'cuttlefish'\n"
+            "     + 'con lân' / 'múa lân' -> 'lion dance' / 'Chinese lion costume'\n"
+            "     + 'đua xe đạp' -> 'cycling race' / 'bicycle race'\n"
             "5. 'bm25_keywords': Mảng chứa TOÀN BỘ CÂU TIẾNG VIỆT GỐC và các CỤM DANH TỪ CỐT LÕI (2-4 từ/cụm).\n"
             "6. 'openimages_classes': Mảng danh từ Tiếng Anh đại diện cho VẬT THỂ THỂ LÝ nhìn thấy được ('person', 'box', 'fruit', 'car', 'sign', ...).\n"
             "7. 'vlm_question': Câu hỏi Tiếng Việt trực tiếp, cô đọng để VLM đọc ảnh trả lời (100% bằng Tiếng Việt).\n\n"
@@ -106,6 +116,74 @@ class FinetuneDataGenerator:
                     "openimages_classes": ["person", "bicycle", "helmet", "land vehicle"],
                     "vlm_question": "Các vận động viên đua xe đạp có đang bứt tốc về đích không?"
                 }
+            },
+            {
+                "query": "Người nông dân đang thu hoạch từng chùm trái bòn bon chín vàng trong vườn cây ăn trái.",
+                "type": "KIS",
+                "output": {
+                    "intent": "VISUAL_SCENE",
+                    "dense_weight": 0.75,
+                    "sparse_weight": 0.25,
+                    "golden_english_prompts": [
+                        "farmer harvesting bunches of ripe yellow langsat fruit in orchard",
+                        "clusters of langsat fruit on tree trunk in tropical orchard",
+                        "harvesting langsat fruit in farm garden"
+                    ],
+                    "bm25_keywords": ["thu hoạch", "trái bòn bon", "vườn cây ăn trái", "chùm bòn bon"],
+                    "openimages_classes": ["person", "fruit", "tree", "plant"],
+                    "vlm_question": "Có người đang thu hoạch chùm trái bòn bon trong vườn không?"
+                }
+            },
+            {
+                "query": "Người đầu bếp dùng dao thái từng lát mực tươi trên thớt gỗ trong gian bếp.",
+                "type": "KIS",
+                "output": {
+                    "intent": "VISUAL_SCENE",
+                    "dense_weight": 0.75,
+                    "sparse_weight": 0.25,
+                    "golden_english_prompts": [
+                        "chef slicing fresh raw squid with knife on wooden cutting board",
+                        "cutting squid slices on chopping board in kitchen",
+                        "hands preparing fresh seafood squid"
+                    ],
+                    "bm25_keywords": ["thái lát mực tươi", "thớt gỗ", "đầu bếp", "gian bếp"],
+                    "openimages_classes": ["person", "seafood", "knife", "cutting board", "kitchen"],
+                    "vlm_question": "Người đầu bếp có đang thái lát mực tươi trên thớt không?"
+                }
+            },
+            {
+                "query": "Tên cây cầu dây văng lớn xuất hiện trên biển chỉ dẫn giao thông là gì?",
+                "type": "QA",
+                "output": {
+                    "intent": "OCR_TEXT",
+                    "dense_weight": 0.35,
+                    "sparse_weight": 0.65,
+                    "golden_english_prompts": [
+                        "traffic road sign showing name of cable stayed bridge",
+                        "green highway traffic sign text cable bridge name",
+                        "close up of bridge name signpost"
+                    ],
+                    "bm25_keywords": ["tên cây cầu", "cầu dây văng", "biển chỉ dẫn giao thông", "biển báo"],
+                    "openimages_classes": ["sign", "bridge", "car"],
+                    "vlm_question": "Tên cây cầu dây văng trên biển chỉ dẫn giao thông là gì?"
+                }
+            },
+            {
+                "query": "Người bán hàng đang xếp những trái sầu riêng và măng cụt lên quầy sạp ngoài chợ.",
+                "type": "KIS",
+                "output": {
+                    "intent": "VISUAL_SCENE",
+                    "dense_weight": 0.75,
+                    "sparse_weight": 0.25,
+                    "golden_english_prompts": [
+                        "vendor arranging durian and mangosteen fruits on market stall",
+                        "durian fruits and purple mangosteens on display shelf at fruit stall",
+                        "fresh durian and mangosteen fruit basket in market"
+                    ],
+                    "bm25_keywords": ["trái sầu riêng", "măng cụt", "quầy sạp ngoài chợ", "người bán hàng"],
+                    "openimages_classes": ["person", "fruit", "food", "table"],
+                    "vlm_question": "Có sầu riêng và măng cụt được bày bán trên quầy sạp chợ không?"
+                }
             }
         ]
 
@@ -123,7 +201,7 @@ class FinetuneDataGenerator:
                 }
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
-        print(f"[INFO] FinetuneDataGenerator: Successfully created sample dataset at '{output_path}'")
+        print(f"[INFO] FinetuneDataGenerator: Successfully created sample dataset ({len(sample_pairs)} pairs) at '{output_path}'")
 
     @staticmethod
     def create_sample_vlm_data(output_path: str = "data/finetune/vlm_train.jsonl"):
@@ -154,6 +232,16 @@ class FinetuneDataGenerator:
                     "Kết luận: Khớp một phần sai lệch hoàn toàn. Điểm: 15"
                 ),
                 "score": 15.0
+            },
+            {
+                "image_path": "data/sample_frames/frame_03.jpg",
+                "query_text": "hai người phụ nữ dán niêm phong thùng carton bằng băng dính",
+                "cot_reasoning": (
+                    "Bước 1: Quét đối tượng: Có hai người phụ nữ trong phòng.\n"
+                    "Bước 2: Kiểm tra hành động: Đang cùng nhau cầm cuộn băng dính dán nắp thùng carton nâu.\n"
+                    "Kết luận: Khớp 100% người, vật thể và hành vi. Điểm: 98"
+                ),
+                "score": 98.0
             }
         ]
 
@@ -161,7 +249,7 @@ class FinetuneDataGenerator:
             for item in sample_vlm_records:
                 f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
-        print(f"[INFO] FinetuneDataGenerator: Successfully created VLM sample dataset at '{output_path}'")
+        print(f"[INFO] FinetuneDataGenerator: Successfully created VLM sample dataset ({len(sample_vlm_records)} records) at '{output_path}'")
 
 if __name__ == "__main__":
     FinetuneDataGenerator.create_sample_nlp_data()

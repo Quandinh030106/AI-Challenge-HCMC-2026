@@ -68,6 +68,8 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
     output_dir = nlp_cfg.get("output_dir", "/kaggle/working/models/nlp_lora_adapter")
     data_path = nlp_cfg.get("data_path", "data/finetune/nlp_train.jsonl")
 
+    os.makedirs(output_dir, exist_ok=True)
+
     if not os.path.exists(data_path):
         from src.finetune.data_generator import FinetuneDataGenerator
         print(f"[INFO] Dataset '{data_path}' missing. Generating seed dataset...")
@@ -127,6 +129,7 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
         save_strategy=nlp_cfg.get("save_strategy", "epoch"),
         fp16=torch.cuda.is_available(),
         optim="paged_adamw_8bit",
+        remove_unused_columns=False,
         report_to="none"
     )
 
@@ -145,6 +148,11 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
     print(f"[INFO] Saving trained LoRA Adapter to '{output_dir}'...")
     trainer.model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
+
+    # Verify saved files
+    if os.path.exists(output_dir):
+        saved_files = os.listdir(output_dir)
+        print(f"[INFO] Verified saved adapter files in '{output_dir}': {saved_files}")
 
     print("=" * 80)
     print(f"[INFO] MODEL A (NLP PARSER) QLoRA TRAINING COMPLETE! Saved to: {output_dir}")
