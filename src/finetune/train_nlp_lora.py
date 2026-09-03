@@ -133,14 +133,22 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
         report_to="none"
     )
 
-    # 5. Standard HuggingFace Trainer (Robust & Zero TRL Dependency)
-    trainer = Trainer(
-        model=model,
-        train_dataset=train_dataset,
-        data_collator=data_collator,
-        tokenizer=tokenizer,
-        args=training_args
-    )
+    # 5. Standard HuggingFace Trainer (Compatible with all transformers versions)
+    try:
+        trainer = Trainer(
+            model=model,
+            train_dataset=train_dataset,
+            data_collator=data_collator,
+            processing_class=tokenizer,
+            args=training_args
+        )
+    except TypeError:
+        trainer = Trainer(
+            model=model,
+            train_dataset=train_dataset,
+            data_collator=data_collator,
+            args=training_args
+        )
 
     print("[INFO] Starting LoRA Fine-Tuning...")
     trainer.train()
