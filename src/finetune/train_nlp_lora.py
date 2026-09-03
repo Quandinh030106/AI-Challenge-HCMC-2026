@@ -3,16 +3,47 @@
 # ==============================================================================
 import os
 import yaml
+import json
 import torch
 from datasets import load_dataset
 from transformers import (
     AutoTokenizer,
     AutoModelForCausalLM,
     BitsAndBytesConfig,
-    TrainingArguments
+    TrainingArguments,
+    Trainer,
+    DataCollatorForSeq2Seq
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from trl import SFTTrainer
+
+class NLPDataset(torch.utils.data.Dataset):
+    """Custom Dataset for Qwen2.5-7B Instruction Tuning."""
+    def __init__(self, data_path: str, tokenizer, max_length: int = 1024):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        self.samples = []
+        if os.path.exists(data_path):
+            with open(data_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        self.samples.append(json.loads(line.strip()))
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        item = self.samples[idx]
+        messages = item.get("messages", [])
+        text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+        enc = self.tokenizer(text, max_length=self.max_length, truncation=True, padding=False, return_tensors="pt")
+        input_ids = enc["input_ids"].squeeze(0)
+        attention_mask = enc["attention_mask"].squeeze(0)
+        labels = input_ids.clone()
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "labels": labels
+        }
 
 def train_model_a(config_path: str = "configs/finetune_config.yaml"):
     """
@@ -57,8 +88,9 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
 
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        quantization_config=bnb_config,
-        device_map="auto",
+        quantization_config=bnb_config if torch.cuda.is_available() else None,
+        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+        device_map="auto" if torch.cuda.is_available() else None,
         trust_remote_code=True
     )
 
@@ -79,16 +111,8 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
 
     # 3. Load & Format Dataset
     print(f"[INFO] Loading dataset from '{data_path}'...")
-    raw_dataset = load_dataset("json", data_files=data_path, split="train")
-
-    def format_chat_prompt(batch):
-        formatted_texts = []
-        for messages in batch["messages"]:
-            text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-            formatted_texts.append(text)
-        return {"text": formatted_texts}
-
-    formatted_dataset = raw_dataset.map(format_chat_prompt, batched=True)
+    train_dataset = NLPDataset(data_path, tokenizer, max_length=nlp_cfg.get("max_seq_length", 1024))
+    data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model, padding=True)
 
     # 4. Training Arguments
     training_args = TrainingArguments(
@@ -106,12 +130,11 @@ def train_model_a(config_path: str = "configs/finetune_config.yaml"):
         report_to="none"
     )
 
-    # 5. SFT Trainer
-    trainer = SFTTrainer(
+    # 5. Standard HuggingFace Trainer (Robust & Zero TRL Dependency)
+    trainer = Trainer(
         model=model,
-        train_dataset=formatted_dataset,
-        dataset_text_field="text",
-        max_seq_length=nlp_cfg.get("max_seq_length", 1024),
+        train_dataset=train_dataset,
+        data_collator=data_collator,
         tokenizer=tokenizer,
         args=training_args
     )
