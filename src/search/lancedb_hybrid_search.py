@@ -72,6 +72,10 @@ class LanceDBHybridSearcher:
             torch.cuda.empty_cache()
         print("[INFO] LanceDBHybridSearcher: Unloaded CLIP model from GPU 0.")
 
+    def unload_model(self):
+        """Alias for unload() to ensure backward compatibility."""
+        return self.unload()
+
     def encode_prompts(self, prompts: List[str]) -> np.ndarray:
         """Encodes visual text prompts into L2-normalized embeddings matching DB dimension."""
         if not prompts:

@@ -169,7 +169,10 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
             trake_precomputed_preds[qid] = trake_phase2.solve(schema, cands, total_preds=100)
 
     # Unload CLIP from GPU 0
-    searcher.unload_model()
+    if hasattr(searcher, "unload_model"):
+        searcher.unload_model()
+    elif hasattr(searcher, "unload"):
+        searcher.unload()
     del searcher
     gc.collect()
     if torch.cuda.is_available():
