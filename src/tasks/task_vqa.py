@@ -171,7 +171,20 @@ class VisualVQASolver:
 
             return out_text.strip()
         except Exception as e:
-            print(f"[WARNING] VQA VLM Infer error: {e}")
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            return "Không rõ"
+            print(f"[WARNING] VQA Multi-Frame VLM warning: {e}. Trying single frame inference...")
+            try:
+                center_img = Image.open(image_paths[0]).convert("RGB")
+                center_img.thumbnail((896, 896))
+                s_msg = [{"role": "user", "content": [{"type": "image", "image": center_img}, {"type": "text", "text": prompt_text}]}]
+                s_txt = self.vlm_processor.apply_chat_template(s_msg, tokenize=False, add_generation_prompt=True)
+                s_inputs = self.vlm_processor(text=[s_txt], images=[center_img], padding=True, return_tensors="pt").to(model_device)
+                with torch.inference_mode():
+                    s_gen = self.vlm_model.generate(**s_inputs, max_new_tokens=50)
+                    s_trim = [out[len(inp):] for inp, out in zip(s_inputs["input_ids"], s_gen)]
+                    s_res = self.vlm_processor.batch_decode(s_trim, skip_special_tokens=True)[0]
+                return s_res.strip()
+            except Exception as e2:
+                print(f"[WARNING] VQA Single-Frame fallback error: {e2}")
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                return "Không rõ"
