@@ -37,9 +37,9 @@ class TextualKISSolver:
         final_candidates = list(candidates)
         query_vi = parsed_schema.get("query_vi", "")
 
-        # Deep Visual Verification for Top K candidates using VLM (Expanded to Top 20 candidates)
+        # Deep Visual Verification for Top K candidates using VLM
         if self.enable_vlm_verify and self.vlm_model is not None and self.vlm_processor is not None and query_vi:
-            verify_pool = final_candidates[:max(20, top_k_verify)]
+            verify_pool = final_candidates[:top_k_verify]
             best_promo_idx = 0
             highest_vlm_score = -1.0
 
