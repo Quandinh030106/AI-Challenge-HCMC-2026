@@ -42,13 +42,20 @@ class LLMQueryParser:
             )
 
             # Attach fine-tuned LoRA Adapter if provided
-            if self.lora_adapter_path and os.path.exists(self.lora_adapter_path):
-                try:
-                    from peft import PeftModel
-                    self.model = PeftModel.from_pretrained(self.model, self.lora_adapter_path)
-                    print(f"[INFO] LLMQueryParser: Successfully attached Specialized LoRA Adapter from '{self.lora_adapter_path}'.")
-                except Exception as peft_err:
-                    print(f"[WARNING] LLMQueryParser: Failed to attach LoRA adapter ({peft_err}). Using base model.")
+            if self.lora_adapter_path:
+                adapter_path = self.lora_adapter_path
+                if not os.path.exists(adapter_path):
+                    alt_path = adapter_path.replace("nlp_lora_adapter", "nlp-lora-adapter") if "nlp_lora_adapter" in adapter_path else adapter_path.replace("nlp-lora-adapter", "nlp_lora_adapter")
+                    if os.path.exists(alt_path):
+                        adapter_path = alt_path
+
+                if os.path.exists(adapter_path):
+                    try:
+                        from peft import PeftModel
+                        self.model = PeftModel.from_pretrained(self.model, adapter_path)
+                        print(f"[INFO] LLMQueryParser: Successfully attached Specialized LoRA Adapter from '{adapter_path}'.")
+                    except Exception as peft_err:
+                        print(f"[WARNING] LLMQueryParser: Failed to attach LoRA adapter ({peft_err}). Using base model.")
 
             self.model.eval()
             print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")

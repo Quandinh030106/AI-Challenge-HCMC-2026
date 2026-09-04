@@ -210,13 +210,20 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         )
 
         # Attach VLM LoRA Adapter if configured
-        if vlm_lora and os.path.exists(vlm_lora):
-            try:
-                from peft import PeftModel
-                vlm_model = PeftModel.from_pretrained(vlm_model, vlm_lora)
-                print(f"[INFO] Successfully attached Specialized VLM LoRA Adapter from '{vlm_lora}'.")
-            except Exception as peft_vlm_err:
-                print(f"[WARNING] VLM LoRA attachment warning ({peft_vlm_err}). Using base VLM.")
+        if vlm_lora:
+            vlm_path = vlm_lora
+            if not os.path.exists(vlm_path):
+                alt_vlm = vlm_path.replace("vlm_lora_adapter", "vlm-lora-adapter") if "vlm_lora_adapter" in vlm_path else vlm_path.replace("vlm-lora-adapter", "vlm_lora_adapter")
+                if os.path.exists(alt_vlm):
+                    vlm_path = alt_vlm
+
+            if os.path.exists(vlm_path):
+                try:
+                    from peft import PeftModel
+                    vlm_model = PeftModel.from_pretrained(vlm_model, vlm_path)
+                    print(f"[INFO] Successfully attached Specialized VLM LoRA Adapter from '{vlm_path}'.")
+                except Exception as peft_vlm_err:
+                    print(f"[WARNING] VLM LoRA attachment warning ({peft_vlm_err}). Using base VLM.")
 
         min_pixels = int(config.get("vlm_verification", {}).get("min_pixels", 100352))
         max_pixels = int(config.get("vlm_verification", {}).get("max_pixels", 802816))
