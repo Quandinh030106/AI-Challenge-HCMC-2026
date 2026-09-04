@@ -84,24 +84,43 @@ class TextualKISSolver:
                 scored_candidates.append((cand_idx, cand, vlm_conf))
                 print(f"   ↳ [VLM {step_i+1}/{len(target_indices)}] Video '{vid}' (Rank #{cand_idx+1}, Frame {best_f_idx}) ➔ Score: {vlm_conf:.1f}/100", flush=True)
 
-            # Identify candidates that passed strict verification threshold
-            high_conf_matches = [item for item in scored_candidates if item[2] >= self.promotion_threshold]
-            if high_conf_matches:
-                high_conf_matches.sort(key=lambda x: x[2], reverse=True)
-                best_item = high_conf_matches[0]
-                best_original_idx = best_item[0]
-                best_cand = best_item[1]
-                best_vlm_score = best_item[2]
+            # Continuous Multimodal Score Blending & Dynamic Relative Margin Promotion
+            rank1_vlm_score = scored_candidates[0][2] if scored_candidates else 0.0
+            best_item = max(scored_candidates, key=lambda x: x[2]) if scored_candidates else None
 
-                if best_original_idx > 0:
+            should_promote = False
+            if best_item and best_item[0] > 0:
+                best_original_idx, best_cand, best_vlm_score = best_item
+                margin = best_vlm_score - rank1_vlm_score
+
+                # Principled Zero-Bias Promotion Criteria:
+                # 1. Absolute high confidence match (>= 75.0)
+                # 2. Strong relative margin (>= 20.0 pts higher than Rank 1 and score >= 60.0)
+                # 3. Rank 1 complete failure (Rank 1 <= 15.0 and candidate >= 50.0)
+                if best_vlm_score >= self.promotion_threshold:
+                    should_promote = True
+                    reason = f"Absolute high confidence ({best_vlm_score:.1f} >= {self.promotion_threshold})"
+                elif best_vlm_score >= 60.0 and margin >= 20.0:
+                    should_promote = True
+                    reason = f"Strong relative margin (+{margin:.1f} pts over Rank 1: {best_vlm_score:.1f} vs {rank1_vlm_score:.1f})"
+                elif rank1_vlm_score <= 15.0 and best_vlm_score >= 50.0:
+                    should_promote = True
+                    reason = f"Rank 1 visual mismatch ({rank1_vlm_score:.1f} pts) superseded by candidate ({best_vlm_score:.1f} pts)"
+
+                if should_promote:
                     current_idx = final_candidates.index(best_cand)
                     promoted = final_candidates.pop(current_idx)
                     final_candidates.insert(0, promoted)
-                    print(f"   ✨ [PROMOTED] Video '{promoted['video_id']}' (Rank #{best_original_idx+1}) promoted to Top 1 (VLM Conf: {best_vlm_score:.1f} >= {self.promotion_threshold}).", flush=True)
+                    print(f"   ✨ [PROMOTED] Video '{promoted['video_id']}' (Rank #{best_original_idx+1}) ➔ Top 1 [{reason}].", flush=True)
                 else:
-                    print(f"   🛡️ [CONFIRMED] Video '{best_cand['video_id']}' maintained at Top 1 (VLM Conf: {best_vlm_score:.1f}).", flush=True)
-            else:
-                print(f"   ℹ️ [HYBRID PRESERVED] No candidate reached threshold {self.promotion_threshold}. Keeping hybrid Rank 1 ('{final_candidates[0]['video_id']}').", flush=True)
+                    print(f"   🛡️ [HYBRID PRESERVED] Rank 1 ('{final_candidates[0]['video_id']}') maintained (VLM Conf: {rank1_vlm_score:.1f}, Best Alternative: {best_vlm_score:.1f}).", flush=True)
+            elif best_item and best_item[0] == 0:
+                print(f"   🛡️ [CONFIRMED] Rank 1 ('{final_candidates[0]['video_id']}') confirmed as optimal visual match (VLM Conf: {best_item[2]:.1f}).", flush=True)
+
+            # Continuous Multimodal Score Re-weighting across all verified candidates
+            for cand_idx, cand_rec, vlm_s in scored_candidates:
+                if "score" in cand_rec:
+                    cand_rec["score"] = float(cand_rec["score"]) * (1.0 + 1.0 * (vlm_s / 100.0))
 
         predictions = []
         for cand in final_candidates[:total_preds]:
