@@ -1103,104 +1103,43 @@ class DenseSearcher:
     # DYNAMIC SEMANTIC FUSION
     # ======================================================
 
-    def encode_dynamic_query(
-        self,
-        semantic_views
-    ):
-
+    def encode_dynamic_query(self, semantic_views):
         """
         Fuse multiple semantic views.
 
         Formula:
-
-        Q =
-        sum(
-            importance_i * embedding_i
-        )
-
+        Q = sum(importance_i * embedding_i)
         """
-
         if not semantic_views:
-
             return None
 
-
-
-        texts = [
-
-            v["text"]
-
-            for v in semantic_views
-
-        ]
-
+        texts = [v["text"] for v in semantic_views]
 
         weights = torch.tensor(
-
-            [
-
-                v["weight"]
-
-                for v in semantic_views
-
-            ],
-
+            [v["weight"] for v in semantic_views],
             dtype=torch.float32,
-
-            device=self.device
-
+            device=self.device,
         )
 
+        # Normalize o float32 de cong tong on dinh (khong mat precision).
+        weights = weights / weights.sum()
 
-        # normalize
+        embeddings = self.encode_text_matrix(texts)
 
-        weights = (
-            weights /
-            weights.sum()
+        # QUAN TRONG: tren cuda, embeddings la float16 (half) trong khi
+        # weights dang float32. Phep nhan half * float32 se bi PyTorch
+        # tu dong "type promote" len float32, lam fused_embedding thanh
+        # float32 du dang chay GPU -> vo dtype dong nhat voi global_tensor
+        # (half) -> RuntimeError o torch.matmul() trong search().
+        # Phai ep weights ve dung dtype cua embeddings TRUOC khi nhan.
+        weights = weights.to(dtype=embeddings.dtype)
+
+        weights = weights.unsqueeze(1)
+
+        fused_embedding = torch.sum(embeddings * weights, dim=0, keepdim=True)
+
+        fused_embedding = fused_embedding / fused_embedding.norm(
+            p=2, dim=-1, keepdim=True
         )
-
-
-
-        embeddings = (
-            self.encode_text_matrix(
-                texts
-            )
-        )
-
-
-
-        weights = weights.unsqueeze(
-            1
-        )
-
-
-        fused_embedding = torch.sum(
-
-            embeddings
-            *
-            weights,
-
-            dim=0,
-
-            keepdim=True
-
-        )
-
-
-
-        fused_embedding = (
-
-            fused_embedding
-
-            /
-
-            fused_embedding.norm(
-                p=2,
-                dim=-1,
-                keepdim=True
-            )
-
-        )
-
 
         return fused_embedding

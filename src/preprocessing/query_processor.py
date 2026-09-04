@@ -381,27 +381,24 @@ Query:
             )
 
 
-            # lấy phần JSON
-            match = re.search(
-                r"\{.*\}",
-                text,
-                re.DOTALL
-            )
+            # Thay vi regex greedy \{.*\}, dung json.JSONDecoder.raw_decode
+            # tu vi tri dau "{" dau tien de chi lay DUY NHAT object JSON
+            # hop le dau tien, bo qua phan text/template bi echo them sau do.
+            brace_index = text.find("{")
 
+            if brace_index != -1:
+                try:
+                    decoder = json.JSONDecoder()
+                    data, _ = decoder.raw_decode(text[brace_index:])
+                except json.JSONDecodeError as parse_exc:
+                    print("Semantic parser JSON decode failed:", parse_exc)
+                    data = None
 
-            if match:
-
-                data = json.loads(
-                    match.group()
-                )
-
-                for key in default_result:
-
-                    if key not in data:
-                        data[key] = default_result[key]
-
-
-                return data
+                if data is not None:
+                    for key in default_result:
+                        if key not in data:
+                            data[key] = default_result[key]
+                    return data
 
 
         except Exception as e:
@@ -473,7 +470,16 @@ Query:
 
 
         replacements = [
+            (
+                r'\bmực\b',
+                'squid'
+            ),
 
+            (
+                r'\bđậu hà lan\b',
+                'green peas'
+            ),
+            
             (
                 r'\bmăng tây\b',
                 'asparagus'
