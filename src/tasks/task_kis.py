@@ -1,7 +1,8 @@
 # ==============================================================================
-# AIC 2026 - TEXTUAL KIS SOLVER WITH DEEP VLM VISUAL VERIFICATION
+# AIC 2026 - TEXTUAL KIS SOLVER WITH CHAIN-OF-THOUGHT VLM VERIFICATION
 # ==============================================================================
 import os
+import re
 import torch
 from PIL import Image
 from typing import List, Dict, Any
@@ -10,19 +11,21 @@ class TextualKISSolver:
     """
     Solves Textual Known Item Search (KIS) task:
     Outputs Top 100 candidate predictions mapped to real physical video frame IDs.
-    Applies Qwen2.5-VL Strict Discriminative Verification to eliminate false-positive
-    adjacent videos and promote the true matching video to Top 1 (maximizing R@1).
+    Applies Qwen2.5-VL Chain-of-Thought (CoT) Visual Verification and 2-frame local
+    temporal action confirmation to maximize Top-1 Exact Matches without bias.
     """
     def __init__(
         self,
         vlm_model=None,
         vlm_processor=None,
+        db_manager=None,
         device="cuda:1",
         enable_vlm_verify: bool = True,
         promotion_threshold: float = 75.0
     ):
         self.vlm_model = vlm_model
         self.vlm_processor = vlm_processor
+        self.db_manager = db_manager
         self.device = device
         self.enable_vlm_verify = enable_vlm_verify
         self.promotion_threshold = promotion_threshold
@@ -36,8 +39,8 @@ class TextualKISSolver:
     ) -> List[Dict[str, Any]]:
         """
         Solves KIS query:
-        1. Evaluates Top K candidates with Qwen2.5-VL using strict discriminative scoring.
-        2. Re-ranks candidates scoring >= promotion_threshold (>= 75.0) to the top.
+        1. Evaluates Top K diverse candidates with Qwen2.5-VL using Chain-of-Thought checklist.
+        2. Promotes candidates scoring >= promotion_threshold (>= 75.0) to Top 1.
         3. Returns strictly formatted 100 predictions.
         """
         if not candidates:
@@ -65,6 +68,18 @@ class TextualKISSolver:
                     continue
 
                 vlm_conf = self._verify_candidate_image(img_path, query_vi)
+
+                # Borderline check (35-74 pts): test adjacent keyframe (best_f_idx + 1) to capture full action
+                if 35.0 <= vlm_conf < self.promotion_threshold and self.db_manager is not None:
+                    next_frames = self.db_manager.fetch_frames_by_indices(vid, [best_f_idx + 1])
+                    if next_frames:
+                        next_p = resolve_keyframe_path(vid, best_f_idx + 1, next_frames[0].get("image_path", ""))
+                        if next_p and os.path.exists(next_p):
+                            next_conf = self._verify_candidate_image(next_p, query_vi)
+                            if next_conf > vlm_conf:
+                                vlm_conf = next_conf
+                                cand["best_frame_id"] = int(next_frames[0].get("frame_id", cand.get("best_frame_id", 0)))
+
                 cand["vlm_score"] = vlm_conf
                 scored_candidates.append((cand_idx, cand, vlm_conf))
                 print(f"   ↳ [VLM {step_i+1}/{len(target_indices)}] Video '{vid}' (Rank #{cand_idx+1}, Frame {best_f_idx}) ➔ Score: {vlm_conf:.1f}/100", flush=True)
@@ -72,7 +87,6 @@ class TextualKISSolver:
             # Identify candidates that passed strict verification threshold
             high_conf_matches = [item for item in scored_candidates if item[2] >= self.promotion_threshold]
             if high_conf_matches:
-                # Sort high confidence matches by VLM score descending
                 high_conf_matches.sort(key=lambda x: x[2], reverse=True)
                 best_item = high_conf_matches[0]
                 best_original_idx = best_item[0]
@@ -80,7 +94,6 @@ class TextualKISSolver:
                 best_vlm_score = best_item[2]
 
                 if best_original_idx > 0:
-                    # Find candidate in final_candidates and promote to index 0
                     current_idx = final_candidates.index(best_cand)
                     promoted = final_candidates.pop(current_idx)
                     final_candidates.insert(0, promoted)
@@ -142,30 +155,30 @@ class TextualKISSolver:
 
     def _verify_candidate_image(self, img_path: str, query_text: str) -> float:
         """
-        Asks Qwen2.5-VL for strict entity and action visual verification at HD resolution.
-        Penalizes generic background matches (<= 25 pts) and rewards exact subject + action match (>= 80 pts).
+        Runs Chain-of-Thought (CoT) Visual Verification using Qwen2.5-VL.
+        Forces the model to identify specific objects and actions before scoring,
+        eliminating arbitrary heuristic score plateaus.
         """
         try:
             img = Image.open(img_path).convert("RGB")
             img.thumbnail((896, 896))
 
-            prompt_directional = (
+            prompt_cot = (
                 f"Nhiệm vụ: Bạn là chuyên gia thẩm định video AIC 2026. Quan sát kỹ khung ảnh HD và đối chiếu với mô tả sau:\n"
                 f"'{query_text}'\n\n"
-                f"TIÊU CHUẨN CHẤM ĐIỂM NGHIÊM NGẶT (Thang điểm 0 - 100):\n"
-                f"1. Nếu ảnh CHỈ CÓ CÙNG BỐI CẢNH CHUNG (ví dụ cùng là góc bếp, vườn cây, đường phố, trường học, lễ hội) nhưng THIẾU các vật thể chính hoặc SAI hành động/tương tác cụ thể trong mô tả: Chấm từ 0 đến 25 điểm (TUYỆT ĐỐI KHÔNG CHẤM CAO).\n"
-                f"2. Nếu ảnh khớp một phần (có vật thể nhưng thiếu hành động hoặc góc quay phụ): Chấm từ 30 đến 55 điểm.\n"
-                f"3. Nếu ảnh khớp rõ ràng, chứa ĐẦY ĐỦ 100% CÁC THỰC THỂ CỐT LÕI, ĐÚNG HÀNH ĐỘNG VÀ ĐẶC ĐIỂM CHI TIẾT: Chấm từ 80 đến 100 điểm.\n\n"
-                f"Chỉ trả lời DUY NHẤT một số nguyên từ 0 đến 100."
+                f"Hãy phân tích theo 3 bước ngắn gọn:\n"
+                f"1. Vật thể: Liệt kê các vật thể/chủ thể chính thấy trong ảnh.\n"
+                f"2. Hành động: Mô tả ngắn hành động đang diễn ra.\n"
+                f"3. Điểm số: Chấm điểm từ 0 đến 100 theo mức độ trùng khớp ĐẦY ĐỦ 100% cả vật thể và hành động (Bắt buộc ghi rõ ở cuối: Điểm: X/100)."
             )
 
-            messages = [{"role": "user", "content": [{"type": "image", "image": img}, {"type": "text", "text": prompt_directional}]}]
+            messages = [{"role": "user", "content": [{"type": "image", "image": img}, {"type": "text", "text": prompt_cot}]}]
             text = self.vlm_processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             model_device = next(self.vlm_model.parameters()).device if hasattr(self.vlm_model, "parameters") else self.device
             inputs = self.vlm_processor(text=[text], images=[img], padding=True, return_tensors="pt").to(model_device)
 
             with torch.inference_mode():
-                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=20)
+                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=60)
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0].strip()
 
@@ -173,8 +186,19 @@ class TextualKISSolver:
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
-            # Parse numeric score
-            digits = "".join([c for c in out_text if c.isdigit() or c == '.'])
-            return float(digits) if digits else 0.0
+            # Robust score extraction
+            score_match = re.search(r'(?:score|điểm|kết quả)\s*[:\-\=]?\s*(\d{1,3})', out_text, re.IGNORECASE)
+            if score_match:
+                return float(score_match.group(1))
+
+            slash_match = re.search(r'(\d{1,3})\s*/\s*100', out_text)
+            if slash_match:
+                return float(slash_match.group(1))
+
+            all_nums = re.findall(r'\b\d+\b', out_text)
+            if all_nums:
+                return float(all_nums[-1])
+            return 0.0
         except Exception:
             return 0.0
+

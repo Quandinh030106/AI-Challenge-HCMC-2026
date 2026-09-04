@@ -261,6 +261,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     kis_solver = TextualKISSolver(
         vlm_model=vlm_model,
         vlm_processor=vlm_processor,
+        db_manager=db_manager,
         device=target_vlm_device,
         enable_vlm_verify=enable_vlm,
         promotion_threshold=promo_thresh
