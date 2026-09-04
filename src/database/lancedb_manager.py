@@ -22,10 +22,17 @@ class LanceDBManager:
 
     def _resolve_db_uri(self, uri: str) -> str:
         if uri and os.path.exists(uri):
+            # Check if nested aic_lancedb exists inside uri
+            nested = os.path.join(uri, "aic_lancedb")
+            if os.path.exists(os.path.join(nested, "keyframes.lance")) or (os.path.exists(nested) and not os.path.exists(os.path.join(uri, "keyframes.lance"))):
+                print(f"[INFO] LanceDBManager: Auto-unwrapped nested database at '{nested}'")
+                return nested
             return uri
 
-        # Check known candidate locations
+        # Check known candidate locations with nesting
         candidates = [
+            "/kaggle/input/aic-db-models/dataset/aic_lancedb/aic_lancedb",
+            "/kaggle/input/datasets/quninhphmanh/aic-db-models/dataset/aic_lancedb/aic_lancedb",
             "/kaggle/input/aic-db-models/dataset/aic_lancedb",
             "/kaggle/input/datasets/quninhphmanh/aic-db-models/dataset/aic_lancedb",
             "/kaggle/working/aic_lancedb",
@@ -33,14 +40,19 @@ class LanceDBManager:
         ]
         for c in candidates:
             if os.path.exists(c):
+                nested = os.path.join(c, "aic_lancedb")
+                if os.path.exists(os.path.join(nested, "keyframes.lance")) or (os.path.exists(nested) and not os.path.exists(os.path.join(c, "keyframes.lance"))):
+                    print(f"[INFO] LanceDBManager: Auto-discovered nested database at '{nested}'")
+                    return nested
                 print(f"[INFO] LanceDBManager: Auto-discovered database at '{c}'")
                 return c
 
         import glob
-        discovered = glob.glob("/kaggle/input/**/aic_lancedb", recursive=True) + glob.glob("/kaggle/working/**/aic_lancedb", recursive=True)
+        discovered = glob.glob("/kaggle/input/**/keyframes.lance", recursive=True)
         if discovered:
-            print(f"[INFO] LanceDBManager: Auto-discovered database at '{discovered[0]}'")
-            return discovered[0]
+            parent_dir = os.path.dirname(discovered[0])
+            print(f"[INFO] LanceDBManager: Auto-discovered keyframes table at '{parent_dir}'")
+            return parent_dir
 
         return uri
 
