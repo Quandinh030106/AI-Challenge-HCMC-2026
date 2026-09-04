@@ -181,8 +181,8 @@ class LanceDBHybridSearcher:
             if entity_targets:
                 matched_count = sum(1 for ent in entity_targets if ent in metadata_text)
                 ratio = float(matched_count / len(entity_targets))
-                # Soft continuous multiplier: 1.0 to 1.35 boost for multi-entity co-occurrence
-                final_score = soft_harmonic_score * (1.0 + 0.35 * ratio)
+                # Soft continuous multiplier: 1.0 to 1.50 boost for multi-entity co-occurrence and OCR match
+                final_score = soft_harmonic_score * (1.0 + 0.50 * ratio)
             else:
                 final_score = soft_harmonic_score
 

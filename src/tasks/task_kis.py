@@ -48,26 +48,26 @@ class TextualKISSolver:
 
         # Deep Visual Verification for Top K candidates using VLM
         if self.enable_vlm_verify and self.vlm_model is not None and self.vlm_processor is not None and query_vi:
-            verify_pool_size = min(len(final_candidates), top_k_verify)
+            target_indices = self._build_diverse_verify_pool(final_candidates, top_k_verify=top_k_verify)
             from src.utils.image_locator import resolve_keyframe_path
 
             scored_candidates = []
-            for idx in range(verify_pool_size):
-                cand = final_candidates[idx]
+            for step_i, cand_idx in enumerate(target_indices):
+                cand = final_candidates[cand_idx]
                 vid = cand["video_id"]
                 best_f_idx = int(cand.get("best_frame_idx", cand.get("frame_idx", 0)))
                 img_path = resolve_keyframe_path(vid, best_f_idx, cand.get("image_path", ""))
                 
                 if not img_path or not os.path.exists(img_path):
                     cand["vlm_score"] = 0.0
-                    scored_candidates.append((idx, cand, 0.0))
-                    print(f"   ↳ [VLM {idx+1}/{verify_pool_size}] Video '{vid}' ➔ Missing Image (Score: 0.0)", flush=True)
+                    scored_candidates.append((cand_idx, cand, 0.0))
+                    print(f"   ↳ [VLM {step_i+1}/{len(target_indices)}] Video '{vid}' (Rank #{cand_idx+1}) ➔ Missing Image (Score: 0.0)", flush=True)
                     continue
 
                 vlm_conf = self._verify_candidate_image(img_path, query_vi)
                 cand["vlm_score"] = vlm_conf
-                scored_candidates.append((idx, cand, vlm_conf))
-                print(f"   ↳ [VLM {idx+1}/{verify_pool_size}] Video '{vid}' (Frame {best_f_idx}) ➔ Score: {vlm_conf:.1f}/100", flush=True)
+                scored_candidates.append((cand_idx, cand, vlm_conf))
+                print(f"   ↳ [VLM {step_i+1}/{len(target_indices)}] Video '{vid}' (Rank #{cand_idx+1}, Frame {best_f_idx}) ➔ Score: {vlm_conf:.1f}/100", flush=True)
 
             # Identify candidates that passed strict verification threshold
             high_conf_matches = [item for item in scored_candidates if item[2] >= self.promotion_threshold]
@@ -75,14 +75,16 @@ class TextualKISSolver:
                 # Sort high confidence matches by VLM score descending
                 high_conf_matches.sort(key=lambda x: x[2], reverse=True)
                 best_item = high_conf_matches[0]
-                best_idx = best_item[0]
+                best_original_idx = best_item[0]
                 best_cand = best_item[1]
                 best_vlm_score = best_item[2]
 
-                if best_idx > 0:
-                    promoted = final_candidates.pop(best_idx)
+                if best_original_idx > 0:
+                    # Find candidate in final_candidates and promote to index 0
+                    current_idx = final_candidates.index(best_cand)
+                    promoted = final_candidates.pop(current_idx)
                     final_candidates.insert(0, promoted)
-                    print(f"   ✨ [PROMOTED] Video '{promoted['video_id']}' promoted to Top 1 (VLM Conf: {best_vlm_score:.1f} >= {self.promotion_threshold}).", flush=True)
+                    print(f"   ✨ [PROMOTED] Video '{promoted['video_id']}' (Rank #{best_original_idx+1}) promoted to Top 1 (VLM Conf: {best_vlm_score:.1f} >= {self.promotion_threshold}).", flush=True)
                 else:
                     print(f"   🛡️ [CONFIRMED] Video '{best_cand['video_id']}' maintained at Top 1 (VLM Conf: {best_vlm_score:.1f}).", flush=True)
             else:
@@ -99,6 +101,44 @@ class TextualKISSolver:
             })
 
         return predictions
+
+    def _build_diverse_verify_pool(self, candidates: List[Dict[str, Any]], top_k_verify: int = 12) -> List[int]:
+        """
+        Constructs a high-diversity verification pool across the top 45 candidates.
+        Ensures diverse batch coverage and prevents single-cluster monopolization.
+        """
+        if len(candidates) <= top_k_verify:
+            return list(range(len(candidates)))
+
+        selected_indices = []
+        selected_batches = {}
+
+        # 1. Always include the top 3 candidates unconditionally
+        for i in range(min(3, len(candidates))):
+            selected_indices.append(i)
+            b = candidates[i]["video_id"].split("_")[0] if "_" in candidates[i]["video_id"] else candidates[i]["video_id"]
+            selected_batches[b] = selected_batches.get(b, 0) + 1
+
+        # 2. Add high-potential candidates across top 45 with batch diversity cap
+        search_horizon = min(45, len(candidates))
+        for i in range(3, search_horizon):
+            if len(selected_indices) >= top_k_verify:
+                break
+            vid = candidates[i]["video_id"]
+            b = vid.split("_")[0] if "_" in vid else vid
+            batch_count = selected_batches.get(b, 0)
+            if batch_count < 4:
+                selected_indices.append(i)
+                selected_batches[b] = batch_count + 1
+
+        # 3. Fill remaining slots if any
+        for i in range(3, search_horizon):
+            if len(selected_indices) >= top_k_verify:
+                break
+            if i not in selected_indices:
+                selected_indices.append(i)
+
+        return selected_indices
 
     def _verify_candidate_image(self, img_path: str, query_text: str) -> float:
         """

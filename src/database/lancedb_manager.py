@@ -124,7 +124,7 @@ class LanceDBManager:
             df = query.select([
                 "video_id", "frame_idx", "frame_id", "pts_time", 
                 "timestamp_formatted", "image_path", "keyframe_caption", 
-                "detected_objects", "_distance"
+                "detected_objects", "ocr_text", "_distance"
             ]).to_pandas()
         except Exception:
             df = query.to_pandas()

@@ -43,6 +43,7 @@ class TRAKESolver:
             if self.db_manager is not None:
                 timeline_records = self.db_manager.fetch_video_timeline(vid)
 
+            seq_score = float(cand.get("score", 0.0))
             if timeline_records and len(timeline_records) >= n_events and self.clip_encoder is not None:
                 # Encode events into CLIP vectors
                 event_vecs = self.clip_encoder.encode_prompts(events)
@@ -53,7 +54,7 @@ class TRAKESolver:
                 # Compute similarity matrix: (n_events, n_frames)
                 sim_matrix = np.dot(event_vecs, frame_vecs.T) # shape: (n_events, n_frames)
                 
-                aligned_indices = self._align_viterbi_dp(sim_matrix)
+                aligned_indices, seq_score = self._align_viterbi_dp(sim_matrix)
                 raw_frame_ids = [int(timeline_records[idx]["frame_id"]) for idx in aligned_indices]
             else:
                 n_total = len(timeline_records) if timeline_records else 100
@@ -70,19 +71,22 @@ class TRAKESolver:
 
             aligned_results.append({
                 "video_id": vid,
-                "frame_ids": raw_frame_ids
+                "frame_ids": raw_frame_ids,
+                "score": float(seq_score)
             })
 
+        aligned_results.sort(key=lambda x: x["score"], reverse=True)
         return aligned_results
 
-    def _align_viterbi_dp(self, sim_matrix: np.ndarray) -> List[int]:
+    def _align_viterbi_dp(self, sim_matrix: np.ndarray) -> tuple:
         """
         Dynamic Programming Viterbi algorithm to find sequence of frame indices
         0 <= t_1 < t_2 < ... < t_N < n_frames that maximizes total alignment similarity.
+        Returns (aligned_indices, average_alignment_score).
         """
         n_events, n_frames = sim_matrix.shape
         if n_frames < n_events:
-            return [int(x) for x in np.linspace(0, max(0, n_frames - 1), n_events)]
+            return ([int(x) for x in np.linspace(0, max(0, n_frames - 1), n_events)], 0.0)
 
         dp = np.full((n_events, n_frames), -np.inf, dtype=np.float32)
         parent = np.zeros((n_events, n_frames), dtype=np.int32)
@@ -99,6 +103,7 @@ class TRAKESolver:
 
         # Backtrack optimal path
         best_end_t = int(np.argmax(dp[n_events - 1, :]))
+        best_total_score = float(dp[n_events - 1, best_end_t])
         aligned_idxs = [0] * n_events
         aligned_idxs[n_events - 1] = best_end_t
 
@@ -107,4 +112,5 @@ class TRAKESolver:
             curr_t = parent[e, curr_t]
             aligned_idxs[e - 1] = curr_t
 
-        return aligned_idxs
+        avg_score = best_total_score / max(1, n_events)
+        return aligned_idxs, avg_score

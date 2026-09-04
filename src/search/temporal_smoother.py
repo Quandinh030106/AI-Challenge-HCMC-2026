@@ -71,6 +71,8 @@ class GaussianTemporalSmoother:
                 "image_path": best_frame_record.get("image_path", ""),
                 "pts_time": float(best_frame_record.get("pts_time", 0.0)),
                 "detected_objects": best_frame_record.get("detected_objects", ""),
+                "ocr_text": str(best_frame_record.get("ocr_text", "")),
+                "keyframe_caption": str(best_frame_record.get("keyframe_caption", "")),
                 "all_frame_scores": smoothed_scores
             })
 

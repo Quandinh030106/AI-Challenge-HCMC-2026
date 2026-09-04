@@ -71,9 +71,10 @@ class VisualVQASolver:
         best_score = -999.0
         best_answer = "Không rõ"
 
-        # Evaluate Top candidate videos
-        eval_pool = final_candidates[:eval_candidates_count]
-        for rank_idx, cand in enumerate(eval_pool):
+        # Evaluate Top candidate videos with diverse pool
+        eval_indices = self._build_diverse_eval_pool(final_candidates, eval_count=eval_candidates_count)
+        for rank_idx, cand_idx in enumerate(eval_indices):
+            cand = final_candidates[cand_idx]
             vid = cand["video_id"]
             best_f_idx = int(cand.get("best_frame_idx", 0))
 
@@ -109,18 +110,20 @@ class VisualVQASolver:
                 if len(cleaned_ans.split()) in [1, 2, 3, 4]:
                     conf += 10.0
 
-            print(f"   ↳ [VQA {rank_idx+1}/{len(eval_pool)}] Video '{vid}' ➔ Ans: '{cleaned_ans}' (Conf: {conf:.1f})", flush=True)
+            print(f"   ↳ [VQA {rank_idx+1}/{len(eval_indices)}] Video '{vid}' (Rank #{cand_idx+1}) ➔ Ans: '{cleaned_ans}' (Conf: {conf:.1f})", flush=True)
 
             if conf > best_score:
                 best_score = conf
-                best_cand_idx = rank_idx
+                best_cand_idx = cand_idx
                 best_answer = cleaned_ans
 
         # Top-1 Promotion: Promote highest confidence answered video to Rank 1
         if best_cand_idx > 0 and best_score >= 40.0:
-            promoted = final_candidates.pop(best_cand_idx)
+            promoted_cand = final_candidates[best_cand_idx]
+            current_idx = final_candidates.index(promoted_cand)
+            promoted = final_candidates.pop(current_idx)
             final_candidates.insert(0, promoted)
-            print(f"   ✨ [VQA PROMOTED] Video '{promoted['video_id']}' promoted to Top 1 (Answer: '{best_answer}', Conf: {best_score:.1f}).", flush=True)
+            print(f"   ✨ [VQA PROMOTED] Video '{promoted['video_id']}' (Rank #{best_cand_idx+1}) promoted to Top 1 (Answer: '{best_answer}', Conf: {best_score:.1f}).", flush=True)
         elif best_cand_idx == 0:
             print(f"   🛡️ [VQA CONFIRMED] Top 1 video '{final_candidates[0]['video_id']}' maintained (Answer: '{best_answer}').", flush=True)
 
@@ -137,6 +140,33 @@ class VisualVQASolver:
             })
 
         return predictions
+
+    def _build_diverse_eval_pool(self, candidates: List[Dict[str, Any]], eval_count: int = 6) -> List[int]:
+        """Constructs diverse candidate evaluation indices for VQA across top 30."""
+        if len(candidates) <= eval_count:
+            return list(range(len(candidates)))
+
+        selected_indices = [0, 1]
+        selected_batches = {}
+        for idx in selected_indices:
+            b = candidates[idx]["video_id"].split("_")[0] if "_" in candidates[idx]["video_id"] else candidates[idx]["video_id"]
+            selected_batches[b] = selected_batches.get(b, 0) + 1
+
+        for i in range(2, min(30, len(candidates))):
+            if len(selected_indices) >= eval_count:
+                break
+            b = candidates[i]["video_id"].split("_")[0] if "_" in candidates[i]["video_id"] else candidates[i]["video_id"]
+            if selected_batches.get(b, 0) < 2:
+                selected_indices.append(i)
+                selected_batches[b] = selected_batches.get(b, 0) + 1
+
+        for i in range(2, min(30, len(candidates))):
+            if len(selected_indices) >= eval_count:
+                break
+            if i not in selected_indices:
+                selected_indices.append(i)
+
+        return selected_indices
 
     def _infer_vlm_multi_frame(self, image_paths: List[str], question_text: str) -> str:
         """Runs multi-frame visual reasoning using Qwen2.5-VL with memory-safe downscaled frames."""
