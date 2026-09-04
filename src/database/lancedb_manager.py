@@ -23,13 +23,25 @@ class LanceDBManager:
     def _resolve_db_uri(self, uri: str) -> str:
         if uri and os.path.exists(uri):
             return uri
-        search_roots = ["/kaggle/input", "/kaggle/working", "data", "."]
-        for s_root in search_roots:
-            if os.path.exists(s_root):
-                for root, dirs, _ in os.walk(s_root):
-                    if "lancedb" in root.lower() or "keyframes" in dirs or "aic_master_table" in dirs:
-                        print(f"[INFO] LanceDBManager: Auto-discovered database at '{root}'")
-                        return root
+
+        # Check known candidate locations
+        candidates = [
+            "/kaggle/input/aic-db-models/dataset/aic_lancedb",
+            "/kaggle/input/datasets/quninhphmanh/aic-db-models/dataset/aic_lancedb",
+            "/kaggle/working/aic_lancedb",
+            "data/aic_lancedb"
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                print(f"[INFO] LanceDBManager: Auto-discovered database at '{c}'")
+                return c
+
+        import glob
+        discovered = glob.glob("/kaggle/input/**/aic_lancedb", recursive=True) + glob.glob("/kaggle/working/**/aic_lancedb", recursive=True)
+        if discovered:
+            print(f"[INFO] LanceDBManager: Auto-discovered database at '{discovered[0]}'")
+            return discovered[0]
+
         return uri
 
     def _connect(self):

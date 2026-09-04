@@ -90,12 +90,24 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     # --------------------------------------------------------------------------
     lancedb_uri = config.get("data", {}).get("lancedb_uri", "data/aic_lancedb")
     db_manager = LanceDBManager(db_uri=lancedb_uri)
-    
+
     if not db_manager.is_ready():
-        print("[INFO] LanceDB master table not found. Running Ingest Pipeline...")
+        import zipfile
+        zip_candidates = glob.glob("/kaggle/input/**/aic_lancedb.zip", recursive=True) + glob.glob("/kaggle/working/**/aic_lancedb.zip", recursive=True)
+        if zip_candidates:
+            target_unzip = "/kaggle/working/aic_lancedb"
+            print(f"[INFO] Auto-unzipping LanceDB from '{zip_candidates[0]}' to '{target_unzip}'...")
+            with zipfile.ZipFile(zip_candidates[0], 'r') as zip_ref:
+                zip_ref.extractall("/kaggle/working")
+            db_manager = LanceDBManager(db_uri=target_unzip)
+
+    if not db_manager.is_ready():
+        target_build_uri = "/kaggle/working/aic_lancedb"
+        print(f"[INFO] LanceDB master table not found. Building database at '{target_build_uri}'...")
+        config["data"]["lancedb_uri"] = target_build_uri
         ingest_pipeline = MultimodalIngestPipeline(config)
         ingest_pipeline.build_database(overwrite=True)
-        db_manager = LanceDBManager(db_uri=lancedb_uri)
+        db_manager = LanceDBManager(db_uri=target_build_uri)
 
     # --------------------------------------------------------------------------
     # ĐỌC DANH SÁCH CÂU HỎI ĐỀ THI (DYNAMIC QUERIES DIR OVERRIDE)
