@@ -323,7 +323,7 @@ def rerank_sequence_aware_kis(
     for event_text in decomposition["events"]:
         query_info = query_processor.process(event_text)
         dense_results = dense_searcher.search(
-            query_info["prompt_ensemble"],
+            query_info["semantic_views"],
             top_k_videos=None,
         )
         sparse_results = sparse_searcher.search(

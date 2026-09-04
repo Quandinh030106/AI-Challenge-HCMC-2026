@@ -37,7 +37,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     txt_files = []
     if input_dir and os.path.exists(input_dir):
         if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
-            unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
+            unzip_tmp = "C:/Users/acer/Downloads/Bộ câu hỏi vòng thi (25 câu).txt"
             os.makedirs(unzip_tmp, exist_ok=True)
             with zipfile.ZipFile(input_dir, "r") as zf:
                 zf.extractall(unzip_tmp)
@@ -141,7 +141,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", default="/kaggle/input/aic-hcmc2026-thu-nghiem-bo-de-thi", help="Thu muc chua cac file .txt de thi")
+    parser.add_argument("--input_dir", default="data/SOTUYEN1-bo-de-thi", help="Thu muc chua cac file .txt de thi")
     parser.add_argument("--config", default="configs/default.yaml")
     args = parser.parse_args()
     

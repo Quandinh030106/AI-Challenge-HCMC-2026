@@ -26,6 +26,7 @@ from src.tasks.task2_vqa import (
 )
 from src.tasks.task3_trake import solve_task3_batch
 from src.utils import load_config, normalize_query_item
+from src.search.coarse_filter import CoarseFilter
 
 
 def load_ground_truth(path):
@@ -79,16 +80,35 @@ def run_video_retrieval(
     sparse_searcher,
     query_processor,
     object_searcher,
+    coarse_filter=None,
 ):
     """Chạy đúng retrieval stage hiện dùng trong Codabench pipeline."""
     query_info = query_processor.process(query_text)
     intent = query_info["intent_info"]
 
+    coarse_video_candidates = None
+
+    if coarse_filter is not None:
+        try:
+            coarse_video_candidates = coarse_filter.filter(
+                query_info,
+                top_k=100,
+            )
+
+        except Exception as exc:
+            print(
+                "[WARNING] CoarseFilter failed: %s"
+                % exc
+            )
+
+            coarse_video_candidates = None
+
     # Q&A chỉ dùng visual/context description cho retrieval.
     search_text = query_text
     dense_results = dense_searcher.search(
-        query_info["prompt_ensemble"],
+        query_info["semantic_views"],
         top_k_videos=100,
+        candidate_video_ids=coarse_video_candidates,
     )
     sparse_results = sparse_searcher.search(
         search_text,
@@ -175,6 +195,8 @@ def main():
 
     print("--- KHOI CHAY PIPELINE TIM KIEM VIDEO ---")
     dense_searcher = DenseSearcher(config)
+    coarse_filter = CoarseFilter(config)
+
 
     kis_ocr_cfg = config.get("search", {}).get("kis_ocr_boost", {})
     ocr_boost_enabled = bool(kis_ocr_cfg.get("enabled", False))
@@ -192,7 +214,7 @@ def main():
         test_query = "một diễn giả đang phát biểu trước máy quay"
         query_info = query_processor.process(test_query)
         dense_results = dense_searcher.search(
-            query_info["prompt_ensemble"],
+            query_info["semantic_views"],
             top_k_videos=3,
         )
         for rank, result in enumerate(dense_results, start=1):
@@ -261,6 +283,7 @@ def main():
                 sparse_searcher,
                 query_processor,
                 object_searcher,
+                coarse_filter,
             )
             fused = retrieval["fused"]
             if visual_reranker is not None:
@@ -323,6 +346,7 @@ def main():
                 sparse_searcher,
                 query_processor,
                 object_searcher,
+                coarse_filter,
             )
             fused = retrieval["fused"]
 
@@ -382,6 +406,7 @@ def main():
                 sparse_searcher,
                 query_processor,
                 object_searcher,
+                coarse_filter,
             )
             fused = retrieval["fused"]
             retrieval_dict["task3"][query_id] = DebugAnalyzer.build_retrieval_trace(

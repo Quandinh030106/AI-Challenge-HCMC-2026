@@ -104,3 +104,14 @@ search:
     enabled: false
     weight: 0.35
     apply_only_ocr_intent: true
+
+semantic_query:
+  enabled: true
+
+  model:
+    name: "Qwen/Qwen2.5-7B-Instruct"
+    max_new_tokens: 512
+    temperature: 0.1
+
+  fallback_translation:
+    enabled: true

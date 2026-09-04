@@ -546,7 +546,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
         # Video retrieval chi dung visual/context description.
         # Question duoc giu rieng cho VQA sau retrieval.
         search_text = query_text
-        dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=100)
+        dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=100)
         sparse_res = sparse_searcher.search(search_text, top_k_videos=50)
         dense_w = 0.4 if task_type == "qa" else intent["dense_weight"]
         sparse_w = 0.6 if task_type == "qa" else intent["sparse_weight"]

@@ -152,7 +152,7 @@ if "Task 1" in task_mode:
             q_info = query_processor.process(query_input)
             intent = q_info["intent_info"]
             
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=top_k*2)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=top_k*2)
             sparse_res = sparse_searcher.search(query_input, top_k_videos=top_k*2)
             fused = reciprocal_rank_fusion(
                 dense_res, sparse_res, 
@@ -220,7 +220,7 @@ elif "Task 2" in task_mode:
             q_info = query_processor.process(query_input)
             intent = q_info["intent_info"]
             
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=10)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=10)
             sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
             fused = reciprocal_rank_fusion(dense_res, sparse_res)
             
@@ -266,7 +266,7 @@ elif "Task 3" in task_mode:
     if st.button("🔍 Can Chinh Chuoi Su Kien", key="btn_task3"):
         with st.spinner("Dang can chinh thoi gian bang Quy hoach dong (DP)..."):
             q_info = query_processor.process(query_input)
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=10)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=10)
             sparse_res = sparse_searcher.search(query_input, top_k_videos=10)
             fused = reciprocal_rank_fusion(dense_res, sparse_res)
             

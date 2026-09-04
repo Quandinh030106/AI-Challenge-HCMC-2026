@@ -98,7 +98,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
             q_info = query_processor.process(query_text)
             intent = q_info["intent_info"]
             
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=30)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=30)
             sparse_res = sparse_searcher.search(query_text, top_k_videos=30)
             fused = reciprocal_rank_fusion(
                 dense_res, sparse_res, 
@@ -162,7 +162,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
             q_info = query_processor.process(query_text)
             intent = q_info["intent_info"]
             
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=30)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=30)
             sparse_res = sparse_searcher.search(query_text, top_k_videos=30)
             fused = reciprocal_rank_fusion(
                 dense_res, sparse_res, 
@@ -230,7 +230,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
             q_info = query_processor.process(query_text)
             intent = q_info["intent_info"]
             
-            dense_res = dense_searcher.search(q_info["prompt_ensemble"], top_k_videos=30)
+            dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=30)
             sparse_res = sparse_searcher.search(query_text, top_k_videos=30)
             fused = reciprocal_rank_fusion(
                 dense_res, sparse_res, 
