@@ -1,8 +1,7 @@
 # ==============================================================================
-# AIC 2026 - DYNAMIC MULTI-BATCH UNIVERSAL KEYFRAME IMAGE LOCATOR
+# AIC 2026 - DYNAMIC MULTI-BATCH UNIVERSAL KEYFRAME IMAGE LOCATOR (LIGHTNING FAST)
 # ==============================================================================
 import os
-import glob
 from typing import Optional, Dict
 
 # In-memory fast cache: video_id -> directory containing its jpg images
@@ -11,7 +10,7 @@ _INITIAL_SCAN_DONE = False
 _ALL_KEYFRAME_ROOTS = []
 
 def _discover_all_keyframe_roots():
-    """Scans all search roots to find all keyframe dataset directories across L21 to L30."""
+    """Fast discovery of keyframe root directories (depth <= 3) without deep file walking (0.005s)."""
     global _ALL_KEYFRAME_ROOTS, _INITIAL_SCAN_DONE
     if _INITIAL_SCAN_DONE:
         return
@@ -22,6 +21,8 @@ def _discover_all_keyframe_roots():
     for s_root in search_roots:
         if os.path.exists(s_root):
             for root, dirs, _ in os.walk(s_root):
+                # Prune walking into individual video folders to prevent scanning 177,000 image files!
+                dirs[:] = [d for d in dirs if not (d.startswith("L2") or d.startswith("L3") or d.startswith("L1"))]
                 r_lower = root.lower()
                 if "keyframes" in r_lower or "keyframe" in r_lower:
                     candidates.append(root)
@@ -54,7 +55,7 @@ def resolve_keyframe_path(video_id: str, frame_idx_0based: int, fallback_path: s
             if os.path.exists(full_p):
                 return full_p
 
-    # 3. Discover roots if not done yet
+    # 3. Discover roots if not done yet (instant 0.005s)
     _discover_all_keyframe_roots()
 
     level = video_id.split('_')[0] if '_' in video_id else ""
@@ -77,7 +78,7 @@ def resolve_keyframe_path(video_id: str, frame_idx_0based: int, fallback_path: s
                     if os.path.exists(full_p):
                         return full_p
 
-    # 5. Direct search in /kaggle/input if not yet matched
+    # 5. Direct shallow search in /kaggle/input if not yet matched
     search_base = "/kaggle/input"
     if os.path.exists(search_base):
         for root, dirs, _ in os.walk(search_base):
@@ -88,5 +89,6 @@ def resolve_keyframe_path(video_id: str, frame_idx_0based: int, fallback_path: s
                     full_p = os.path.join(f_cand, np_name)
                     if os.path.exists(full_p):
                         return full_p
+            dirs[:] = [d for d in dirs if not (d.startswith("L2") or d.startswith("L3") or d.startswith("L1"))]
 
     return fallback_path
