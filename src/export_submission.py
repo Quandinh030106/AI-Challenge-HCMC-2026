@@ -339,9 +339,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
             lines = [l.strip() for l in f if l.strip()]
         if len(lines) == 0:
             print(f"[ERROR] Found empty submission file: {cf}!")
-        elif len(lines) < 100:
-            print(f"[WARNING] File '{os.path.basename(cf)}' has {len(lines)} lines (expected 100).")
-
+    import zipfile
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(submission_dir):
             for file in files:
