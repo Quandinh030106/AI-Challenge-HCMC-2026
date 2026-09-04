@@ -179,29 +179,9 @@ class MultimodalIngestPipeline:
         return ""
 
     def _find_image_path(self, video_id: str, frame_idx_0based: int) -> str:
-        """Finds physical keyframe image path."""
-        if not self.keyframes_dir or not os.path.exists(self.keyframes_dir):
-            return ""
-
-        f_1based = frame_idx_0based + 1
-        name_patterns = [
-            f"{f_1based:03d}.jpg", f"{f_1based:04d}.jpg", f"{f_1based:05d}.jpg", f"{f_1based}.jpg",
-            f"{frame_idx_0based:03d}.jpg", f"{frame_idx_0based:04d}.jpg", f"{frame_idx_0based}.jpg"
-        ]
-
-        level = video_id.split('_')[0] if '_' in video_id else ""
-        for np_name in name_patterns:
-            candidates = [
-                os.path.join(self.keyframes_dir, f"Keyframes_{level}", "keyframes", video_id, np_name),
-                os.path.join(self.keyframes_dir, f"Keyframes_{level}", video_id, np_name),
-                os.path.join(self.keyframes_dir, level, "keyframes", video_id, np_name),
-                os.path.join(self.keyframes_dir, "keyframes", video_id, np_name),
-                os.path.join(self.keyframes_dir, video_id, np_name)
-            ]
-            for c in candidates:
-                if os.path.exists(c):
-                    return c
-        return ""
+        """Finds physical keyframe image path across all batches L21-L30."""
+        from src.utils.image_locator import resolve_keyframe_path
+        return resolve_keyframe_path(video_id, frame_idx_0based, fallback_path="")
 
     def build_database(self, overwrite: bool = True) -> dict:
         """

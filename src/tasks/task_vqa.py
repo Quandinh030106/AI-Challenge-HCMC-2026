@@ -78,17 +78,19 @@ class VisualVQASolver:
             best_f_idx = int(cand.get("best_frame_idx", 0))
 
             # Retrieve 3-frame local temporal window [f_idx - 1, f_idx, f_idx + 1]
+            from src.utils.image_locator import resolve_keyframe_path
             image_paths = []
             if self.db_manager is not None:
                 window_indices = [max(0, best_f_idx - 1), best_f_idx, best_f_idx + 1]
                 frame_records = self.db_manager.fetch_frames_by_indices(vid, window_indices)
                 for fr in frame_records:
-                    p = fr.get("image_path", "")
+                    f_idx_curr = int(fr.get("frame_idx", best_f_idx))
+                    p = resolve_keyframe_path(vid, f_idx_curr, fr.get("image_path", ""))
                     if p and os.path.exists(p) and p not in image_paths:
                         image_paths.append(p)
 
             if not image_paths:
-                single_p = cand.get("image_path", "")
+                single_p = resolve_keyframe_path(vid, best_f_idx, cand.get("image_path", ""))
                 if single_p and os.path.exists(single_p):
                     image_paths.append(single_p)
 

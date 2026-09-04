@@ -43,8 +43,11 @@ class TextualKISSolver:
             best_promo_idx = 0
             highest_vlm_score = -1.0
 
+            from src.utils.image_locator import resolve_keyframe_path
             for idx, cand in enumerate(verify_pool):
-                img_path = cand.get("image_path", "")
+                vid = cand["video_id"]
+                best_f_idx = int(cand.get("frame_idx", 0))
+                img_path = resolve_keyframe_path(vid, best_f_idx, cand.get("image_path", ""))
                 if not img_path or not os.path.exists(img_path):
                     continue
 
