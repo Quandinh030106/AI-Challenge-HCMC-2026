@@ -2,7 +2,7 @@
 AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
 ============================================================
 
-Generated: 2026-09-04 22:36:10
+Generated: 2026-09-05 00:26:03
 
 Project root:
 D:\VS_Code\AI-Challenge-HCMC-2026
@@ -3721,27 +3721,24 @@ Query:
             )
 
 
-            # lấy phần JSON
-            match = re.search(
-                r"\{.*\}",
-                text,
-                re.DOTALL
-            )
+            # Thay vi regex greedy \{.*\}, dung json.JSONDecoder.raw_decode
+            # tu vi tri dau "{" dau tien de chi lay DUY NHAT object JSON
+            # hop le dau tien, bo qua phan text/template bi echo them sau do.
+            brace_index = text.find("{")
 
+            if brace_index != -1:
+                try:
+                    decoder = json.JSONDecoder()
+                    data, _ = decoder.raw_decode(text[brace_index:])
+                except json.JSONDecodeError as parse_exc:
+                    print("Semantic parser JSON decode failed:", parse_exc)
+                    data = None
 
-            if match:
-
-                data = json.loads(
-                    match.group()
-                )
-
-                for key in default_result:
-
-                    if key not in data:
-                        data[key] = default_result[key]
-
-
-                return data
+                if data is not None:
+                    for key in default_result:
+                        if key not in data:
+                            data[key] = default_result[key]
+                    return data
 
 
         except Exception as e:
@@ -3813,7 +3810,16 @@ Query:
 
 
         replacements = [
+            (
+                r'\bmực\b',
+                'squid'
+            ),
 
+            (
+                r'\bđậu hà lan\b',
+                'green peas'
+            ),
+            
             (
                 r'\bmăng tây\b',
                 'asparagus'
@@ -6624,105 +6630,44 @@ class DenseSearcher:
     # DYNAMIC SEMANTIC FUSION
     # ======================================================
 
-    def encode_dynamic_query(
-        self,
-        semantic_views
-    ):
-
+    def encode_dynamic_query(self, semantic_views):
         """
         Fuse multiple semantic views.
 
         Formula:
-
-        Q =
-        sum(
-            importance_i * embedding_i
-        )
-
+        Q = sum(importance_i * embedding_i)
         """
-
         if not semantic_views:
-
             return None
 
-
-
-        texts = [
-
-            v["text"]
-
-            for v in semantic_views
-
-        ]
-
+        texts = [v["text"] for v in semantic_views]
 
         weights = torch.tensor(
-
-            [
-
-                v["weight"]
-
-                for v in semantic_views
-
-            ],
-
+            [v["weight"] for v in semantic_views],
             dtype=torch.float32,
-
-            device=self.device
-
+            device=self.device,
         )
 
+        # Normalize o float32 de cong tong on dinh (khong mat precision).
+        weights = weights / weights.sum()
 
-        # normalize
+        embeddings = self.encode_text_matrix(texts)
 
-        weights = (
-            weights /
-            weights.sum()
+        # QUAN TRONG: tren cuda, embeddings la float16 (half) trong khi
+        # weights dang float32. Phep nhan half * float32 se bi PyTorch
+        # tu dong "type promote" len float32, lam fused_embedding thanh
+        # float32 du dang chay GPU -> vo dtype dong nhat voi global_tensor
+        # (half) -> RuntimeError o torch.matmul() trong search().
+        # Phai ep weights ve dung dtype cua embeddings TRUOC khi nhan.
+        weights = weights.to(dtype=embeddings.dtype)
+
+        weights = weights.unsqueeze(1)
+
+        fused_embedding = torch.sum(embeddings * weights, dim=0, keepdim=True)
+
+        fused_embedding = fused_embedding / fused_embedding.norm(
+            p=2, dim=-1, keepdim=True
         )
-
-
-
-        embeddings = (
-            self.encode_text_matrix(
-                texts
-            )
-        )
-
-
-
-        weights = weights.unsqueeze(
-            1
-        )
-
-
-        fused_embedding = torch.sum(
-
-            embeddings
-            *
-            weights,
-
-            dim=0,
-
-            keepdim=True
-
-        )
-
-
-
-        fused_embedding = (
-
-            fused_embedding
-
-            /
-
-            fused_embedding.norm(
-                p=2,
-                dim=-1,
-                keepdim=True
-            )
-
-        )
-
 
         return fused_embedding
 
@@ -10637,7 +10582,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     txt_files = []
     if input_dir and os.path.exists(input_dir):
         if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
-            unzip_tmp = "/kaggle/working/bo_de_thi_extracted"
+            unzip_tmp = "C:/Users/acer/Downloads/Bộ câu hỏi vòng thi (25 câu).txt"
             os.makedirs(unzip_tmp, exist_ok=True)
             with zipfile.ZipFile(input_dir, "r") as zf:
                 zf.extractall(unzip_tmp)
@@ -10741,7 +10686,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", default="/kaggle/input/aic-hcmc2026-thu-nghiem-bo-de-thi", help="Thu muc chua cac file .txt de thi")
+    parser.add_argument("--input_dir", default="data/SOTUYEN1-bo-de-thi", help="Thu muc chua cac file .txt de thi")
     parser.add_argument("--config", default="configs/default.yaml")
     args = parser.parse_args()
     

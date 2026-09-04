@@ -1143,3 +1143,28 @@ class DenseSearcher:
         )
 
         return fused_embedding
+
+    # ======================================================
+    # WEIGHTED SIMILARITY (chuan hoa shape sau matmul)
+    # ======================================================
+
+    def weighted_similarity(self, sim_matrix):
+        """
+        Chuyen sim_matrix (N_frames, n_cols) thanh vector diem 1 chieu
+        (N_frames,) de dung cho argmax/convolve o buoc sau.
+
+        encode_dynamic_query() da fuse toan bo semantic view thanh MOT
+        embedding duy nhat (weighted sum theo importance), nen q_matrix
+        luon co dung 1 cot -> sim_matrix luon co shape (N_frames, 1).
+        Ham nay chi can squeeze chieu do.
+
+        Giu nhanh fallback (mean theo cot) cho truong hop hiem gap q_matrix
+        co nhieu cot (vi du neu sau nay co caller truyen nhieu query vector
+        chua fuse) de khong crash, khong phai vi day la hanh vi "weighted"
+        moi - trong pipeline hien tai nhanh nay khong duoc dung toi.
+        """
+        if sim_matrix.dim() == 1:
+            return sim_matrix
+        if sim_matrix.shape[-1] == 1:
+            return sim_matrix.squeeze(-1)
+        return sim_matrix.mean(dim=-1)
