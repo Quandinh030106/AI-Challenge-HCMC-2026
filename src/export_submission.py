@@ -95,7 +95,6 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         print(f"[INFO] LanceDB ready at '{db_manager.db_uri}'. Zero-retrain mode active!")
     else:
         # Auto-detect zip archives if raw table wasn't found
-        import zipfile
         zip_candidates = glob.glob("/kaggle/input/**/aic_lancedb.zip", recursive=True) + glob.glob("/kaggle/working/**/aic_lancedb.zip", recursive=True)
         if zip_candidates:
             target_unzip = "/kaggle/working/aic_lancedb"
