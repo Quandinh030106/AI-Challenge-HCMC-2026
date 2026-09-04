@@ -117,17 +117,22 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     if not queries_dir:
         queries_dir = config.get("data", {}).get("queries_dir", "")
 
-    query_files = sorted(glob.glob(os.path.join(queries_dir, "*.txt")) if (queries_dir and os.path.exists(queries_dir)) else [])
-    
+    query_files = []
+    if queries_dir and os.path.exists(queries_dir):
+        query_files = sorted(glob.glob(os.path.join(queries_dir, "*.txt")))
+        if not query_files:
+            query_files = sorted(glob.glob(os.path.join(queries_dir, "**", "*.txt"), recursive=True))
+
     if not query_files:
         # Search Kaggle input
-        for root, _, files in os.walk("/kaggle/input"):
+        for root, dirs, files in os.walk("/kaggle/input"):
+            dirs[:] = [d for d in dirs if d not in ["keyframes", "video", "videos", "objects", "clip-features-32"]]
             for f in files:
                 if f.endswith(".txt") and "query" in f.lower():
                     query_files.append(os.path.join(root, f))
         query_files = sorted(list(set(query_files)))
 
-    print(f"[INFO] Found {len(query_files)} query files to process.")
+    print(f"[INFO] Found {len(query_files)} query files to process from '{queries_dir if queries_dir else 'auto-search'}'.")
     raw_queries = [parse_raw_query_file(qf) for qf in query_files]
 
     # --------------------------------------------------------------------------
