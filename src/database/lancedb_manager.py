@@ -51,18 +51,39 @@ class LanceDBManager:
 
         try:
             self.db = lancedb.connect(self.db_uri)
-            tbl_names = self.db.table_names()
+            try:
+                tbl_names = self.db.table_names()
+                print(f"[INFO] LanceDBManager: Tables in '{self.db_uri}': {tbl_names}")
+            except Exception:
+                tbl_names = []
             
-            if "keyframes" in tbl_names:
-                self.keyframes_table = self.db.open_table("keyframes")
-                print(f"[INFO] LanceDBManager: Connected to 'keyframes' table ({len(self.keyframes_table)} rows).")
-            elif "aic_master_table" in tbl_names:
-                self.keyframes_table = self.db.open_table("aic_master_table")
-                print(f"[INFO] LanceDBManager: Connected to legacy 'aic_master_table' ({len(self.keyframes_table)} rows).")
+            for t_cand in ["keyframes", "keyframes.lance", "aic_master_table"]:
+                if t_cand in tbl_names:
+                    try:
+                        self.keyframes_table = self.db.open_table(t_cand)
+                        print(f"[INFO] LanceDBManager: Connected to keyframes table '{t_cand}' ({len(self.keyframes_table)} rows).")
+                        break
+                    except Exception:
+                        pass
 
-            if "videos" in tbl_names:
-                self.videos_table = self.db.open_table("videos")
-                print(f"[INFO] LanceDBManager: Connected to 'videos' table ({len(self.videos_table)} rows).")
+            # Fallback: attempt direct open if table_names() did not catch it
+            if self.keyframes_table is None:
+                for t_name in ["keyframes", "aic_master_table"]:
+                    try:
+                        self.keyframes_table = self.db.open_table(t_name)
+                        print(f"[INFO] LanceDBManager: Directly opened '{t_name}' table ({len(self.keyframes_table)} rows).")
+                        break
+                    except Exception:
+                        pass
+
+            for v_cand in ["videos", "videos.lance"]:
+                if v_cand in tbl_names:
+                    try:
+                        self.videos_table = self.db.open_table(v_cand)
+                        print(f"[INFO] LanceDBManager: Connected to videos table '{v_cand}' ({len(self.videos_table)} rows).")
+                        break
+                    except Exception:
+                        pass
         except Exception as e:
             print(f"[ERROR] LanceDBManager connection failed: {e}")
 

@@ -91,7 +91,10 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     lancedb_uri = config.get("data", {}).get("lancedb_uri", "data/aic_lancedb")
     db_manager = LanceDBManager(db_uri=lancedb_uri)
 
-    if not db_manager.is_ready():
+    if db_manager.is_ready():
+        print(f"[INFO] LanceDB ready at '{db_manager.db_uri}'. Zero-retrain mode active!")
+    else:
+        # Auto-detect zip archives if raw table wasn't found
         import zipfile
         zip_candidates = glob.glob("/kaggle/input/**/aic_lancedb.zip", recursive=True) + glob.glob("/kaggle/working/**/aic_lancedb.zip", recursive=True)
         if zip_candidates:
@@ -103,7 +106,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
 
     if not db_manager.is_ready():
         target_build_uri = "/kaggle/working/aic_lancedb"
-        print(f"[INFO] LanceDB master table not found. Building database at '{target_build_uri}'...")
+        print(f"[INFO] LanceDB not found. Building database at '{target_build_uri}'...")
         config["data"]["lancedb_uri"] = target_build_uri
         ingest_pipeline = MultimodalIngestPipeline(config)
         ingest_pipeline.build_database(overwrite=True)
