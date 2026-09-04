@@ -247,7 +247,19 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
     except Exception as e:
         print(f"[WARNING] VLM Loading warning ({e}). Proceeding in lightweight mode...")
 
-    kis_solver = TextualKISSolver(vlm_model=vlm_model, vlm_processor=vlm_processor, device=target_vlm_device, enable_vlm_verify=True)
+    vlm_cfg = config.get("vlm_verification", {})
+    top_k_verify = int(vlm_cfg.get("top_k_verify", 12))
+    vqa_eval_count = int(vlm_cfg.get("vqa_eval_count", 6))
+    promo_thresh = float(vlm_cfg.get("top1_promotion_threshold", 75.0))
+    enable_vlm = bool(vlm_cfg.get("enabled", True))
+
+    kis_solver = TextualKISSolver(
+        vlm_model=vlm_model,
+        vlm_processor=vlm_processor,
+        device=target_vlm_device,
+        enable_vlm_verify=enable_vlm,
+        promotion_threshold=promo_thresh
+    )
     vqa_solver = VisualVQASolver(vlm_model=vlm_model, vlm_processor=vlm_processor, db_manager=db_manager, device=target_vlm_device)
     trake_solver = TRAKESolver(db_manager=db_manager, clip_encoder=None)
 
@@ -263,13 +275,13 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         csv_path = os.path.join(submission_dir, f"{qid}.csv")
 
         if task_type == "kis":
-            preds = kis_solver.solve(schema, cands, total_preds=100, top_k_verify=10)
+            preds = kis_solver.solve(schema, cands, total_preds=100, top_k_verify=top_k_verify)
             with open(csv_path, "w", encoding="utf-8", newline="") as f_out:
                 for p in preds:
                     f_out.write(f"{p['video_id']},{p['frame_id']}\n")
 
         elif task_type == "qa":
-            preds = vqa_solver.solve(schema, cands, total_preds=100, eval_candidates_count=4)
+            preds = vqa_solver.solve(schema, cands, total_preds=100, eval_candidates_count=vqa_eval_count)
             with open(csv_path, "w", encoding="utf-8", newline="") as f_out:
                 for p in preds:
                     f_out.write(f"{p['video_id']},{p['frame_id']},{p['answer']}\n")

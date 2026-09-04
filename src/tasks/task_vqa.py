@@ -58,7 +58,7 @@ class VisualVQASolver:
         parsed_schema: dict,
         candidates: List[Dict[str, Any]],
         total_preds: int = 100,
-        eval_candidates_count: int = 4
+        eval_candidates_count: int = 6
     ) -> List[Dict[str, Any]]:
         """Solves VQA query and produces Top 100 candidate predictions with formatted answer."""
         if not candidates:
@@ -102,10 +102,12 @@ class VisualVQASolver:
 
             # Confidence scoring
             conf = 10.0 - (rank_idx * 1.5)
-            if cleaned_ans and cleaned_ans.lower() not in ["không rõ", "none", "chưa rõ"]:
-                conf += 30.0
+            if cleaned_ans and cleaned_ans.lower() not in ["không rõ", "none", "chưa rõ", ""]:
+                conf += 35.0
                 if any(c.isdigit() for c in cleaned_ans):
-                    conf += 20.0
+                    conf += 25.0
+                if len(cleaned_ans.split()) in [1, 2, 3, 4]:
+                    conf += 10.0
 
             if conf > best_score:
                 best_score = conf
@@ -113,10 +115,12 @@ class VisualVQASolver:
                 best_answer = cleaned_ans
 
         # Top-1 Promotion: Promote highest confidence answered video to Rank 1
-        if best_cand_idx > 0 and best_score >= 25.0:
+        if best_cand_idx > 0 and best_score >= 40.0:
             promoted = final_candidates.pop(best_cand_idx)
             final_candidates.insert(0, promoted)
             print(f"[INFO] VQASolver: Promoted candidate '{promoted['video_id']}' to Top 1 (Answer: '{best_answer}').")
+        elif best_cand_idx == 0:
+            print(f"[INFO] VQASolver: Confirmed Top 1 video '{final_candidates[0]['video_id']}' (Answer: '{best_answer}').")
 
         formatted_ans = format_vqa_answer_for_csv(best_answer)
 
@@ -135,9 +139,12 @@ class VisualVQASolver:
     def _infer_vlm_multi_frame(self, image_paths: List[str], question_text: str) -> str:
         """Runs multi-frame visual reasoning using Qwen2.5-VL with memory-safe downscaled frames."""
         prompt_text = (
-            f"Nhiệm vụ: Quan sát kỹ các khung ảnh trải dài theo thời gian của video này và trả lời câu hỏi sau bằng Tiếng Việt:\n"
-            f"'{question_text}'\n"
-            f"Yêu cầu: Trả lời ngắn gọn, trực tiếp con số / tên riêng / từ cần tìm. Không thêm lời dẫn rườm rà."
+            f"Nhiệm vụ: Quan sát kỹ các khung ảnh HD sau và trả lời câu hỏi trực tiếp bằng Tiếng Việt:\n"
+            f"'{question_text}'\n\n"
+            f"YÊU CẦU QUAN TRỌNG:\n"
+            f"- Đọc chính xác con số, chữ viết trên bảng/biển báo/cân/bản đồ/giá cả/nhãn mác, hoặc đếm chính xác số lượng đối tượng.\n"
+            f"- Trả lời CỰC KỲ NGẮN GỌN, đúng trọng tâm (chỉ xuất con số, danh từ hoặc cụm từ kết quả).\n"
+            f"- TUYỆT ĐỐI KHÔNG thêm lời dẫn giải thích rườm rà."
         )
 
         content_items = []
@@ -163,7 +170,7 @@ class VisualVQASolver:
             inputs = self.vlm_processor(text=[text], images=pil_images, padding=True, return_tensors="pt").to(model_device)
 
             with torch.inference_mode():
-                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=50)
+                gen_ids = self.vlm_model.generate(**inputs, max_new_tokens=40)
                 gen_trimmed = [out[len(inp):] for inp, out in zip(inputs["input_ids"], gen_ids)]
                 out_text = self.vlm_processor.batch_decode(gen_trimmed, skip_special_tokens=True)[0]
 
@@ -181,7 +188,7 @@ class VisualVQASolver:
                 s_txt = self.vlm_processor.apply_chat_template(s_msg, tokenize=False, add_generation_prompt=True)
                 s_inputs = self.vlm_processor(text=[s_txt], images=[center_img], padding=True, return_tensors="pt").to(model_device)
                 with torch.inference_mode():
-                    s_gen = self.vlm_model.generate(**s_inputs, max_new_tokens=50)
+                    s_gen = self.vlm_model.generate(**s_inputs, max_new_tokens=40)
                     s_trim = [out[len(inp):] for inp, out in zip(s_inputs["input_ids"], s_gen)]
                     s_res = self.vlm_processor.batch_decode(s_trim, skip_special_tokens=True)[0]
                 return s_res.strip()
