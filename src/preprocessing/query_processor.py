@@ -221,6 +221,18 @@ class QueryProcessor:
                 )
             )
 
+            # Dual-GPU: cuda:1 danh rieng cho VLM (Qwen2-VL) trong
+            # VisualReRanker/solve_task2. Neu dung device_map="auto",
+            # accelerate co the tran layer cua model 7B nay sang cuda:1
+            # khi cuda:0 khong du cho, lam VLM OOM ngay tu lenh goi dau
+            # tien (da xac nhan qua log: cuda:1 da 14.35/14.56 GiB TRUOC
+            # khi VisualReRanker xu ly bat ky anh nao). Ep model nay CHI
+            # dung cuda:0 de bao ve VRAM danh cho VLM.
+            device_map = (
+                {"": "cuda:0"}
+                if torch.cuda.device_count() >= 2
+                else "auto"
+            )
 
             self.semantic_model = (
                 AutoModelForCausalLM
@@ -231,7 +243,7 @@ class QueryProcessor:
                         if self.device == "cuda"
                         else torch.float32
                     ),
-                    device_map="auto"
+                    device_map=device_map,
                 )
             )
 

@@ -3,6 +3,7 @@ import sys
 
 # Cau hinh bo nho GPU chong phan manh VRAM tren Kaggle
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 
 # Dam bao thu muc goc cua du an luon nam trong sys.path
 

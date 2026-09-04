@@ -76,33 +76,39 @@ class VisualReRanker:
                 ],
             }
         ]
-        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        image_inputs, video_inputs = process_vision_info(messages)
-        inputs = self.processor(
-            text=[text],
-            images=image_inputs,
-            videos=video_inputs,
-            padding=True,
-            return_tensors="pt",
-        ).to(self.model.device)
+        try:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            image_inputs, video_inputs = process_vision_info(messages)
+            inputs = self.processor(
+                text=[text],
+                images=image_inputs,
+                videos=video_inputs,
+                padding=True,
+                return_tensors="pt",
+            ).to(self.model.device)
 
-        with torch.no_grad():
-            generated_ids = self.model.generate(
-                **inputs,
-                max_new_tokens=60,
-                do_sample=False,
-                temperature=0.0,
-                top_p=1.0,
-                repetition_penalty=1.1,
-            )
-            generated_ids_trimmed = [
-                out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
-            ]
-            output_text = self.processor.batch_decode(
-                generated_ids_trimmed,
-                skip_special_tokens=True,
-                clean_up_tokenization_spaces=False,
-            )
+            with torch.no_grad():
+                generated_ids = self.model.generate(
+                    **inputs,
+                    max_new_tokens=60,
+                    do_sample=False,
+                    temperature=0.0,
+                    top_p=1.0,
+                    repetition_penalty=1.1,
+                )
+                generated_ids_trimmed = [
+                    out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                ]
+                output_text = self.processor.batch_decode(
+                    generated_ids_trimmed,
+                    skip_special_tokens=True,
+                    clean_up_tokenization_spaces=False,
+                )
+        finally:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         ans = output_text[0].strip()
         score_match = re.search(r"Score:\s*([0-9]+(?:\.[0-9]+)?)", ans, re.IGNORECASE)
@@ -112,6 +118,8 @@ class VisualReRanker:
             score = 8.0 if any(w in ans.lower() for w in ["yes", "có", "đúng", "match"]) else 1.0
 
         return min(max(score, 0.0), 10.0)
+
+    
 
     def get_top_peak_indices(self, dense_info, n_peaks=3):
         """Trich xuat cac dinh cuc dai dai dien phan bo tren cac phan khuc khac nhau cua video."""
@@ -216,3 +224,5 @@ class VisualReRanker:
         )
 
         return final_top_n + remaining_candidates
+
+    

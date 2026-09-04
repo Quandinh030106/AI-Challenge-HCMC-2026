@@ -71,7 +71,7 @@ search:
   # Prompt 7: baseline de ablation, KHONG phai weight da toi uu.
   qa_evidence:
     candidate_video_count: 5
-    evidence_frame_budget: 6
+    evidence_frame_budget: 4
     temporal_nms_distance: 1
     evidence_dense_weight: 0.65
     evidence_ocr_weight: 0.35
