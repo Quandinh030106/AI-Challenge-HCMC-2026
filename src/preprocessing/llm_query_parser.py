@@ -37,7 +37,7 @@ class LLMQueryParser:
                 self.model_id,
                 quantization_config=bnb_config if torch.cuda.is_available() else None,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="cuda:0" if torch.cuda.is_available() else None,
+                device_map="auto" if torch.cuda.is_available() else None,
                 trust_remote_code=True
             )
 
@@ -60,7 +60,9 @@ class LLMQueryParser:
             self.model.eval()
             print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in 4-bit NF4 mode on GPU.")
         except Exception as e:
-            print(f"[WARNING] 4-bit quantization unavailable ({e}). Loading in Dual-GPU FP16 mode (device_map='auto')...")
+            print(f"[WARNING] 4-bit quantization fallback ({e}). Loading in FP16 mode (device_map='auto')...")
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_id,
@@ -69,7 +71,7 @@ class LLMQueryParser:
                 trust_remote_code=True
             )
             self.model.eval()
-            print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in Dual-GPU FP16 mode.")
+            print("[INFO] LLMQueryParser: Loaded Qwen2.5-7B-Instruct in FP16 mode.")
 
     def unload_model(self):
         """Unloads NLP LLM model from VRAM to free memory."""
@@ -149,7 +151,8 @@ class LLMQueryParser:
     def _parse_with_llm(self, messages, query_vi, task_type):
         """Executes text generation and cleans output JSON string."""
         text_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(text_prompt, return_tensors="pt").to(self.device)
+        model_device = next(self.model.parameters()).device if hasattr(self.model, "parameters") else self.device
+        inputs = self.tokenizer(text_prompt, return_tensors="pt").to(model_device)
 
         with torch.inference_mode():
             output_ids = self.model.generate(
