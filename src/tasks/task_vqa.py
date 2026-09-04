@@ -109,6 +109,8 @@ class VisualVQASolver:
                 if len(cleaned_ans.split()) in [1, 2, 3, 4]:
                     conf += 10.0
 
+            print(f"   ↳ [VQA {rank_idx+1}/{len(eval_pool)}] Video '{vid}' ➔ Ans: '{cleaned_ans}' (Conf: {conf:.1f})", flush=True)
+
             if conf > best_score:
                 best_score = conf
                 best_cand_idx = rank_idx
@@ -118,9 +120,9 @@ class VisualVQASolver:
         if best_cand_idx > 0 and best_score >= 40.0:
             promoted = final_candidates.pop(best_cand_idx)
             final_candidates.insert(0, promoted)
-            print(f"[INFO] VQASolver: Promoted candidate '{promoted['video_id']}' to Top 1 (Answer: '{best_answer}').")
+            print(f"   ✨ [VQA PROMOTED] Video '{promoted['video_id']}' promoted to Top 1 (Answer: '{best_answer}', Conf: {best_score:.1f}).", flush=True)
         elif best_cand_idx == 0:
-            print(f"[INFO] VQASolver: Confirmed Top 1 video '{final_candidates[0]['video_id']}' (Answer: '{best_answer}').")
+            print(f"   🛡️ [VQA CONFIRMED] Top 1 video '{final_candidates[0]['video_id']}' maintained (Answer: '{best_answer}').", flush=True)
 
         formatted_ans = format_vqa_answer_for_csv(best_answer)
 

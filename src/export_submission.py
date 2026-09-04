@@ -274,6 +274,8 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         cands = retrieved_candidates.get(qid, [])
         csv_path = os.path.join(submission_dir, f"{qid}.csv")
 
+        print(f"\n[{idx}/{len(parsed_schemas)}] 🔍 Solving '{qid}' ({task_type.upper()})...", flush=True)
+
         if task_type == "kis":
             preds = kis_solver.solve(schema, cands, total_preds=100, top_k_verify=top_k_verify)
             with open(csv_path, "w", encoding="utf-8", newline="") as f_out:
@@ -313,7 +315,7 @@ def run_master_pipeline(config_path: str = "configs/lancedb_config.yaml", output
         elif task_type == "trake":
             extra_info = f" | Frames: {top1_fid}"
 
-        print(f"[{idx}/{len(parsed_schemas)}] Query '{qid}' ({task_type.upper()}) ➔ Top 1 Video: '{top1_vid}', Frame ID: {top1_fid}, Timestamp: {ts_str} ({pts:.1f}s), Score: {top1_score}{extra_info}")
+        print(f"   ➔ [RESULT] Top 1 Video: '{top1_vid}', Frame: {top1_fid}, Timestamp: {ts_str} ({pts:.1f}s), Score: {top1_score}{extra_info}", flush=True)
 
     # Unload VLM
     if vlm_model is not None:

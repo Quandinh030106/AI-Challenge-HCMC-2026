@@ -61,11 +61,13 @@ class TextualKISSolver:
                 if not img_path or not os.path.exists(img_path):
                     cand["vlm_score"] = 0.0
                     scored_candidates.append((idx, cand, 0.0))
+                    print(f"   ↳ [VLM {idx+1}/{verify_pool_size}] Video '{vid}' ➔ Missing Image (Score: 0.0)", flush=True)
                     continue
 
                 vlm_conf = self._verify_candidate_image(img_path, query_vi)
                 cand["vlm_score"] = vlm_conf
                 scored_candidates.append((idx, cand, vlm_conf))
+                print(f"   ↳ [VLM {idx+1}/{verify_pool_size}] Video '{vid}' (Frame {best_f_idx}) ➔ Score: {vlm_conf:.1f}/100", flush=True)
 
             # Identify candidates that passed strict verification threshold
             high_conf_matches = [item for item in scored_candidates if item[2] >= self.promotion_threshold]
@@ -80,9 +82,11 @@ class TextualKISSolver:
                 if best_idx > 0:
                     promoted = final_candidates.pop(best_idx)
                     final_candidates.insert(0, promoted)
-                    print(f"[INFO] KISSolver: Promoted candidate '{promoted['video_id']}' to Top 1 (VLM Conf: {best_vlm_score:.1f} >= {self.promotion_threshold}).")
+                    print(f"   ✨ [PROMOTED] Video '{promoted['video_id']}' promoted to Top 1 (VLM Conf: {best_vlm_score:.1f} >= {self.promotion_threshold}).", flush=True)
                 else:
-                    print(f"[INFO] KISSolver: Confirmed candidate '{best_cand['video_id']}' at Top 1 (VLM Conf: {best_vlm_score:.1f}).")
+                    print(f"   🛡️ [CONFIRMED] Video '{best_cand['video_id']}' maintained at Top 1 (VLM Conf: {best_vlm_score:.1f}).", flush=True)
+            else:
+                print(f"   ℹ️ [HYBRID PRESERVED] No candidate reached threshold {self.promotion_threshold}. Keeping hybrid Rank 1 ('{final_candidates[0]['video_id']}').", flush=True)
 
         predictions = []
         for cand in final_candidates[:total_preds]:
