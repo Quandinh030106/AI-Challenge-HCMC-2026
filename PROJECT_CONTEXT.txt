@@ -2,7 +2,7 @@
 AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
 ============================================================
 
-Generated: 2026-09-05 00:26:03
+Generated: 2026-09-05 12:37:38
 
 Project root:
 D:\VS_Code\AI-Challenge-HCMC-2026
@@ -145,6 +145,7 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+  dense_similarity_batch_size: 8192
 
   # Prompt 5: cac gia tri nay la baseline de ablation, KHONG phai weight toi uu.
   sequence_aware:
@@ -183,7 +184,7 @@ search:
   # Prompt 7: baseline de ablation, KHONG phai weight da toi uu.
   qa_evidence:
     candidate_video_count: 5
-    evidence_frame_budget: 6
+    evidence_frame_budget: 4
     temporal_nms_distance: 1
     evidence_dense_weight: 0.65
     evidence_ocr_weight: 0.35
@@ -251,6 +252,7 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+  dense_similarity_batch_size: 8192
   sequence_aware:
     enabled: true
     min_event_words: 4
@@ -1822,6 +1824,7 @@ import sys
 
 # Cau hinh bo nho GPU chong phan manh VRAM tren Kaggle
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 
 # Dam bao thu muc goc cua du an luon nam trong sys.path
 
@@ -3338,6 +3341,7 @@ if __name__ == "__main__":
 FILE: src\preprocessing\query_processor.py
 ============================================================
 
+import gc
 import re
 import json
 import torch
@@ -3398,7 +3402,7 @@ class QueryProcessor:
         # Semantic Query Engine
         # ==================================================
 
-        self.semantic_enabled = True
+        self.semantic_enabled = False
 
         self.semantic_model_name = (
             "Qwen/Qwen2.5-7B-Instruct"
@@ -3561,6 +3565,18 @@ class QueryProcessor:
                 )
             )
 
+            # Dual-GPU: cuda:1 danh rieng cho VLM (Qwen2-VL) trong
+            # VisualReRanker/solve_task2. Neu dung device_map="auto",
+            # accelerate co the tran layer cua model 7B nay sang cuda:1
+            # khi cuda:0 khong du cho, lam VLM OOM ngay tu lenh goi dau
+            # tien (da xac nhan qua log: cuda:1 da 14.35/14.56 GiB TRUOC
+            # khi VisualReRanker xu ly bat ky anh nao). Ep model nay CHI
+            # dung cuda:0 de bao ve VRAM danh cho VLM.
+            device_map = (
+                {"": "cuda:0"}
+                if torch.cuda.device_count() >= 2
+                else "auto"
+            )
 
             self.semantic_model = (
                 AutoModelForCausalLM
@@ -3571,7 +3587,7 @@ class QueryProcessor:
                         if self.device == "cuda"
                         else torch.float32
                     ),
-                    device_map="auto"
+                    device_map=device_map,
                 )
             )
 
@@ -3596,8 +3612,23 @@ class QueryProcessor:
 
             print(e)
 
+            if self.semantic_model is not None:
+                del self.semantic_model
+                self.semantic_model = None
+
+            if self.semantic_tokenizer is not None:
+                del self.semantic_tokenizer
+                self.semantic_tokenizer = None
+
+            gc.collect()
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.ipc_collect()
+
 
             self.semantic_enabled = False
+            self.semantic_loaded = False
 
 
 
@@ -5562,6 +5593,13 @@ class DenseSearcher:
             config["data"]["features_dir"]
         )
 
+        self.similarity_batch_size = int(
+            config.get("search", {}).get(
+                "dense_similarity_batch_size",
+                8192,
+            )
+        )
+
 
         print(
             f"DenseSearcher: Loading {self.model_name} "
@@ -6276,18 +6314,19 @@ class DenseSearcher:
 
         with torch.no_grad():
 
-
-            sim_matrix = torch.matmul(
-                search_tensor,
-                q_matrix.T
-            )
-
-
-            sim_scores = (
-                self.weighted_similarity(
-                    sim_matrix
+            score_chunks = []
+            batch_size = max(1, self.similarity_batch_size)
+            for start in range(0, search_tensor.shape[0], batch_size):
+                end = start + batch_size
+                sim_matrix = torch.matmul(
+                    search_tensor[start:end],
+                    q_matrix.T,
                 )
-            )
+                score_chunks.append(
+                    self.weighted_similarity(sim_matrix)
+                )
+
+            sim_scores = torch.cat(score_chunks, dim=0)
 
 
             sim_scores_np = (
@@ -6670,6 +6709,31 @@ class DenseSearcher:
         )
 
         return fused_embedding
+
+    # ======================================================
+    # WEIGHTED SIMILARITY (chuan hoa shape sau matmul)
+    # ======================================================
+
+    def weighted_similarity(self, sim_matrix):
+        """
+        Chuyen sim_matrix (N_frames, n_cols) thanh vector diem 1 chieu
+        (N_frames,) de dung cho argmax/convolve o buoc sau.
+
+        encode_dynamic_query() da fuse toan bo semantic view thanh MOT
+        embedding duy nhat (weighted sum theo importance), nen q_matrix
+        luon co dung 1 cot -> sim_matrix luon co shape (N_frames, 1).
+        Ham nay chi can squeeze chieu do.
+
+        Giu nhanh fallback (mean theo cot) cho truong hop hiem gap q_matrix
+        co nhieu cot (vi du neu sau nay co caller truyen nhieu query vector
+        chua fuse) de khong crash, khong phai vi day la hanh vi "weighted"
+        moi - trong pipeline hien tai nhanh nay khong duoc dung toi.
+        """
+        if sim_matrix.dim() == 1:
+            return sim_matrix
+        if sim_matrix.shape[-1] == 1:
+            return sim_matrix.squeeze(-1)
+        return sim_matrix.mean(dim=-1)
 
 
 
@@ -8641,33 +8705,39 @@ class VisualReRanker:
                 ],
             }
         ]
-        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        image_inputs, video_inputs = process_vision_info(messages)
-        inputs = self.processor(
-            text=[text],
-            images=image_inputs,
-            videos=video_inputs,
-            padding=True,
-            return_tensors="pt",
-        ).to(self.model.device)
+        try:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            image_inputs, video_inputs = process_vision_info(messages)
+            inputs = self.processor(
+                text=[text],
+                images=image_inputs,
+                videos=video_inputs,
+                padding=True,
+                return_tensors="pt",
+            ).to(self.model.device)
 
-        with torch.no_grad():
-            generated_ids = self.model.generate(
-                **inputs,
-                max_new_tokens=60,
-                do_sample=False,
-                temperature=0.0,
-                top_p=1.0,
-                repetition_penalty=1.1,
-            )
-            generated_ids_trimmed = [
-                out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
-            ]
-            output_text = self.processor.batch_decode(
-                generated_ids_trimmed,
-                skip_special_tokens=True,
-                clean_up_tokenization_spaces=False,
-            )
+            with torch.no_grad():
+                generated_ids = self.model.generate(
+                    **inputs,
+                    max_new_tokens=60,
+                    do_sample=False,
+                    temperature=0.0,
+                    top_p=1.0,
+                    repetition_penalty=1.1,
+                )
+                generated_ids_trimmed = [
+                    out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+                ]
+                output_text = self.processor.batch_decode(
+                    generated_ids_trimmed,
+                    skip_special_tokens=True,
+                    clean_up_tokenization_spaces=False,
+                )
+        finally:
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         ans = output_text[0].strip()
         score_match = re.search(r"Score:\s*([0-9]+(?:\.[0-9]+)?)", ans, re.IGNORECASE)
@@ -8677,6 +8747,8 @@ class VisualReRanker:
             score = 8.0 if any(w in ans.lower() for w in ["yes", "có", "đúng", "match"]) else 1.0
 
         return min(max(score, 0.0), 10.0)
+
+    
 
     def get_top_peak_indices(self, dense_info, n_peaks=3):
         """Trich xuat cac dinh cuc dai dai dien phan bo tren cac phan khuc khac nhau cua video."""
@@ -8781,6 +8853,8 @@ class VisualReRanker:
         )
 
         return final_top_n + remaining_candidates
+
+    
 
 
 
@@ -9607,10 +9681,11 @@ def solve_single_video_vqa(
         "Hãy đối chiếu tất cả ảnh nhưng chỉ chọn ảnh có bằng chứng trực tiếp nhất. "
         "OCR_HINT có thể sai, chỉ dùng khi khớp hình ảnh. "
         "Nếu không đủ bằng chứng, answer phải là 'Không rõ'.\n"
-        "Trả về DUY NHẤT JSON hợp lệ, không markdown:\n"
-        "{\"answer\": \"đáp án ngắn dưới 20 từ\", "
-        "\"evidence_image\": 1, \"confidence\": 0.0, "
-        "\"evidence_source\": \"ocr+visual hoặc visual\"}"
+        "Trả về DUY NHẤT JSON hợp lệ, không markdown, ví dụ đúng định dạng "
+        "(không copy nguyên văn các giá trị mẫu dưới đây):\n"
+        "{\"answer\": \"<đáp án ngắn dưới 20 từ>\", "
+        "\"evidence_image\": <số thứ tự ảnh>, \"confidence\": <0.0-1.0>, "
+        "\"evidence_source\": \"<ocr hoặc visual hoặc ocr+visual>\"}"
         % (query_text, question, qa_type, _instruction_for_type(qa_type))
     )
     content.append({"type": "text", "text": prompt})
@@ -9656,6 +9731,7 @@ def solve_single_video_vqa(
             torch.cuda.empty_cache()
 
     parsed = _parse_vlm_json(raw_output, question, len(usable))
+    print("  [DEBUG] raw_output=%r" % raw_output[:300])
     evidence_index = (parsed.get("evidence_image") or 1) - 1
     evidence_index = max(0, min(len(usable) - 1, evidence_index))
     chosen = usable[evidence_index]

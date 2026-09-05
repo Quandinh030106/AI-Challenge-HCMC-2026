@@ -33,6 +33,7 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+  dense_similarity_batch_size: 8192
 
   # Prompt 5: cac gia tri nay la baseline de ablation, KHONG phai weight toi uu.
   sequence_aware:

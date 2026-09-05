@@ -1,3 +1,4 @@
+import gc
 import re
 import json
 import torch
@@ -58,7 +59,7 @@ class QueryProcessor:
         # Semantic Query Engine
         # ==================================================
 
-        self.semantic_enabled = True
+        self.semantic_enabled = False
 
         self.semantic_model_name = (
             "Qwen/Qwen2.5-7B-Instruct"
@@ -268,8 +269,23 @@ class QueryProcessor:
 
             print(e)
 
+            if self.semantic_model is not None:
+                del self.semantic_model
+                self.semantic_model = None
+
+            if self.semantic_tokenizer is not None:
+                del self.semantic_tokenizer
+                self.semantic_tokenizer = None
+
+            gc.collect()
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.ipc_collect()
+
 
             self.semantic_enabled = False
+            self.semantic_loaded = False
 
 
 

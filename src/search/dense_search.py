@@ -35,6 +35,13 @@ class DenseSearcher:
             config["data"]["features_dir"]
         )
 
+        self.similarity_batch_size = int(
+            config.get("search", {}).get(
+                "dense_similarity_batch_size",
+                8192,
+            )
+        )
+
 
         print(
             f"DenseSearcher: Loading {self.model_name} "
@@ -749,18 +756,19 @@ class DenseSearcher:
 
         with torch.no_grad():
 
-
-            sim_matrix = torch.matmul(
-                search_tensor,
-                q_matrix.T
-            )
-
-
-            sim_scores = (
-                self.weighted_similarity(
-                    sim_matrix
+            score_chunks = []
+            batch_size = max(1, self.similarity_batch_size)
+            for start in range(0, search_tensor.shape[0], batch_size):
+                end = start + batch_size
+                sim_matrix = torch.matmul(
+                    search_tensor[start:end],
+                    q_matrix.T,
                 )
-            )
+                score_chunks.append(
+                    self.weighted_similarity(sim_matrix)
+                )
+
+            sim_scores = torch.cat(score_chunks, dim=0)
 
 
             sim_scores_np = (

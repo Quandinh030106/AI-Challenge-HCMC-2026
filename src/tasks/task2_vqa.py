@@ -406,10 +406,11 @@ def solve_single_video_vqa(
         "Hãy đối chiếu tất cả ảnh nhưng chỉ chọn ảnh có bằng chứng trực tiếp nhất. "
         "OCR_HINT có thể sai, chỉ dùng khi khớp hình ảnh. "
         "Nếu không đủ bằng chứng, answer phải là 'Không rõ'.\n"
-        "Trả về DUY NHẤT JSON hợp lệ, không markdown:\n"
-        "{\"answer\": \"đáp án ngắn dưới 20 từ\", "
-        "\"evidence_image\": 1, \"confidence\": 0.0, "
-        "\"evidence_source\": \"ocr+visual hoặc visual\"}"
+        "Trả về DUY NHẤT JSON hợp lệ, không markdown, ví dụ đúng định dạng "
+        "(không copy nguyên văn các giá trị mẫu dưới đây):\n"
+        "{\"answer\": \"<đáp án ngắn dưới 20 từ>\", "
+        "\"evidence_image\": <số thứ tự ảnh>, \"confidence\": <0.0-1.0>, "
+        "\"evidence_source\": \"<ocr hoặc visual hoặc ocr+visual>\"}"
         % (query_text, question, qa_type, _instruction_for_type(qa_type))
     )
     content.append({"type": "text", "text": prompt})
@@ -455,6 +456,7 @@ def solve_single_video_vqa(
             torch.cuda.empty_cache()
 
     parsed = _parse_vlm_json(raw_output, question, len(usable))
+    print("  [DEBUG] raw_output=%r" % raw_output[:300])
     evidence_index = (parsed.get("evidence_image") or 1) - 1
     evidence_index = max(0, min(len(usable) - 1, evidence_index))
     chosen = usable[evidence_index]

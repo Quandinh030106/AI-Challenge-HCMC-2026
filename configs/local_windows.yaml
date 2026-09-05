@@ -15,6 +15,7 @@ models:
 search:
   top_k_videos: 10
   top_k_frames: 100
+  dense_similarity_batch_size: 8192
   sequence_aware:
     enabled: true
     min_event_words: 4
