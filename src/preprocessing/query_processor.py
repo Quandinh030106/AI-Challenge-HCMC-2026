@@ -77,6 +77,13 @@ class QueryProcessor:
             semantic_config.get("quantization_4bit", False)
         )
 
+        self.semantic_max_new_tokens = int(
+            semantic_config.get("model", {}).get(
+                "max_new_tokens",
+                250,
+            )
+        )
+
         self.semantic_tokenizer = None
         self.semantic_model = None
 
@@ -371,10 +378,9 @@ class QueryProcessor:
 
         prompt = f"""
 Bạn là chuyên gia phân tích truy vấn video.
-
-Hãy phân tích câu tiếng Việt sau thành JSON.
-
-Chỉ trả về JSON hợp lệ.
+Hãy phân tích câu tiếng Việt sau và trả về JSON.
+QUAN TRỌNG: mọi giá trị trong JSON (scene, objects, actions, ...) PHẢI được dịch sang TIẾNG ANH.
+Chỉ trả về JSON hợp lệ, không thêm giải thích.
 
 Cấu trúc:
 
@@ -411,7 +417,7 @@ Query:
                 outputs = (
                     self.semantic_model.generate(
                         **inputs,
-                        max_new_tokens=512,
+                        max_new_tokens=self.semantic_max_new_tokens,
                         temperature=0.1,
                         do_sample=False
                     )

@@ -89,7 +89,7 @@ semantic_query:
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"
-    max_new_tokens: 512
+    max_new_tokens: 250
     temperature: 0.1
 
   fallback_translation:
