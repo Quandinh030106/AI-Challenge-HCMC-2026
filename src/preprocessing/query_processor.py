@@ -517,6 +517,11 @@ Query:
 
         replacements = [
             (
+                r'\b(?<!cân bằng)(?<!cân nặng)(?<!cân đo)(?<!cân nhắc)(?<!cân đối)cân\b',
+                'scale'
+            ),
+
+            (
                 r'\bmực\b',
                 'squid'
             ),
