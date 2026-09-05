@@ -31,7 +31,7 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     print(f"Thu muc de thi: {input_dir}")
     print("================================================================")
     
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     object_searcher = ObjectSearcher(config)
     
     txt_files = []

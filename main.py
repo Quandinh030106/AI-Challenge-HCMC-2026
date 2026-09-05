@@ -204,7 +204,7 @@ def main():
     apply_only_ocr_intent = bool(kis_ocr_cfg.get("apply_only_ocr_intent", True))
     ocr_store = FrameOCRStore(metadata_dir, keyframes_dir) if ocr_boost_enabled else None
 
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     temporal_refiner = TemporalRefiner(config, dense_searcher)
 
     if not gt_path:

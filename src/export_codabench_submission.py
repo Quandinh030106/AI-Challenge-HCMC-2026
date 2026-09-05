@@ -428,7 +428,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     object_searcher = ObjectSearcher(config)
     vlm_model_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2-VL-2B-Instruct")
     visual_reranker = VisualReRanker(vlm_model_name)

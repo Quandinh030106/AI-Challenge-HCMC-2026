@@ -32,7 +32,10 @@ class QueryProcessor:
         - intent_info
     """
 
-    def __init__(self):
+    def __init__(self, config=None):
+
+        config = config or {}
+        semantic_config = config.get("semantic_query", {})
 
         self.device = (
             "cuda"
@@ -59,10 +62,19 @@ class QueryProcessor:
         # Semantic Query Engine
         # ==================================================
 
-        self.semantic_enabled = False
+        self.semantic_enabled = bool(
+            semantic_config.get("enabled", False)
+        )
 
-        self.semantic_model_name = (
-            "Qwen/Qwen2.5-7B-Instruct"
+        self.semantic_model_name = semantic_config.get(
+            "model", {}
+        ).get(
+            "name",
+            "Qwen/Qwen2.5-7B-Instruct",
+        )
+
+        self.semantic_quantization_4bit = bool(
+            semantic_config.get("quantization_4bit", False)
         )
 
         self.semantic_tokenizer = None
@@ -235,6 +247,17 @@ class QueryProcessor:
                 else "auto"
             )
 
+            quantization_config = None
+            if self.semantic_quantization_4bit and self.device == "cuda":
+                from transformers import BitsAndBytesConfig
+
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=torch.float16,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_use_double_quant=True,
+                )
+
             self.semantic_model = (
                 AutoModelForCausalLM
                 .from_pretrained(
@@ -245,6 +268,7 @@ class QueryProcessor:
                         else torch.float32
                     ),
                     device_map=device_map,
+                    quantization_config=quantization_config,
                 )
             )
 
@@ -283,14 +307,8 @@ class QueryProcessor:
                 torch.cuda.empty_cache()
                 torch.cuda.ipc_collect()
 
-
             self.semantic_enabled = False
             self.semantic_loaded = False
-
-
-
-
-    # ======================================================
     # SEMANTIC QUERY PARSER
     # ======================================================
 

@@ -26,7 +26,7 @@ def init_engine():
     config = load_config("configs/default.yaml")
     dense = DenseSearcher(config)
     sparse = SparseSearcher(config)
-    qp = QueryProcessor()
+    qp = QueryProcessor(config)
     return config, dense, sparse, qp
 
 config, dense_searcher, sparse_searcher, query_processor = init_engine()

@@ -108,6 +108,7 @@ search:
 
 semantic_query:
   enabled: true
+  quantization_4bit: true
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"

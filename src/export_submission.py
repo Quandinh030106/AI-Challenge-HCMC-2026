@@ -41,7 +41,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
     # 1. Khoi tao cac module tim kiem
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     temporal_refiner = TemporalRefiner(config, dense_searcher)
     
     keyframes_dir = config["data"].get("keyframes_dir")
