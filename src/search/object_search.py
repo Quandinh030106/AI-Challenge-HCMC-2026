@@ -245,7 +245,24 @@ class ObjectSearcher:
                 if kw == "tượng" and ("tượng trưng" in text_lower or "tượng hình" in text_lower):
                     if not any(s in text_lower for s in ["bức tượng", "tượng đài", "tạc tượng", "pho tượng"]):
                         continue
-                        
+
+                if kw == "đàn":
+                    # "đàn" là từ chỉ số lượng (herd/flock) khi đứng ngay truoc mot loai
+                    # dong vat khac, KHONG phai nhac cu. Kiem tra tong quat thay vi liet
+                    # ke tay tung con vat (da thieu "đàn sư tử", se tiep tuc thieu cac
+                    # truong hop khac neu lam theo kieu liet ke tay).
+                    herd_match = re.search(r'\bđàn\s+(\w+)', text_lower)
+                    next_word = herd_match.group(1) if herd_match else ""
+                    animal_words = {
+                        "hổ", "dê", "bò", "chim", "ong", "cá", "sư", "voi",
+                        "ngựa", "trâu", "cừu", "gà", "vịt", "khỉ", "sói",
+                    }
+                    is_animal_herd = next_word in animal_words or "người đàn ông" in text_lower
+                    if is_animal_herd and not any(
+                        m in text_lower
+                        for m in ["chơi đàn", "gảy đàn", "tiếng đàn", "đàn guitar", "đàn piano", "đàn tranh", "nhạc cụ"]
+                    ):
+                        continue
                 for e in ents:
                     target_entities.add(e.lower())
                     
