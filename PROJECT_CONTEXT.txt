@@ -2,7 +2,7 @@
 AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
 ============================================================
 
-Generated: 09/06/2026 13:51:02
+Generated: 09/06/2026 17:09:00
 
 Mục đích:
 File này chứa cấu trúc và source code của project để ChatGPT
@@ -3717,22 +3717,19 @@ class QueryProcessor:
 
         prompt = f"""
 Báº¡n lÃ  chuyÃªn gia phÃ¢n tÃ­ch truy váº¥n video.
-HÃ£y phÃ¢n tÃ­ch cÃ¢u tiáº¿ng Viá»‡t sau vÃ  tráº£ vá» JSON.
-QUAN TRá»ŒNG: má»i giÃ¡ trá»‹ trong JSON (scene, objects, actions, ...) PHáº¢I Ä‘Æ°á»£c dá»‹ch sang TIáº¾NG ANH.
-Chá»‰ tráº£ vá» JSON há»£p lá»‡, khÃ´ng thÃªm giáº£i thÃ­ch.
+HÃ£y phÃ¢n tÃ­ch cÃ¢u tiáº¿ng Viá»‡t sau vÃ  tráº£ vá» JSON MÃ” Táº¢ ÄÃšNG Ná»˜I DUNG cÃ¢u Ä‘Ã³.
+QUAN TRá»ŒNG: má»i giÃ¡ trá»‹ PHáº¢I dá»‹ch sang TIáº¾NG ANH vÃ  PHáº¢N ÃNH ÄÃšNG ná»™i dung cÃ¢u, KHÃ”NG Ä‘á»ƒ trá»‘ng náº¿u cÃ¢u cÃ³ thÃ´ng tin liÃªn quan.
 
-Cáº¥u trÃºc:
+VÃ­ dá»¥ Ä‘á»‹nh dáº¡ng (chá»‰ minh há»a, khÃ´ng pháº£i ná»™i dung cáº§n tráº£ lá»i):
+Query: "Má»™t ngÆ°á»i Ä‘Ã n Ã´ng Ä‘ang chiÃªn trá»©ng trong cháº£o trÃªn báº¿p gas."
+{{"scene": "cooking scene in a kitchen", "objects": ["man", "pan", "egg", "gas stove"], "actions": ["frying"], "attributes": [], "relationships": [], "temporal_order": [], "environment": ["kitchen"], "domain": "cooking"}}
 
-{{
-"scene":"",
-"objects":[],
-"actions":[],
-"attributes":[],
-"relationships":[],
-"temporal_order":[],
-"environment":[],
-"domain":""
-}}
+Viá»‡c chá»‰ tÃ¬m cÃ¡c tá»« riÃªng láº» cÃ³ thá»ƒ tráº£ vá» ráº¥t nhiá»u káº¿t quáº£ sai; há»‡ thá»‘ng cáº§n hiá»ƒu Ä‘á»“ng thá»i object, action vÃ  context
+YÃªu cáº§u cá»§a tÃ´i lÃ  pháº£i cÃ³ Ä‘áº§y Ä‘á»§ táº¥t cáº£ cÃ¡c danh tá»«, Ä‘á»™ng tá»«, tÃ­nh tá»«, tráº¡ng tá»«, má»‘i quan há»‡, thá»© tá»± thá»i gian, mÃ´i trÆ°á»ng vÃ  bá»‘i cáº£nh liÃªn quan Ä‘áº¿n cÃ¢u truy váº¥n.
+KhÃ´ng giá»›i háº¡n vá» Ä‘á»™ dÃ i hay sá»‘ lÆ°á»£ng cÃ¡c thá»±c thá»ƒ, hÃ nh Ä‘á»™ng, thuá»™c tÃ­nh, má»‘i quan há»‡, thá»© tá»± thá»i gian, mÃ´i trÆ°á»ng vÃ  bá»‘i cáº£nh.
+CÃ¡i tÃ´i cáº§n lÃ  toÃ n bá»™ thÃ´ng tin liÃªn quan Ä‘áº¿n cÃ¢u truy váº¥n, khÃ´ng bá» sÃ³t báº¥t ká»³ chi tiáº¿t nÃ o.
+
+BÃ¢y giá» hÃ£y phÃ¢n tÃ­ch cÃ¢u sau, CHá»ˆ tráº£ vá» JSON, khÃ´ng thÃªm giáº£i thÃ­ch:
 
 Query:
 
@@ -3752,7 +3749,6 @@ Query:
 
 
             with torch.no_grad():
-
                 outputs = (
                     self.semantic_model.generate(
                         **inputs,
@@ -3762,14 +3758,21 @@ Query:
                     )
                 )
 
+            # CHI lay phan token MOI duoc sinh ra, khong lay lai prompt dau vao.
+            # Neu decode ca outputs[0] (gom ca prompt), text.find("{") se bat nham
+            # dau "{" cua vi du cau truc RONG trong chinh prompt, khong bao gio
+            # doc toi JSON that su model sinh ra o cuoi chuoi.
+            generated_ids = outputs[0][inputs["input_ids"].shape[-1]:]
 
             text = (
                 self.semantic_tokenizer
                 .decode(
-                    outputs[0],
+                    generated_ids,
                     skip_special_tokens=True
                 )
             )
+
+            print("[DEBUG] Qwen raw output:", text[:500])
 
 
             # Thay vi regex greedy \{.*\}, dung json.JSONDecoder.raw_decode
@@ -3861,6 +3864,11 @@ Query:
 
 
         replacements = [
+            (
+                r'\bcon cÃ¡\b',
+                'fish'
+            ),
+
             (
                 r'\b(?<!cÃ¢n báº±ng)(?<!cÃ¢n náº·ng)(?<!cÃ¢n Ä‘o)(?<!cÃ¢n nháº¯c)(?<!cÃ¢n Ä‘á»‘i)cÃ¢n\b',
                 'scale'
@@ -7064,7 +7072,27 @@ class ObjectSearcher:
                 if kw == "tÆ°á»£ng" and ("tÆ°á»£ng trÆ°ng" in text_lower or "tÆ°á»£ng hÃ¬nh" in text_lower):
                     if not any(s in text_lower for s in ["bá»©c tÆ°á»£ng", "tÆ°á»£ng Ä‘Ã i", "táº¡c tÆ°á»£ng", "pho tÆ°á»£ng"]):
                         continue
-                        
+
+                if kw == "mÃ¨o" and "náº¥m mÃ¨o" in text_lower:
+                    continue
+                
+                if kw == "Ä‘Ã n":
+                    # "Ä‘Ã n" lÃ  tá»« chá»‰ sá»‘ lÆ°á»£ng (herd/flock) khi Ä‘á»©ng ngay truoc mot loai
+                    # dong vat khac, KHONG phai nhac cu. Kiem tra tong quat thay vi liet
+                    # ke tay tung con vat (da thieu "Ä‘Ã n sÆ° tá»­", se tiep tuc thieu cac
+                    # truong hop khac neu lam theo kieu liet ke tay).
+                    herd_match = re.search(r'\bÄ‘Ã n\s+(\w+)', text_lower)
+                    next_word = herd_match.group(1) if herd_match else ""
+                    animal_words = {
+                        "há»•", "dÃª", "bÃ²", "chim", "ong", "cÃ¡", "sÆ°", "voi",
+                        "ngá»±a", "trÃ¢u", "cá»«u", "gÃ ", "vá»‹t", "khá»‰", "sÃ³i",
+                    }
+                    is_animal_herd = next_word in animal_words or "ngÆ°á»i Ä‘Ã n Ã´ng" in text_lower
+                    if is_animal_herd and not any(
+                        m in text_lower
+                        for m in ["chÆ¡i Ä‘Ã n", "gáº£y Ä‘Ã n", "tiáº¿ng Ä‘Ã n", "Ä‘Ã n guitar", "Ä‘Ã n piano", "Ä‘Ã n tranh", "nháº¡c cá»¥"]
+                    ):
+                        continue
                 for e in ents:
                     target_entities.add(e.lower())
                     
@@ -7136,7 +7164,8 @@ class ObjectSearcher:
             "person", "man", "woman", "girl", "boy", "human",
             "clothing", "shirt", "dress", "pants", "suit",
             "plant", "tree", "building", "window", "door", "wall", "sky", "floor", "ground", "road", "sand",
-            "food", "animal", "vehicle"
+            "food", "animal", "vehicle",
+            "mammal", "carnivore",
         }
         
         tier2_props = {

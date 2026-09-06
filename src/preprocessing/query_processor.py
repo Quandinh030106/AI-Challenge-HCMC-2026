@@ -316,6 +316,66 @@ class QueryProcessor:
 
             self.semantic_enabled = False
             self.semantic_loaded = False
+
+
+    # ======================================================
+    # PARTIAL JSON RECOVERY (Prompt 10)
+    # ======================================================
+
+    @staticmethod
+    def _partial_recover_semantic_json(text, default_result):
+        """
+        Khi json.JSONDecoder.raw_decode() that bai (thuong do Qwen output
+        bi CAT CUT vi vuot max_new_tokens - da xac nhan qua log thuc te:
+        "Unterminated string starting at: line 1 column 1133"), hanh vi cu
+        vut bo TOAN BO du lieu da sinh ra, ke ca cac truong da hoan chinh
+        truoc diem cat.
+
+        Ham nay co gang cuu lai TUNG TRUONG da hoan chinh (dung format
+        JSON that su cho truong do: co du dau ngoac dong/mo), bo qua
+        truong bi cat cut giua chung (KHONG doan bua du lieu). Vi thu tu
+        key trong prompt la scene -> objects -> actions -> attributes ->
+        relationships -> temporal_order -> environment -> domain, cac
+        truong quan trong nhat cho CLIP retrieval (scene/objects/actions)
+        thuong nam o DAU nen co xac suat con nguyen ven cao nhat.
+
+        Tra ve dict day du (default cho truong khong cuu duoc) neu cuu
+        duoc IT NHAT 1 truong, hoac None neu khong cuu duoc gi (giu
+        nguyen hanh vi cu: roll ve fallback_semantic_parse).
+        """
+        recovered = dict(default_result)
+        found_any = False
+
+        list_keys = (
+            "objects", "actions", "attributes",
+            "relationships", "temporal_order", "environment",
+        )
+        for key in list_keys:
+            match = re.search(
+                r'"%s"\s*:\s*\[(.*?)\]' % re.escape(key),
+                text,
+                flags=re.DOTALL,
+            )
+            if not match:
+                continue
+            items = re.findall(r'"((?:[^"\\]|\\.)*)"', match.group(1))
+            if items:
+                recovered[key] = items
+                found_any = True
+
+        for key in ("scene", "domain"):
+            match = re.search(
+                r'"%s"\s*:\s*"((?:[^"\\]|\\.)*)"' % re.escape(key),
+                text,
+            )
+            if match:
+                recovered[key] = match.group(1)
+                found_any = True
+
+        return recovered if found_any else None
+
+
+    # ======================================================
     # SEMANTIC QUERY PARSER
     # ======================================================
 
@@ -385,7 +445,11 @@ Ví dụ định dạng (chỉ minh họa, không phải nội dung cần trả 
 Query: "Một người đàn ông đang chiên trứng trong chảo trên bếp gas."
 {{"scene": "cooking scene in a kitchen", "objects": ["man", "pan", "egg", "gas stove"], "actions": ["frying"], "attributes": [], "relationships": [], "temporal_order": [], "environment": ["kitchen"], "domain": "cooking"}}
 
-Bây giờ hãy phân tích câu sau, CHỈ trả về JSON, không thêm giải thích:
+Việc chỉ tìm các từ riêng lẻ có thể trả về rất nhiều kết quả sai; hệ thống cần hiểu đồng thời object, action và context.
+Yêu cầu: liệt kê ĐẦY ĐỦ các danh từ, động từ, tính từ, mối quan hệ, thứ tự thời gian, môi trường và bối cảnh CÓ THẬT trong câu, không bỏ sót chi tiết nào và không bịa thêm chi tiết không có trong câu.
+Mỗi mục trong danh sách viết đầy đủ, tránh lặp lại ý đã có ở mục khác.
+
+Bây giờ hãy phân tích câu sau, CHỈ trả về JSON hợp lệ (đúng cú pháp, đóng đủ dấu ngoặc), không thêm giải thích:
 
 Query:
 
@@ -442,7 +506,20 @@ Query:
                     data, _ = decoder.raw_decode(text[brace_index:])
                 except json.JSONDecodeError as parse_exc:
                     print("Semantic parser JSON decode failed:", parse_exc)
-                    data = None
+                    # Prompt 10: KHONG vut bo toan bo output khi JSON bi cat
+                    # cut (thuong do vuot max_new_tokens voi cau phuc tap -
+                    # da xac nhan qua log query-p1-23-kis). Cac truong o DAU
+                    # JSON (scene/objects/actions) van thuong con nguyen ven
+                    # va co gia tri retrieval cao hon nhieu so voi roll het
+                    # ve fallback_semantic_parse (chi vai tu khoa hardcode).
+                    data = self._partial_recover_semantic_json(
+                        text[brace_index:], default_result,
+                    )
+                    if data is not None:
+                        print(
+                            "Semantic parser: da cuu duoc mot phan JSON "
+                            "bi cat cut (partial recovery)."
+                        )
 
                 if data is not None:
                     for key in default_result:
@@ -1104,12 +1181,12 @@ Query:
         return unique
 
 
-        # ======================================================
+    # ======================================================
     # BUILD DYNAMIC SEMANTIC VIEWS
     # ======================================================
 
+    @staticmethod
     def build_dynamic_semantic_views(
-        self,
         query_en,
         semantic_query
     ):
@@ -1124,6 +1201,17 @@ Query:
             scene
 
         View nào có dữ liệu mới sinh.
+
+        Prompt 10: THEM view "context" ghep object+action+attribute+scene
+        thanh MOT cau tu nhien (thay vi cac cum tu roi rac), vi cac view
+        rieng le duoi day duoc CLIP encode DOC LAP roi cong trong so lai
+        (weighted sum trong encode_dynamic_query), nen mat het lien ket
+        "ai lam gi voi gi" (vi du "nguoi cam keo mau den" bi tach thanh
+        hai vector rieng "person" va "black scissors" khong con gan voi
+        nhau). View "context" bo sung mot cau gan voi phong cach caption
+        CLIP duoc huan luyen, giup giu duoc quan he giua cac thanh phan.
+        Cac view cu KHONG bi xoa, chi them view moi -> an toan rollback
+        bang cach chinh importance ve 0.
 
         Output:
 
@@ -1275,6 +1363,37 @@ Query:
 
                 }
 
+            )
+
+
+        # ---------------------------------
+        # Context view (Prompt 10 - relational)
+        # ---------------------------------
+
+        context_parts = []
+
+        if actions and objects:
+            context_parts.append(
+                "%s %s" % (", ".join(actions), ", ".join(objects))
+            )
+        elif objects:
+            context_parts.append(", ".join(objects))
+        elif actions:
+            context_parts.append(", ".join(actions))
+
+        if attributes:
+            context_parts.append(", ".join(attributes))
+
+        if scene_text:
+            context_parts.append(", ".join(scene_text))
+
+        if context_parts:
+            views.append(
+                {
+                    "type": "context",
+                    "text": ". ".join(context_parts),
+                    "importance": 0.25,
+                }
             )
 
 
