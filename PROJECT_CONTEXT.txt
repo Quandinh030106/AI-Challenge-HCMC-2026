@@ -1,18 +1,12 @@
-============================================================
+﻿============================================================
 AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
 ============================================================
 
-Generated: 2026-09-05 12:37:38
+Generated: 09/06/2026 13:51:02
 
-Project root:
-D:\VS_Code\AI-Challenge-HCMC-2026
-
-Purpose:
-This file contains the current project structure,
-configuration, documentation and source code.
-
-Binary files, PDFs, images, datasets, checkpoints
-and generated outputs are not embedded.
+Mục đích:
+File này chứa cấu trúc và source code của project để ChatGPT
+có thể đọc và hiểu toàn bộ codebase.
 
 ============================================================
 PROJECT FILE LIST
@@ -58,7 +52,7 @@ src\utils.py
 
 
 ============================================================
-FILE CONTENTS
+SOURCE CODE
 ============================================================
 
 
@@ -220,10 +214,11 @@ search:
 
 semantic_query:
   enabled: true
+  quantization_4bit: true
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"
-    max_new_tokens: 512
+    max_new_tokens: 250
     temperature: 0.1
 
   fallback_translation:
@@ -321,11 +316,12 @@ search:
 
 
 semantic_query:
-  enabled: true
+  enabled: false
+  quantization_4bit: false
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"
-    max_new_tokens: 512
+    max_new_tokens: 250
     temperature: 0.1
 
   fallback_translation:
@@ -375,15 +371,15 @@ def load_ground_truth(path):
 
 def find_ground_truth(explicit_path, metadata_dir):
     """
-    Chỉ tự động dùng local_val_gt.json.
+    Chá»‰ tá»± Ä‘á»™ng dÃ¹ng local_val_gt.json.
 
-    Không fallback sang src/label/sample.json hoặc Task*.json vì các file đó
-    là placeholder/smoke-test và có thể tạo metric gây hiểu nhầm.
+    KhÃ´ng fallback sang src/label/sample.json hoáº·c Task*.json vÃ¬ cÃ¡c file Ä‘Ã³
+    lÃ  placeholder/smoke-test vÃ  cÃ³ thá»ƒ táº¡o metric gÃ¢y hiá»ƒu nháº§m.
     """
     if explicit_path:
         if not os.path.isfile(explicit_path):
             raise FileNotFoundError(
-                "Ground Truth không tồn tại: %s" % explicit_path
+                "Ground Truth khÃ´ng tá»“n táº¡i: %s" % explicit_path
             )
         return explicit_path
 
@@ -421,7 +417,7 @@ def run_video_retrieval(
     object_searcher,
     coarse_filter=None,
 ):
-    """Chạy đúng retrieval stage hiện dùng trong Codabench pipeline."""
+    """Cháº¡y Ä‘Ãºng retrieval stage hiá»‡n dÃ¹ng trong Codabench pipeline."""
     query_info = query_processor.process(query_text)
     intent = query_info["intent_info"]
 
@@ -442,7 +438,7 @@ def run_video_retrieval(
 
             coarse_video_candidates = None
 
-    # Q&A chỉ dùng visual/context description cho retrieval.
+    # Q&A chá»‰ dÃ¹ng visual/context description cho retrieval.
     search_text = query_text
     dense_results = dense_searcher.search(
         query_info["semantic_views"],
@@ -454,8 +450,8 @@ def run_video_retrieval(
         top_k_videos=50,
     )
 
-    # Snapshot gọn trước ObjectSearcher vì module đó có thể cập nhật nested
-    # dense_info tại chỗ. Trace cần giữ cả điểm Dense gốc và điểm sau boost.
+    # Snapshot gá»n trÆ°á»›c ObjectSearcher vÃ¬ module Ä‘Ã³ cÃ³ thá»ƒ cáº­p nháº­t nested
+    # dense_info táº¡i chá»—. Trace cáº§n giá»¯ cáº£ Ä‘iá»ƒm Dense gá»‘c vÃ  Ä‘iá»ƒm sau boost.
     dense_trace_results = [
         {
             "video_id": item.get("video_id"),
@@ -511,17 +507,17 @@ def main():
     parser.add_argument(
         "--ground-truth",
         default=None,
-        help="Dev-set Ground Truth thật. Nếu bỏ trống, chỉ tìm local_val_gt.json.",
+        help="Dev-set Ground Truth tháº­t. Náº¿u bá» trá»‘ng, chá»‰ tÃ¬m local_val_gt.json.",
     )
     parser.add_argument(
         "--output-dir",
         default="output/evaluation",
-        help="Thư mục lưu predictions, retrieval trace và debug report.",
+        help="ThÆ° má»¥c lÆ°u predictions, retrieval trace vÃ  debug report.",
     )
     parser.add_argument(
         "--fail-fast",
         action="store_true",
-        help="Dừng ngay ở lỗi pipeline đầu tiên thay vì ghi lỗi và chạy query tiếp theo.",
+        help="Dá»«ng ngay á»Ÿ lá»—i pipeline Ä‘áº§u tiÃªn thay vÃ¬ ghi lá»—i vÃ  cháº¡y query tiáº¿p theo.",
     )
     args = parser.parse_args()
 
@@ -543,14 +539,14 @@ def main():
     apply_only_ocr_intent = bool(kis_ocr_cfg.get("apply_only_ocr_intent", True))
     ocr_store = FrameOCRStore(metadata_dir, keyframes_dir) if ocr_boost_enabled else None
 
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     temporal_refiner = TemporalRefiner(config, dense_searcher)
 
     if not gt_path:
-        print("\nKhông tìm thấy local dev-set Ground Truth thật.")
-        print("Không tự động dùng src/label/sample.json hoặc Task*.json.")
-        print("Chạy smoke query để kiểm tra DenseSearcher:")
-        test_query = "một diễn giả đang phát biểu trước máy quay"
+        print("\nKhÃ´ng tÃ¬m tháº¥y local dev-set Ground Truth tháº­t.")
+        print("KhÃ´ng tá»± Ä‘á»™ng dÃ¹ng src/label/sample.json hoáº·c Task*.json.")
+        print("Cháº¡y smoke query Ä‘á»ƒ kiá»ƒm tra DenseSearcher:")
+        test_query = "má»™t diá»…n giáº£ Ä‘ang phÃ¡t biá»ƒu trÆ°á»›c mÃ¡y quay"
         query_info = query_processor.process(test_query)
         dense_results = dense_searcher.search(
             query_info["semantic_views"],
@@ -567,7 +563,7 @@ def main():
                 )
             )
         print(
-            "\nMuốn đánh giá Prompt 3, chạy lại với --ground-truth "
+            "\nMuá»‘n Ä‘Ã¡nh giÃ¡ Prompt 3, cháº¡y láº¡i vá»›i --ground-truth "
             "data/dev/local_val_gt.json"
         )
         return
@@ -575,7 +571,7 @@ def main():
     print("\nGround Truth: %s" % gt_path)
     ground_truth = load_ground_truth(gt_path)
 
-    # Các module dưới đây khớp với pipeline tạo submission hiện tại.
+    # CÃ¡c module dÆ°á»›i Ä‘Ã¢y khá»›p vá»›i pipeline táº¡o submission hiá»‡n táº¡i.
     sparse_searcher = SparseSearcher(config)
     object_searcher = ObjectSearcher(config)
     vlm_model_name = config.get("models", {}).get(
@@ -610,7 +606,7 @@ def main():
             traceback.print_exc()
             raise exc
 
-    print("\nĐang xử lý Task 1 (Textual KIS)...")
+    print("\nÄang xá»­ lÃ½ Task 1 (Textual KIS)...")
     for raw_item in task_items(ground_truth, "task1"):
         item = normalize_query_item(raw_item)
         query_id = item["query_id"]
@@ -669,11 +665,11 @@ def main():
             predictions_dict["task1"][query_id] = refined_predictions
             temporal_refinement_dict[query_id] = refinement_trace
         except Exception as exc:
-            # Lỗi được ghi rõ vào report; không silent pass.
+            # Lá»—i Ä‘Æ°á»£c ghi rÃµ vÃ o report; khÃ´ng silent pass.
             predictions_dict["task1"].setdefault(query_id, [])
             record_error("task1", query_id, exc)
 
-    print("\nĐang xử lý Task 2 (Visual Q&A)...")
+    print("\nÄang xá»­ lÃ½ Task 2 (Visual Q&A)...")
     for raw_item in task_items(ground_truth, "task2"):
         item = normalize_query_item(raw_item)
         query_id = item["query_id"]
@@ -689,7 +685,7 @@ def main():
             )
             fused = retrieval["fused"]
 
-            # Video Recall được đo trước khi VQA dùng answer để promote candidate.
+            # Video Recall Ä‘Æ°á»£c Ä‘o trÆ°á»›c khi VQA dÃ¹ng answer Ä‘á»ƒ promote candidate.
             retrieval_dict["task2"][query_id] = DebugAnalyzer.build_retrieval_trace(
                 retrieval["dense_trace_results"],
                 retrieval["sparse_results"],
@@ -733,7 +729,7 @@ def main():
             predictions_dict["task2"].setdefault(query_id, [])
             record_error("task2", query_id, exc)
 
-    print("\nĐang xử lý Task 3 (TRAKE)...")
+    print("\nÄang xá»­ lÃ½ Task 3 (TRAKE)...")
     for raw_item in task_items(ground_truth, "task3"):
         item = normalize_query_item(raw_item)
         query_id = item["query_id"]
@@ -795,7 +791,7 @@ def main():
     analyzer.save_json(report, report_path)
     analyzer.print_summary(report)
 
-    print("\nĐã lưu:")
+    print("\nÄÃ£ lÆ°u:")
     print(" - Predictions    : %s" % os.path.abspath(predictions_path))
     print(" - Retrieval trace: %s" % os.path.abspath(retrieval_path))
     print(" - Temporal trace : %s" % os.path.abspath(temporal_path))
@@ -826,10 +822,10 @@ Inference pipeline and training/evaluation setup.
 3. Place data in `data/`
 
 
-##Chạy tools:
+##Cháº¡y tools:
 ###tool 1:
 . python src/tools/check_project_encoding.py --root .
-Sau khi commit checkpoint mới chạy:
+Sau khi commit checkpoint má»›i cháº¡y:
 . python src/tools/check_project_encoding.py --root . --fix
 . git diff
 
@@ -855,6 +851,7 @@ opencv-python
 tqdm
 qwen-vl-utils
 accelerate
+bitsandbytes
 pillow
 easyocr
 streamlit
@@ -867,7 +864,6 @@ streamlit
 FILE: src\dataset\dataset.py
 ============================================================
 
-[EMPTY FILE]
 
 
 
@@ -910,7 +906,7 @@ def _compact_prediction(prediction):
 
 
 class DebugAnalyzer:
-    """Tạo diagnostic JSON; không thay đổi prediction hay điểm số."""
+    """Táº¡o diagnostic JSON; khÃ´ng thay Ä‘á»•i prediction hay Ä‘iá»ƒm sá»‘."""
 
     def __init__(self, ground_truth, ground_truth_source=None):
         self.evaluator = Evaluator(
@@ -929,9 +925,9 @@ class DebugAnalyzer:
         limit=100,
     ):
         """
-        Chuyển output Dense/Sparse/Fusion thành trace JSON gọn.
+        Chuyá»ƒn output Dense/Sparse/Fusion thÃ nh trace JSON gá»n.
 
-        Không ghi all_scores vì mảng này rất lớn và không JSON-serializable.
+        KhÃ´ng ghi all_scores vÃ¬ máº£ng nÃ y ráº¥t lá»›n vÃ  khÃ´ng JSON-serializable.
         """
         dense_lookup = {}
         for rank, item in enumerate(dense_results or [], start=1):
@@ -1137,7 +1133,7 @@ from collections import Counter, defaultdict
 
 
 def summarize_failures(query_results):
-    """Tổng hợp failure stage và lỗi Top-1 theo task."""
+    """Tá»•ng há»£p failure stage vÃ  lá»—i Top-1 theo task."""
     failure_stage = Counter()
     top1_failure = Counter()
     per_task = defaultdict(
@@ -1225,47 +1221,47 @@ def _normalize_answer_text(value):
     if value is None:
         return ""
     text = unicodedata.normalize("NFKC", str(value)).casefold().strip()
-    text = text.strip('"\'`“”‘’')
+    text = text.strip('"\'`â€œâ€â€˜â€™')
     text = re.sub(r"[^\w\s]", " ", text, flags=re.UNICODE)
     return re.sub(r"\s+", " ", text).strip()
 
 
 NUMBER_ALIASES = {
-    "không": "0",
+    "khÃ´ng": "0",
     "zero": "0",
-    "một": "1",
+    "má»™t": "1",
     "one": "1",
     "hai": "2",
     "two": "2",
     "ba": "3",
     "three": "3",
-    "bốn": "4",
-    "tư": "4",
+    "bá»‘n": "4",
+    "tÆ°": "4",
     "four": "4",
-    "năm": "5",
+    "nÄƒm": "5",
     "five": "5",
-    "sáu": "6",
+    "sÃ¡u": "6",
     "six": "6",
-    "bảy": "7",
+    "báº£y": "7",
     "seven": "7",
-    "tám": "8",
+    "tÃ¡m": "8",
     "eight": "8",
-    "chín": "9",
+    "chÃ­n": "9",
     "nine": "9",
-    "mười": "10",
+    "mÆ°á»i": "10",
     "ten": "10",
 }
 
 
 class Evaluator:
     """
-    Bộ đánh giá local cho AIC 2026.
+    Bá»™ Ä‘Ã¡nh giÃ¡ local cho AIC 2026.
 
-    - R@k bám theo công thức BTC: max R-Score trong Top-k.
-    - Video Recall dùng danh sách video retrieval riêng nếu được cung cấp.
-    - Frame Recall luôn yêu cầu đúng video và đúng frame/alignment, nhưng bỏ
-      qua answer của Q&A.
-    - Không dùng metric local để khẳng định chất lượng nếu Ground Truth là
+    - R@k bÃ¡m theo cÃ´ng thá»©c BTC: max R-Score trong Top-k.
+    - Video Recall dÃ¹ng danh sÃ¡ch video retrieval riÃªng náº¿u Ä‘Æ°á»£c cung cáº¥p.
+    - Frame Recall luÃ´n yÃªu cáº§u Ä‘Ãºng video vÃ  Ä‘Ãºng frame/alignment, nhÆ°ng bá»
+      qua answer cá»§a Q&A.
+    - KhÃ´ng dÃ¹ng metric local Ä‘á»ƒ kháº³ng Ä‘á»‹nh cháº¥t lÆ°á»£ng náº¿u Ground Truth lÃ 
       placeholder/smoke-test.
     """
 
@@ -1317,7 +1313,7 @@ class Evaluator:
             "template",
             "annotation_required",
         }:
-            placeholder_reasons.append("Ground Truth được đánh dấu là dữ liệu mẫu.")
+            placeholder_reasons.append("Ground Truth Ä‘Æ°á»£c Ä‘Ã¡nh dáº¥u lÃ  dá»¯ liá»‡u máº«u.")
 
         if any(
             token in source_name
@@ -1328,33 +1324,33 @@ class Evaluator:
                 "/src/label/task3.json",
             )
         ):
-            placeholder_reasons.append("Đường dẫn Ground Truth thuộc bộ label mẫu của project.")
+            placeholder_reasons.append("ÄÆ°á»ng dáº«n Ground Truth thuá»™c bá»™ label máº«u cá»§a project.")
 
         for task_type, task_items in self.gt.items():
             for query_id, item in task_items.items():
                 prefix = "%s/%s" % (task_type, query_id)
                 if not item.get("video_id"):
-                    issues.append("%s: thiếu video_id" % prefix)
+                    issues.append("%s: thiáº¿u video_id" % prefix)
 
                 if task_type in {"task1", "task2"}:
                     start = _safe_int(item.get("frame_start"))
                     end = _safe_int(item.get("frame_end"))
                     if start is None or end is None or start > end:
-                        issues.append("%s: frame range không hợp lệ" % prefix)
+                        issues.append("%s: frame range khÃ´ng há»£p lá»‡" % prefix)
 
                 if task_type == "task2" and not item.get("answer"):
-                    issues.append("%s: thiếu answer" % prefix)
+                    issues.append("%s: thiáº¿u answer" % prefix)
 
                 if task_type == "task3":
                     events = item.get("events_dicts") or []
                     if not events:
-                        issues.append("%s: thiếu events" % prefix)
+                        issues.append("%s: thiáº¿u events" % prefix)
                     for event_idx, event in enumerate(events, start=1):
                         start = _safe_int(event.get("frame_start"))
                         end = _safe_int(event.get("frame_end"))
                         if start is None or end is None or start > end:
                             issues.append(
-                                "%s: event %d có frame range không hợp lệ"
+                                "%s: event %d cÃ³ frame range khÃ´ng há»£p lá»‡"
                                 % (prefix, event_idx)
                             )
 
@@ -1382,11 +1378,11 @@ class Evaluator:
 
     def check_answer_match(self, prediction, gt_item):
         """
-        So khớp answer theo hướng bảo thủ.
+        So khá»›p answer theo hÆ°á»›ng báº£o thá»§.
 
-        Không dùng token-overlap vì "màu đỏ" và "màu xanh" cùng có từ
-        "màu" nhưng là hai đáp án khác nhau. Dev-set có thể khai báo
-        acceptable_answers để chấp nhận các cách diễn đạt tương đương.
+        KhÃ´ng dÃ¹ng token-overlap vÃ¬ "mÃ u Ä‘á»" vÃ  "mÃ u xanh" cÃ¹ng cÃ³ tá»«
+        "mÃ u" nhÆ°ng lÃ  hai Ä‘Ã¡p Ã¡n khÃ¡c nhau. Dev-set cÃ³ thá»ƒ khai bÃ¡o
+        acceptable_answers Ä‘á»ƒ cháº¥p nháº­n cÃ¡c cÃ¡ch diá»…n Ä‘áº¡t tÆ°Æ¡ng Ä‘Æ°Æ¡ng.
         """
         pred = _normalize_answer_text(prediction)
         if not pred:
@@ -1506,7 +1502,7 @@ class Evaluator:
         retrieval_candidates=None,
     ):
         if query_id not in self.gt.get(task_type, {}):
-            raise KeyError("Không tìm thấy Ground Truth cho %s/%s" % (task_type, query_id))
+            raise KeyError("KhÃ´ng tÃ¬m tháº¥y Ground Truth cho %s/%s" % (task_type, query_id))
 
         gt_item = self.gt[task_type][query_id]
         preds = list(predictions or [])[:100]
@@ -1620,7 +1616,7 @@ class Evaluator:
         return result
 
     def evaluate_query(self, query_id, task_type, predictions):
-        """API tương thích với code cũ: trả về final_score và list R@k."""
+        """API tÆ°Æ¡ng thÃ­ch vá»›i code cÅ©: tráº£ vá» final_score vÃ  list R@k."""
         detail = self.evaluate_query_detailed(query_id, task_type, predictions)
         return detail["final_score"], [
             detail["r_at_k"]["R@%d" % k] for k in K_VALUES
@@ -1781,8 +1777,8 @@ def main():
         "--retrieval-trace",
         required=True,
         help=(
-            "File retrieval_trace.json. Bắt buộc để Video Recall được tính "
-            "trên video retrieval thay vì suy ra từ các dòng submission."
+            "File retrieval_trace.json. Báº¯t buá»™c Ä‘á»ƒ Video Recall Ä‘Æ°á»£c tÃ­nh "
+            "trÃªn video retrieval thay vÃ¬ suy ra tá»« cÃ¡c dÃ²ng submission."
         ),
     )
     parser.add_argument(
@@ -1948,7 +1944,7 @@ def parse_query_file(file_path):
     trake_event_pattern = re.compile(
         r"^(?:"
         r"e\s*(\d+)"
-        r"|(?:sự\s*kiện|su\s*kien|event|bước|buoc)\s*(\d+)"
+        r"|(?:sá»±\s*kiá»‡n|su\s*kien|event|bÆ°á»›c|buoc)\s*(\d+)"
         r"|(\d+)\s*[\.\:\)]"
         r")"
         r"\s*[:\.\-\)]?\s*(.*)$",
@@ -2005,18 +2001,18 @@ def parse_query_file(file_path):
             return True
 
         if re.match(
-            r"^(câu hỏi|cau hoi|question|hỏi|hoi|cho biết|cho biet)\b",
+            r"^(cÃ¢u há»i|cau hoi|question|há»i|hoi|cho biáº¿t|cho biet)\b",
             text_lower,
         ):
             return True
 
         question_phrases = [
-            " bao nhiêu",
-            " là gì",
-            " ở đâu",
-            " màu gì",
-            " tên của ",
-            " ai là",
+            " bao nhiÃªu",
+            " lÃ  gÃ¬",
+            " á»Ÿ Ä‘Ã¢u",
+            " mÃ u gÃ¬",
+            " tÃªn cá»§a ",
+            " ai lÃ ",
         ]
 
         return any(
@@ -2057,7 +2053,7 @@ def parse_query_file(file_path):
         ).strip()
 
         question = re.sub(
-            r"^(câu hỏi|cau hoi|question)\s*[:\.]?\s*",
+            r"^(cÃ¢u há»i|cau hoi|question)\s*[:\.]?\s*",
             "",
             question,
             flags=re.IGNORECASE,
@@ -2166,20 +2162,20 @@ def parse_query_file(file_path):
 
     qa_indicators = [
         "?",
-        "câu hỏi",
+        "cÃ¢u há»i",
         "cau hoi",
         "question",
         "q&a",
-        "hỏi:",
-        "là gì",
-        "ở đâu",
-        "thế nào",
-        "màu gì",
-        "bao nhiêu",
-        "tên của",
-        "ai là",
-        "mấy câu thơ",
-        "tiêu đề",
+        "há»i:",
+        "lÃ  gÃ¬",
+        "á»Ÿ Ä‘Ã¢u",
+        "tháº¿ nÃ o",
+        "mÃ u gÃ¬",
+        "bao nhiÃªu",
+        "tÃªn cá»§a",
+        "ai lÃ ",
+        "máº¥y cÃ¢u thÆ¡",
+        "tiÃªu Ä‘á»",
     ]
 
     if any(
@@ -2218,13 +2214,13 @@ def parse_query_file(file_path):
 def format_answer_for_csv(ans_text):
     """Format cau tra loi VQA cho file CSV tuan thu dung quy dinh toi da 100 ky tu cua BTC."""
     if not ans_text or str(ans_text).strip() in ["", '""', "''", "None"]:
-        ans_text = "Không rõ"
+        ans_text = "KhÃ´ng rÃµ"
     ans_cleaned = str(ans_text).strip().strip('"').strip("'").replace("\n", " ").strip()
     # Quy dinh cua BTC: Answer (Q&A) co do dai toi da 100 ky tu
     if len(ans_cleaned) > 100:
         ans_cleaned = ans_cleaned[:100].strip()
     if not ans_cleaned:
-        ans_cleaned = "Không rõ"
+        ans_cleaned = "KhÃ´ng rÃµ"
     ans_escaped = ans_cleaned.replace('"', '""')
     return f'"{ans_escaped}"'
 
@@ -2249,7 +2245,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
     
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     object_searcher = ObjectSearcher(config)
     vlm_model_name = config.get("models", {}).get("vlm_model", "Qwen/Qwen2-VL-2B-Instruct")
     visual_reranker = VisualReRanker(vlm_model_name)
@@ -2550,7 +2546,7 @@ def export_submissions(input_file, config_path="configs/default.yaml", output_di
     # 1. Khoi tao cac module tim kiem
     dense_searcher = DenseSearcher(config)
     sparse_searcher = SparseSearcher(config)
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     temporal_refiner = TemporalRefiner(config, dense_searcher)
     
     keyframes_dir = config["data"].get("keyframes_dir")
@@ -3012,7 +3008,7 @@ def extract_objects(object_dir):
                     score = 1.0
 
 
-            # bỏ detection yếu
+            # bá» detection yáº¿u
             if score < 0.3:
                 continue
 
@@ -3025,7 +3021,7 @@ def extract_objects(object_dir):
 
 
 
-        # fallback nếu entity không có
+        # fallback náº¿u entity khÃ´ng cÃ³
         if not entities:
 
             for idx, name in enumerate(names):
@@ -3369,13 +3365,16 @@ class QueryProcessor:
 
     + fallback NLLB translation
 
-    Output sẽ giữ tương thích với pipeline cũ:
+    Output sáº½ giá»¯ tÆ°Æ¡ng thÃ­ch vá»›i pipeline cÅ©:
         - query_en
         - prompt_ensemble
         - intent_info
     """
 
-    def __init__(self):
+    def __init__(self, config=None):
+
+        config = config or {}
+        semantic_config = config.get("semantic_query", {})
 
         self.device = (
             "cuda"
@@ -3384,7 +3383,7 @@ class QueryProcessor:
         )
 
         # ==================================================
-        # Translation model (giữ lại từ pipeline cũ)
+        # Translation model (giá»¯ láº¡i tá»« pipeline cÅ©)
         # ==================================================
 
         self.translation_model_name = (
@@ -3402,16 +3401,32 @@ class QueryProcessor:
         # Semantic Query Engine
         # ==================================================
 
-        self.semantic_enabled = False
+        self.semantic_enabled = bool(
+            semantic_config.get("enabled", False)
+        )
 
-        self.semantic_model_name = (
-            "Qwen/Qwen2.5-7B-Instruct"
+        self.semantic_model_name = semantic_config.get(
+            "model", {}
+        ).get(
+            "name",
+            "Qwen/Qwen2.5-7B-Instruct",
+        )
+
+        self.semantic_quantization_4bit = bool(
+            semantic_config.get("quantization_4bit", False)
+        )
+
+        self.semantic_max_new_tokens = int(
+            semantic_config.get("model", {}).get(
+                "max_new_tokens",
+                250,
+            )
         )
 
         self.semantic_tokenizer = None
         self.semantic_model = None
 
-        # tránh load Qwen ngay khi khởi động
+        # trÃ¡nh load Qwen ngay khi khá»Ÿi Ä‘á»™ng
         self.semantic_loaded = False
 
 
@@ -3578,6 +3593,17 @@ class QueryProcessor:
                 else "auto"
             )
 
+            quantization_config = None
+            if self.semantic_quantization_4bit and self.device == "cuda":
+                from transformers import BitsAndBytesConfig
+
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=torch.float16,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_use_double_quant=True,
+                )
+
             self.semantic_model = (
                 AutoModelForCausalLM
                 .from_pretrained(
@@ -3588,6 +3614,7 @@ class QueryProcessor:
                         else torch.float32
                     ),
                     device_map=device_map,
+                    quantization_config=quantization_config,
                 )
             )
 
@@ -3626,14 +3653,8 @@ class QueryProcessor:
                 torch.cuda.empty_cache()
                 torch.cuda.ipc_collect()
 
-
             self.semantic_enabled = False
             self.semantic_loaded = False
-
-
-
-
-    # ======================================================
     # SEMANTIC QUERY PARSER
     # ======================================================
 
@@ -3695,13 +3716,12 @@ class QueryProcessor:
 
 
         prompt = f"""
-Bạn là chuyên gia phân tích truy vấn video.
+Báº¡n lÃ  chuyÃªn gia phÃ¢n tÃ­ch truy váº¥n video.
+HÃ£y phÃ¢n tÃ­ch cÃ¢u tiáº¿ng Viá»‡t sau vÃ  tráº£ vá» JSON.
+QUAN TRá»ŒNG: má»i giÃ¡ trá»‹ trong JSON (scene, objects, actions, ...) PHáº¢I Ä‘Æ°á»£c dá»‹ch sang TIáº¾NG ANH.
+Chá»‰ tráº£ vá» JSON há»£p lá»‡, khÃ´ng thÃªm giáº£i thÃ­ch.
 
-Hãy phân tích câu tiếng Việt sau thành JSON.
-
-Chỉ trả về JSON hợp lệ.
-
-Cấu trúc:
+Cáº¥u trÃºc:
 
 {{
 "scene":"",
@@ -3736,7 +3756,7 @@ Query:
                 outputs = (
                     self.semantic_model.generate(
                         **inputs,
-                        max_new_tokens=512,
+                        max_new_tokens=self.semantic_max_new_tokens,
                         temperature=0.1,
                         do_sample=False
                     )
@@ -3842,47 +3862,52 @@ Query:
 
         replacements = [
             (
-                r'\bmực\b',
+                r'\b(?<!cÃ¢n báº±ng)(?<!cÃ¢n náº·ng)(?<!cÃ¢n Ä‘o)(?<!cÃ¢n nháº¯c)(?<!cÃ¢n Ä‘á»‘i)cÃ¢n\b',
+                'scale'
+            ),
+
+            (
+                r'\bmá»±c\b',
                 'squid'
             ),
 
             (
-                r'\bđậu hà lan\b',
+                r'\bÄ‘áº­u hÃ  lan\b',
                 'green peas'
             ),
             
             (
-                r'\bmăng tây\b',
+                r'\bmÄƒng tÃ¢y\b',
                 'asparagus'
             ),
 
             (
-                r'\bmúa lân\b',
+                r'\bmÃºa lÃ¢n\b',
                 'lion dance performance'
             ),
 
             (
-                r'\bcon lân\b',
+                r'\bcon lÃ¢n\b',
                 'lion dance performer'
             ),
 
             (
-                r'\bbọ cánh cứng\b',
+                r'\bbá» cÃ¡nh cá»©ng\b',
                 'beetle insect'
             ),
 
             (
-                r'\bđiêu khắc cát\b',
+                r'\bÄ‘iÃªu kháº¯c cÃ¡t\b',
                 'sand sculpture'
             ),
 
             (
-                r'\bngười đàn ông\b',
+                r'\bngÆ°á»i Ä‘Ã n Ã´ng\b',
                 'man'
             ),
 
             (
-                r'\bngười phụ nữ\b',
+                r'\bngÆ°á»i phá»¥ ná»¯\b',
                 'woman'
             )
         ]
@@ -4012,10 +4037,10 @@ Query:
     def fallback_semantic_parse(self, query_vi):
 
         """
-        Fallback khi Qwen semantic model không chạy.
+        Fallback khi Qwen semantic model khÃ´ng cháº¡y.
 
-        Không thay thế LLM.
-        Chỉ giữ một số entity/action quan trọng.
+        KhÃ´ng thay tháº¿ LLM.
+        Chá»‰ giá»¯ má»™t sá»‘ entity/action quan trá»ng.
         """
 
         result = {
@@ -4048,14 +4073,14 @@ Query:
 
         cooking_words = [
 
-            "nấu",
-            "xào",
-            "chiên",
-            "luộc",
-            "chảo",
-            "bếp",
-            "món ăn",
-            "nguyên liệu"
+            "náº¥u",
+            "xÃ o",
+            "chiÃªn",
+            "luá»™c",
+            "cháº£o",
+            "báº¿p",
+            "mÃ³n Äƒn",
+            "nguyÃªn liá»‡u"
 
         ]
 
@@ -4085,34 +4110,34 @@ Query:
 
         object_map = {
 
-            "mực":
+            "má»±c":
                 "squid",
 
-            "đậu hà lan":
+            "Ä‘áº­u hÃ  lan":
                 "green peas",
 
-            "hành tây":
+            "hÃ nh tÃ¢y":
                 "onion",
 
-            "ớt đỏ":
+            "á»›t Ä‘á»":
                 "red chili",
 
-            "chảo":
+            "cháº£o":
                 "pan",
 
-            "bếp":
+            "báº¿p":
                 "stove",
 
-            "xe đạp":
+            "xe Ä‘áº¡p":
                 "bicycle",
 
-            "con lân":
+            "con lÃ¢n":
                 "lion dance performer",
 
             "nho":
                 "grape",
 
-            "kéo":
+            "kÃ©o":
                 "scissors"
 
         }
@@ -4133,25 +4158,25 @@ Query:
 
         action_map = {
 
-            "xào":
+            "xÃ o":
                 "stir frying",
 
-            "cho vào":
+            "cho vÃ o":
                 "adding ingredients",
 
-            "bỏ vào":
+            "bá» vÃ o":
                 "putting ingredients",
 
-            "cắt":
+            "cáº¯t":
                 "cutting",
 
-            "rót":
+            "rÃ³t":
                 "pouring",
 
-            "đuổi theo":
+            "Ä‘uá»•i theo":
                 "chasing",
 
-            "đi":
+            "Ä‘i":
                 "walking"
 
         }
@@ -4274,21 +4299,21 @@ Query:
 
         ocr_keywords = [
 
-            "chữ",
+            "chá»¯",
 
-            "biển",
+            "biá»ƒn",
 
-            "bảng",
+            "báº£ng",
 
             "logo",
 
-            "số",
+            "sá»‘",
 
-            "tên",
+            "tÃªn",
 
-            "ghi là",
+            "ghi lÃ ",
 
-            "đọc",
+            "Ä‘á»c",
 
             "poster",
 
@@ -4296,7 +4321,7 @@ Query:
 
             "slide",
 
-            "tiêu đề"
+            "tiÃªu Ä‘á»"
 
         ]
 
@@ -4429,12 +4454,12 @@ Query:
         Convert structured semantic query
         into dynamic retrieval views.
 
-        Không cố định:
+        KhÃ´ng cá»‘ Ä‘á»‹nh:
             object
             action
             scene
 
-        View nào có dữ liệu mới sinh.
+        View nÃ o cÃ³ dá»¯ liá»‡u má»›i sinh.
 
         Output:
 
@@ -4721,7 +4746,7 @@ Query:
         )
 
 
-        # nếu Qwen fail
+        # náº¿u Qwen fail
 
         if not any(
             semantic_query.values()
@@ -6743,12 +6768,12 @@ FILE: src\search\fusion.py
 
 def reciprocal_rank_fusion(dense_results, sparse_results, k=60, dense_weight=1.0, sparse_weight=1.0, dense_dict=None):
     """
-    Kết hợp kết quả từ Dense Search (CLIP/SigLIP) và Sparse Search (BM25)
-    sử dụng thuật toán Reciprocal Rank Fusion (RRF) có trọng số động.
+    Káº¿t há»£p káº¿t quáº£ tá»« Dense Search (CLIP/SigLIP) vÃ  Sparse Search (BM25)
+    sá»­ dá»¥ng thuáº­t toÃ¡n Reciprocal Rank Fusion (RRF) cÃ³ trá»ng sá»‘ Ä‘á»™ng.
     """
     rrf_scores = {}
     
-    # 1. Tính toán thứ hạng và điểm RRF cho Dense Search
+    # 1. TÃ­nh toÃ¡n thá»© háº¡ng vÃ  Ä‘iá»ƒm RRF cho Dense Search
     for rank, item in enumerate(dense_results):
         video_id = item["video_id"]
         if video_id not in rrf_scores:
@@ -6759,7 +6784,7 @@ def reciprocal_rank_fusion(dense_results, sparse_results, k=60, dense_weight=1.0
             }
         rrf_scores[video_id]["rrf_score"] += dense_weight * (1.0 / (k + rank + 1))
         
-    # 2. Tính toán thứ hạng và điểm RRF cho Sparse Search
+    # 2. TÃ­nh toÃ¡n thá»© háº¡ng vÃ  Ä‘iá»ƒm RRF cho Sparse Search
     for rank, item in enumerate(sparse_results):
         video_id = item["video_id"]
         dense_info = None
@@ -6778,7 +6803,7 @@ def reciprocal_rank_fusion(dense_results, sparse_results, k=60, dense_weight=1.0
                 
         rrf_scores[video_id]["rrf_score"] += sparse_weight * (1.0 / (k + rank + 1))
         
-    # 3. Sắp xếp lại danh sách kết quả theo điểm RRF giảm dần
+    # 3. Sáº¯p xáº¿p láº¡i danh sÃ¡ch káº¿t quáº£ theo Ä‘iá»ƒm RRF giáº£m dáº§n
     fused_results = list(rrf_scores.values())
     fused_results = sorted(fused_results, key=lambda x: x["rrf_score"], reverse=True)
     return fused_results
@@ -6814,94 +6839,94 @@ class ObjectSearcher:
         # Bang anh xa thuc the toan dien cho tat ca 24 cau de thi sang cac lop OpenImages chuan cua BTC
         self.entity_map = {
             # Phuong tien & Dua xe
-            "xe đạp": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Land vehicle", "Sports equipment", "Vehicle"],
-            "đua xe": ["Bicycle", "Wheel", "Helmet", "Sports equipment", "Person", "Clothing"],
-            "tay đua": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Sports equipment"],
+            "xe Ä‘áº¡p": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Land vehicle", "Sports equipment", "Vehicle"],
+            "Ä‘ua xe": ["Bicycle", "Wheel", "Helmet", "Sports equipment", "Person", "Clothing"],
+            "tay Ä‘ua": ["Bicycle", "Wheel", "Helmet", "Hat", "Clothing", "Person", "Sports equipment"],
             "flycam": ["Aircraft", "Vehicle"],
-            "thuyền": ["Boat", "Watercraft", "Vehicle"],
+            "thuyá»n": ["Boat", "Watercraft", "Vehicle"],
             "ghe": ["Boat", "Watercraft", "Vehicle"],
-            "chèo ghe": ["Boat", "Watercraft", "Person"],
-            "tàu vũ trụ": ["Rocket", "Space vehicle", "Helmet", "Suit", "Aircraft", "Airplane", "Clothing", "Person", "Vehicle"],
+            "chÃ¨o ghe": ["Boat", "Watercraft", "Person"],
+            "tÃ u vÅ© trá»¥": ["Rocket", "Space vehicle", "Helmet", "Suit", "Aircraft", "Airplane", "Clothing", "Person", "Vehicle"],
             # Tu dien danh tu thuc the don thuan (khong doan mo boi canh)
-            "người": ["Person"],
-            "nam giới": ["Man", "Person"],
-            "nữ giới": ["Woman", "Person"],
-            "phụ nữ": ["Woman", "Person"],
-            "đàn ông": ["Man", "Person"],
-            "trẻ em": ["Girl", "Boy", "Person"],
-            "cô gái": ["Girl", "Woman", "Person"],
-            "chàng trai": ["Boy", "Man", "Person"],
+            "ngÆ°á»i": ["Person"],
+            "nam giá»›i": ["Man", "Person"],
+            "ná»¯ giá»›i": ["Woman", "Person"],
+            "phá»¥ ná»¯": ["Woman", "Person"],
+            "Ä‘Ã n Ã´ng": ["Man", "Person"],
+            "tráº» em": ["Girl", "Boy", "Person"],
+            "cÃ´ gÃ¡i": ["Girl", "Woman", "Person"],
+            "chÃ ng trai": ["Boy", "Man", "Person"],
             "con trai": ["Boy", "Man", "Person"],
-            "con gái": ["Girl", "Woman", "Person"],
+            "con gÃ¡i": ["Girl", "Woman", "Person"],
 
-            "xe đạp": ["Bicycle", "Vehicle"],
-            "xe máy": ["Motorcycle", "Vehicle"],
-            "ô tô": ["Car", "Vehicle"],
-            "xe hơi": ["Car", "Vehicle"],
-            "xe buýt": ["Bus", "Vehicle"],
-            "xe tải": ["Truck", "Vehicle"],
-            "máy bay": ["Airplane", "Aircraft", "Vehicle"],
-            "trực thăng": ["Helicopter", "Aircraft", "Vehicle"],
-            "tàu hỏa": ["Train", "Vehicle"],
-            "thuyền": ["Boat", "Watercraft", "Vehicle"],
-            "tàu thủy": ["Boat", "Watercraft", "Vehicle"],
-            "tàu vũ trụ": ["Rocket", "Space vehicle", "Vehicle"],
-            "tên lửa": ["Rocket", "Space vehicle"],
-            "phi hành gia": ["Person", "Suit", "Helmet"],
-            "chó": ["Dog", "Animal", "Mammal", "Carnivore"],
-            "mèo": ["Cat", "Animal", "Mammal", "Carnivore"],
-            "ngựa": ["Horse", "Animal", "Mammal"],
-            "bò": ["Cow", "Cattle", "Livestock", "Animal", "Mammal"],
-            "dê": ["Goat", "Livestock", "Animal", "Mammal"],
-            "cừu": ["Sheep", "Livestock", "Animal", "Mammal"],
-            "hổ": ["Tiger", "Carnivore", "Animal", "Mammal"],
-            "sư tử": ["Lion", "Carnivore", "Animal", "Mammal"],
+            "xe Ä‘áº¡p": ["Bicycle", "Vehicle"],
+            "xe mÃ¡y": ["Motorcycle", "Vehicle"],
+            "Ã´ tÃ´": ["Car", "Vehicle"],
+            "xe hÆ¡i": ["Car", "Vehicle"],
+            "xe buÃ½t": ["Bus", "Vehicle"],
+            "xe táº£i": ["Truck", "Vehicle"],
+            "mÃ¡y bay": ["Airplane", "Aircraft", "Vehicle"],
+            "trá»±c thÄƒng": ["Helicopter", "Aircraft", "Vehicle"],
+            "tÃ u há»a": ["Train", "Vehicle"],
+            "thuyá»n": ["Boat", "Watercraft", "Vehicle"],
+            "tÃ u thá»§y": ["Boat", "Watercraft", "Vehicle"],
+            "tÃ u vÅ© trá»¥": ["Rocket", "Space vehicle", "Vehicle"],
+            "tÃªn lá»­a": ["Rocket", "Space vehicle"],
+            "phi hÃ nh gia": ["Person", "Suit", "Helmet"],
+            "chÃ³": ["Dog", "Animal", "Mammal", "Carnivore"],
+            "mÃ¨o": ["Cat", "Animal", "Mammal", "Carnivore"],
+            "ngá»±a": ["Horse", "Animal", "Mammal"],
+            "bÃ²": ["Cow", "Cattle", "Livestock", "Animal", "Mammal"],
+            "dÃª": ["Goat", "Livestock", "Animal", "Mammal"],
+            "cá»«u": ["Sheep", "Livestock", "Animal", "Mammal"],
+            "há»•": ["Tiger", "Carnivore", "Animal", "Mammal"],
+            "sÆ° tá»­": ["Lion", "Carnivore", "Animal", "Mammal"],
             "voi": ["Elephant", "Animal", "Mammal"],
-            "gấu": ["Bear", "Carnivore", "Animal", "Mammal"],
-            "hươu": ["Deer", "Animal", "Mammal"],
+            "gáº¥u": ["Bear", "Carnivore", "Animal", "Mammal"],
+            "hÆ°Æ¡u": ["Deer", "Animal", "Mammal"],
             "chim": ["Bird", "Animal"],
-            "cá": ["Fish", "Sea life", "Animal"],
-            "cá mập": ["Shark", "Fish", "Sea life", "Animal"],
-            "bạch tuộc": ["Sea life", "Animal"],
-            "mực": ["Sea life", "Animal"],
-            "bọ cánh cứng": ["Beetle", "Insect", "Animal"],
-            "côn trùng": ["Insect", "Animal"],
-            "bánh": ["Cake", "Baked goods", "Food"],
-            "bánh rán": ["Doughnut", "Cake", "Pastry", "Food"],
-            "chuối": ["Banana", "Fruit", "Food"],
-            "táo": ["Apple", "Fruit", "Food"],
-            "dâu": ["Fruit", "Food"],
-            "dứa": ["Pineapple", "Fruit", "Food"],
-            "nấm": ["Mushroom", "Vegetable", "Food"],
-            "măng tây": ["Vegetable", "Food"],
-            "thịt": ["Meat", "Beef", "Pork", "Food"],
-            "gỏi cuốn": ["Spring roll", "Dish", "Food"],
+            "cÃ¡": ["Fish", "Sea life", "Animal"],
+            "cÃ¡ máº­p": ["Shark", "Fish", "Sea life", "Animal"],
+            "báº¡ch tuá»™c": ["Sea life", "Animal"],
+            "má»±c": ["Sea life", "Animal"],
+            "bá» cÃ¡nh cá»©ng": ["Beetle", "Insect", "Animal"],
+            "cÃ´n trÃ¹ng": ["Insect", "Animal"],
+            "bÃ¡nh": ["Cake", "Baked goods", "Food"],
+            "bÃ¡nh rÃ¡n": ["Doughnut", "Cake", "Pastry", "Food"],
+            "chuá»‘i": ["Banana", "Fruit", "Food"],
+            "tÃ¡o": ["Apple", "Fruit", "Food"],
+            "dÃ¢u": ["Fruit", "Food"],
+            "dá»©a": ["Pineapple", "Fruit", "Food"],
+            "náº¥m": ["Mushroom", "Vegetable", "Food"],
+            "mÄƒng tÃ¢y": ["Vegetable", "Food"],
+            "thá»‹t": ["Meat", "Beef", "Pork", "Food"],
+            "gá»i cuá»‘n": ["Spring roll", "Dish", "Food"],
             "pizza": ["Pizza", "Food"],
-            "máy ảnh": ["Camera", "Camera lens", "Electronics"],
-            "ống kính": ["Camera lens", "Camera"],
-            "điện thoại": ["Cell phone", "Electronics"],
-            "máy tính": ["Laptop", "Computer", "Electronics"],
+            "mÃ¡y áº£nh": ["Camera", "Camera lens", "Electronics"],
+            "á»‘ng kÃ­nh": ["Camera lens", "Camera"],
+            "Ä‘iá»‡n thoáº¡i": ["Cell phone", "Electronics"],
+            "mÃ¡y tÃ­nh": ["Laptop", "Computer", "Electronics"],
             "tivi": ["Television", "Electronics"],
-            "đàn": ["Musical instrument"],
-            "nhạc cụ": ["Musical instrument"],
-            "trống": ["Drum", "Musical instrument"],
-            "kèn": ["Musical instrument"],
-            "trượt ván": ["Skateboard", "Sports equipment"],
-            "ván trượt": ["Skateboard", "Sports equipment"],
-            "bóng đá": ["Sports ball", "Sports equipment"],
-            "múa lân": ["Lion", "Dragon", "Costume"],
-            "tượng": ["Sculpture", "Statue", "Art"],
-            "điêu khắc": ["Sculpture", "Statue", "Art"],
+            "Ä‘Ã n": ["Musical instrument"],
+            "nháº¡c cá»¥": ["Musical instrument"],
+            "trá»‘ng": ["Drum", "Musical instrument"],
+            "kÃ¨n": ["Musical instrument"],
+            "trÆ°á»£t vÃ¡n": ["Skateboard", "Sports equipment"],
+            "vÃ¡n trÆ°á»£t": ["Skateboard", "Sports equipment"],
+            "bÃ³ng Ä‘Ã¡": ["Sports ball", "Sports equipment"],
+            "mÃºa lÃ¢n": ["Lion", "Dragon", "Costume"],
+            "tÆ°á»£ng": ["Sculpture", "Statue", "Art"],
+            "Ä‘iÃªu kháº¯c": ["Sculpture", "Statue", "Art"],
             "hoa": ["Flower", "Rose", "Plant"],
-            "cây": ["Tree", "Plant"],
-            "sách": ["Book"],
-            "kệ sách": ["Bookcase", "Furniture"],
-            "bàn": ["Table", "Furniture"],
-            "ghế": ["Chair", "Furniture"],
-            "áo": ["Shirt", "Clothing"],
-            "quần": ["Pants", "Clothing"],
-            "nón": ["Hat", "Helmet", "Clothing"],
-            "mũ": ["Hat", "Helmet", "Clothing"]
+            "cÃ¢y": ["Tree", "Plant"],
+            "sÃ¡ch": ["Book"],
+            "ká»‡ sÃ¡ch": ["Bookcase", "Furniture"],
+            "bÃ n": ["Table", "Furniture"],
+            "gháº¿": ["Chair", "Furniture"],
+            "Ã¡o": ["Shirt", "Clothing"],
+            "quáº§n": ["Pants", "Clothing"],
+            "nÃ³n": ["Hat", "Helmet", "Clothing"],
+            "mÅ©": ["Hat", "Helmet", "Clothing"]
         }
 
 
@@ -7033,11 +7058,11 @@ class ObjectSearcher:
         for kw, ents in self.entity_map.items():
             if re.search(r'\b' + re.escape(kw) + r'\b', text_lower):
                 # Xu ly loai tru cac tu dong am dac thu cua tieng Viet
-                if kw == "đàn" and ("đàn hổ" in text_lower or "đàn dê" in text_lower or "đàn bò" in text_lower or "đàn chim" in text_lower or "người đàn ông" in text_lower or "đàn ong" in text_lower or "đàn cá" in text_lower):
-                    if not any(m in text_lower for m in ["chơi đàn", "gảy đàn", "tiếng đàn", "đàn guitar", "đàn piano", "đàn tranh", "nhạc cụ"]):
+                if kw == "Ä‘Ã n" and ("Ä‘Ã n há»•" in text_lower or "Ä‘Ã n dÃª" in text_lower or "Ä‘Ã n bÃ²" in text_lower or "Ä‘Ã n chim" in text_lower or "ngÆ°á»i Ä‘Ã n Ã´ng" in text_lower or "Ä‘Ã n ong" in text_lower or "Ä‘Ã n cÃ¡" in text_lower):
+                    if not any(m in text_lower for m in ["chÆ¡i Ä‘Ã n", "gáº£y Ä‘Ã n", "tiáº¿ng Ä‘Ã n", "Ä‘Ã n guitar", "Ä‘Ã n piano", "Ä‘Ã n tranh", "nháº¡c cá»¥"]):
                         continue
-                if kw == "tượng" and ("tượng trưng" in text_lower or "tượng hình" in text_lower):
-                    if not any(s in text_lower for s in ["bức tượng", "tượng đài", "tạc tượng", "pho tượng"]):
+                if kw == "tÆ°á»£ng" and ("tÆ°á»£ng trÆ°ng" in text_lower or "tÆ°á»£ng hÃ¬nh" in text_lower):
+                    if not any(s in text_lower for s in ["bá»©c tÆ°á»£ng", "tÆ°á»£ng Ä‘Ã i", "táº¡c tÆ°á»£ng", "pho tÆ°á»£ng"]):
                         continue
                         
                 for e in ents:
@@ -7101,9 +7126,9 @@ class ObjectSearcher:
     def get_entity_information_weight(self, entity_name, query_text=""):
         """
         Dinh luong trong so thuc the theo nguyen ly Saliency 3 Tang (Visual Saliency Taxonomy):
-        - ⭐ Tier 1 (x3.5): Chu the tieu diem doc nhat (Dong vat, Phuong tien, Nhac cu, Mon an cu the, Thiet bi, Nghe thuat...)
-        - 🔹 Tier 2 (x2.0): Dao cu, Do noi that, Phu kien ca nhan (Chao, dia, bat, ban, ghe, ke sach, mu, non, kinh, balo, tui...)
-        - 🔸 Tier 3 (x0.5): Tac nhan nen & Boi canh pho quat (Person, Man, Woman, Clothing, Shirt, Plant, Tree, Building, Wall...)
+        - â­ Tier 1 (x3.5): Chu the tieu diem doc nhat (Dong vat, Phuong tien, Nhac cu, Mon an cu the, Thiet bi, Nghe thuat...)
+        - ðŸ”¹ Tier 2 (x2.0): Dao cu, Do noi that, Phu kien ca nhan (Chao, dia, bat, ban, ghe, ke sach, mu, non, kinh, balo, tui...)
+        - ðŸ”¸ Tier 3 (x0.5): Tac nhan nen & Boi canh pho quat (Person, Man, Woman, Clothing, Shirt, Plant, Tree, Building, Wall...)
         """
         ent = entity_name.lower().strip()
         
@@ -7278,25 +7303,25 @@ class KISQueryDecomposer:
     """Tach query KIS thanh cac semantic anchor theo quy tac nhe, deterministic."""
 
     _marker_pattern = re.compile(
-        r"(?P<reverse>\btrước\s+đó\b)"
+        r"(?P<reverse>\btrÆ°á»›c\s+Ä‘Ã³\b)"
         r"|(?P<forward>"
-        r"\b(?:sau\s+đó|tiếp\s+theo|tiếp\s+đến|kế\s+tiếp)\b"
-        r"|\bngay\s+sau(?:\s+cảnh\s+này)?\b"
-        r"|\bsau\s+vài\s+(?:giây|phút|khoảnh\s+khắc)(?:\s+nghỉ)?\b"
-        r"|\b(?:đoạn\s+clip|đoạn\s+phim|mẩu\s+tin|cảnh\s+quay)?\s*"
-        r"bắt\s+đầu\s+(?:bằng|với)\b"
-        r"|\b(?:đoạn\s+clip|đoạn\s+phim|cảnh\s+quay)?\s*"
-        r"(?:kết\s+thúc\s+(?:bằng|với|khi)|kết\s+thúc)\b"
-        r"|\bcảnh\s+quay\s+tiếp\s+theo(?:\s+là)?\b"
-        r"|\bđầu\s+tiên\s+là\b"
-        r"|\bslide\s+bài\s+giảng\b"
+        r"\b(?:sau\s+Ä‘Ã³|tiáº¿p\s+theo|tiáº¿p\s+Ä‘áº¿n|káº¿\s+tiáº¿p)\b"
+        r"|\bngay\s+sau(?:\s+cáº£nh\s+nÃ y)?\b"
+        r"|\bsau\s+vÃ i\s+(?:giÃ¢y|phÃºt|khoáº£nh\s+kháº¯c)(?:\s+nghá»‰)?\b"
+        r"|\b(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|máº©u\s+tin|cáº£nh\s+quay)?\s*"
+        r"báº¯t\s+Ä‘áº§u\s+(?:báº±ng|vá»›i)\b"
+        r"|\b(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|cáº£nh\s+quay)?\s*"
+        r"(?:káº¿t\s+thÃºc\s+(?:báº±ng|vá»›i|khi)|káº¿t\s+thÃºc)\b"
+        r"|\bcáº£nh\s+quay\s+tiáº¿p\s+theo(?:\s+lÃ )?\b"
+        r"|\bÄ‘áº§u\s+tiÃªn\s+lÃ \b"
+        r"|\bslide\s+bÃ i\s+giáº£ng\b"
         r")",
         flags=re.IGNORECASE,
     )
 
     _leading_noise = re.compile(
-        r"^(?:đoạn\s+clip|đoạn\s+phim|mẩu\s+tin|cảnh\s+quay|hình\s+ảnh)"
-        r"\s*(?:cho\s+thấy|là|về)?\s*",
+        r"^(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|máº©u\s+tin|cáº£nh\s+quay|hÃ¬nh\s+áº£nh)"
+        r"\s*(?:cho\s+tháº¥y|lÃ |vá»)?\s*",
         flags=re.IGNORECASE,
     )
 
@@ -7358,7 +7383,7 @@ class KISQueryDecomposer:
                 continue
 
             if relation == "reverse" and events:
-                # "Trước đó" mô tả event đứng trước cảnh vừa nêu (query p1-12).
+                # "TrÆ°á»›c Ä‘Ã³" mÃ´ táº£ event Ä‘á»©ng trÆ°á»›c cáº£nh vá»«a nÃªu (query p1-12).
                 events.insert(max(0, len(events) - 1), anchor)
             else:
                 events.append(anchor)
@@ -7805,10 +7830,10 @@ class SparseSearcher:
             return []
         raw_words = re.findall(r'\b\w+\b', text.lower())
         stopwords = {
-            "đoạn", "video", "clip", "về", "một", "chương", "trình", "của", "tên", "là", 
-            "trong", "có", "thể", "thấy", "này", "đang", "đi", "tại", "thuộc", "tỉnh", 
-            "hãy", "tìm", "chính", "xác", "phân", "cảnh", "bắt", "đầu", "với", "hình", 
-            "ảnh", "sau", "đó", "tiếp", "theo", "người", "cần", "biết", "gồm", "các"
+            "Ä‘oáº¡n", "video", "clip", "vá»", "má»™t", "chÆ°Æ¡ng", "trÃ¬nh", "cá»§a", "tÃªn", "lÃ ", 
+            "trong", "cÃ³", "thá»ƒ", "tháº¥y", "nÃ y", "Ä‘ang", "Ä‘i", "táº¡i", "thuá»™c", "tá»‰nh", 
+            "hÃ£y", "tÃ¬m", "chÃ­nh", "xÃ¡c", "phÃ¢n", "cáº£nh", "báº¯t", "Ä‘áº§u", "vá»›i", "hÃ¬nh", 
+            "áº£nh", "sau", "Ä‘Ã³", "tiáº¿p", "theo", "ngÆ°á»i", "cáº§n", "biáº¿t", "gá»“m", "cÃ¡c"
         }
         filtered = [w for w in raw_words if w not in stopwords and len(w) > 1]
         return filtered if filtered else raw_words
@@ -7885,9 +7910,9 @@ class SparseSearcher:
         tokenized_query = self.preprocess_text(query_text)
         
         # Phat hien dong cac thuc the viet hoa, tu viet tat va tu khoa trong ngoac kep (khong hardcode)
-        entities = re.findall(r'\b[A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ][a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]+\b', query_text)
+        entities = re.findall(r'\b[A-ZÄÃÃ€áº¢Ãƒáº Ã‚áº¤áº¦áº¨áºªáº¬Ä‚áº®áº°áº²áº´áº¶Ã‰Ãˆáººáº¼áº¸ÃŠáº¾á»€á»‚á»„á»†ÃÃŒá»ˆÄ¨á»ŠÃ“Ã’á»ŽÃ•á»ŒÃ”á»á»’á»”á»–á»˜Æ á»šá»œá»žá» á»¢ÃšÃ™á»¦Å¨á»¤Æ¯á»¨á»ªá»¬á»®á»°Ãá»²á»¶á»¸á»´][a-zÄ‘Ã¡Ã áº£Ã£áº¡Ã¢áº¥áº§áº©áº«áº­Äƒáº¯áº±áº³áºµáº·Ã©Ã¨áº»áº½áº¹Ãªáº¿á»á»ƒá»…á»‡Ã­Ã¬á»‰Ä©á»‹Ã³Ã²á»Ãµá»Ã´á»‘á»“á»•á»—á»™Æ¡á»›á»á»Ÿá»¡á»£ÃºÃ¹á»§Å©á»¥Æ°á»©á»«á»­á»¯á»±Ã½á»³á»·á»¹á»µ]+\b', query_text)
         acronyms = re.findall(r'\b[A-Z0-9\-]{2,}\b', query_text)
-        quoted_terms = re.findall(r'["“]([^"”]+)["”]', query_text)
+        quoted_terms = re.findall(r'["â€œ]([^"â€]+)["â€]', query_text)
         
         boosted_tokens = list(tokenized_query)
         for ent in entities:
@@ -7962,10 +7987,10 @@ class TemporalRefiner:
     """
     Coarse-to-fine raw-video localization cho Textual KIS.
 
-    - Tâm cửa sổ lấy từ đúng hàng Map-Keyframes.
-    - Decode từng vùng nhỏ bằng OpenCV, không load nguyên video.
-    - Dùng lại image/text encoder của DenseSearcher.
-    - Trả actual frame ordinal 0-based của raw MP4.
+    - TÃ¢m cá»­a sá»• láº¥y tá»« Ä‘Ãºng hÃ ng Map-Keyframes.
+    - Decode tá»«ng vÃ¹ng nhá» báº±ng OpenCV, khÃ´ng load nguyÃªn video.
+    - DÃ¹ng láº¡i image/text encoder cá»§a DenseSearcher.
+    - Tráº£ actual frame ordinal 0-based cá»§a raw MP4.
     """
 
     VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"}
@@ -8691,10 +8716,10 @@ class VisualReRanker:
         """Danh gia do trung khop cua anh tren thang diem 0-10."""
         self._load_model()
         prompt = (
-            f"Hãy quan sát kỹ bức ảnh này và cho biết: Bức ảnh có chứa đúng phân cảnh được mô tả sau đây không: "
+            f"HÃ£y quan sÃ¡t ká»¹ bá»©c áº£nh nÃ y vÃ  cho biáº¿t: Bá»©c áº£nh cÃ³ chá»©a Ä‘Ãºng phÃ¢n cáº£nh Ä‘Æ°á»£c mÃ´ táº£ sau Ä‘Ã¢y khÃ´ng: "
             f"'{query_text}'?\n"
-            f"Đánh giá độ trùng khớp trên thang điểm từ 0 đến 10 (10 = hoàn toàn trùng khớp chi tiết, 0 = hoàn toàn không liên quan).\n"
-            f"Trả về kết quả theo định dạng: Score: X (ví dụ: Score: 9.5 hoặc Score: 2)."
+            f"ÄÃ¡nh giÃ¡ Ä‘á»™ trÃ¹ng khá»›p trÃªn thang Ä‘iá»ƒm tá»« 0 Ä‘áº¿n 10 (10 = hoÃ n toÃ n trÃ¹ng khá»›p chi tiáº¿t, 0 = hoÃ n toÃ n khÃ´ng liÃªn quan).\n"
+            f"Tráº£ vá» káº¿t quáº£ theo Ä‘á»‹nh dáº¡ng: Score: X (vÃ­ dá»¥: Score: 9.5 hoáº·c Score: 2)."
         )
         messages = [
             {
@@ -8744,7 +8769,7 @@ class VisualReRanker:
         if score_match:
             score = float(score_match.group(1))
         else:
-            score = 8.0 if any(w in ans.lower() for w in ["yes", "có", "đúng", "match"]) else 1.0
+            score = 8.0 if any(w in ans.lower() for w in ["yes", "cÃ³", "Ä‘Ãºng", "match"]) else 1.0
 
         return min(max(score, 0.0), 10.0)
 
@@ -8878,10 +8903,10 @@ class FrameMappingError(RuntimeError):
 
 def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None):
     """
-    Map keyframe/vector ordinal (0-based) -> actual frame_idx của video gốc.
+    Map keyframe/vector ordinal (0-based) -> actual frame_idx cá»§a video gá»‘c.
 
-    `frame_idx` tham số của hàm này là index của vector/keyframe trong mảng,
-    KHÔNG phải actual video frame index.
+    `frame_idx` tham sá»‘ cá»§a hÃ m nÃ y lÃ  index cá»§a vector/keyframe trong máº£ng,
+    KHÃ”NG pháº£i actual video frame index.
     """
     global _csv_map_cache
 
@@ -8964,8 +8989,8 @@ def get_frame_id_from_idx(keyframes_dir, video_id, frame_idx, metadata_dir=None)
             for col in df.columns
         }
 
-        # Dataset BTC thực tế dùng `frame_idx`.
-        # Không đoán bằng cột numeric lớn nhất.
+        # Dataset BTC thá»±c táº¿ dÃ¹ng `frame_idx`.
+        # KhÃ´ng Ä‘oÃ¡n báº±ng cá»™t numeric lá»›n nháº¥t.
         if "frame_idx" not in normalized:
             raise FrameMappingError(
                 f"CSV {target_csv_path} does not contain required column 'frame_idx'. "
@@ -9347,15 +9372,15 @@ def load_vlm(model_id="Qwen/Qwen2-VL-2B-Instruct"):
 def classify_qa_type(question):
     """Phan loai bon dang Q&A chinh thuc ma khong hardcode query ID."""
     text = str(question or "").lower()
-    if any(phrase in text for phrase in ("có bao nhiêu", "bao nhiêu vị trí", "đếm")):
+    if any(phrase in text for phrase in ("cÃ³ bao nhiÃªu", "bao nhiÃªu vá»‹ trÃ­", "Ä‘áº¿m")):
         return "counting"
-    if any(phrase in text for phrase in ("tên của", "tên con", "địa danh", "đèo là gì")):
+    if any(phrase in text for phrase in ("tÃªn cá»§a", "tÃªn con", "Ä‘á»‹a danh", "Ä‘Ã¨o lÃ  gÃ¬")):
         return "place_name"
-    if any(phrase in text for phrase in ("biển báo", "biển số", "con số được ghi")):
+    if any(phrase in text for phrase in ("biá»ƒn bÃ¡o", "biá»ƒn sá»‘", "con sá»‘ Ä‘Æ°á»£c ghi")):
         return "sign_number"
-    if any(phrase in text for phrase in ("con số hiển thị", "số hiển thị", "trên cân")):
+    if any(phrase in text for phrase in ("con sá»‘ hiá»ƒn thá»‹", "sá»‘ hiá»ƒn thá»‹", "trÃªn cÃ¢n")):
         return "read_number"
-    if any(phrase in text for phrase in ("chữ gì", "ghi gì", "đọc", "tên gì")):
+    if any(phrase in text for phrase in ("chá»¯ gÃ¬", "ghi gÃ¬", "Ä‘á»c", "tÃªn gÃ¬")):
         return "read_text"
     return "generic"
 
@@ -9363,20 +9388,20 @@ def classify_qa_type(question):
 def clean_vlm_answer(raw_answer, question=None):
     """Lam sach answer nhung khong tu bien reasoning thanh dap an gia."""
     if raw_answer is None:
-        return "Không rõ"
+        return "KhÃ´ng rÃµ"
     answer = str(raw_answer).strip()
     if not answer:
-        return "Không rõ"
+        return "KhÃ´ng rÃµ"
 
     if question and len(question) > 10:
         clean_question = question.strip().rstrip("?")
         if answer.lower().startswith(clean_question.lower()):
-            answer = answer[len(clean_question):].lstrip(" : là,.-")
+            answer = answer[len(clean_question):].lstrip(" : lÃ ,.-")
 
     prefixes = [
-        r"^(?:đáp án|câu trả lời|kết quả)\s*(?:là)?\s*[:\-\.]?\s*",
-        r"^(?:đó là|chính là|là)\s*[:\-\.]?\s*",
-        r"^(?:trên|trong)\s+(?:hình|ảnh)\s*(?:là|có)?\s*[:\-\.]?\s*",
+        r"^(?:Ä‘Ã¡p Ã¡n|cÃ¢u tráº£ lá»i|káº¿t quáº£)\s*(?:lÃ )?\s*[:\-\.]?\s*",
+        r"^(?:Ä‘Ã³ lÃ |chÃ­nh lÃ |lÃ )\s*[:\-\.]?\s*",
+        r"^(?:trÃªn|trong)\s+(?:hÃ¬nh|áº£nh)\s*(?:lÃ |cÃ³)?\s*[:\-\.]?\s*",
     ]
     changed = True
     while changed:
@@ -9389,34 +9414,34 @@ def clean_vlm_answer(raw_answer, question=None):
 
     answer = answer.strip().strip('"').strip("'").rstrip(".!?;:")
     refusal_terms = (
-        "không rõ",
-        "chưa rõ",
-        "không thể xác định",
-        "không xác định",
-        "không nhìn thấy",
-        "không thấy",
-        "xin lỗi",
-        "tôi không",
+        "khÃ´ng rÃµ",
+        "chÆ°a rÃµ",
+        "khÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh",
+        "khÃ´ng xÃ¡c Ä‘á»‹nh",
+        "khÃ´ng nhÃ¬n tháº¥y",
+        "khÃ´ng tháº¥y",
+        "xin lá»—i",
+        "tÃ´i khÃ´ng",
         "none",
     )
     if not answer or any(term in answer.lower() for term in refusal_terms):
-        return "Không rõ"
-    return answer[:100].strip() or "Không rõ"
+        return "KhÃ´ng rÃµ"
+    return answer[:100].strip() or "KhÃ´ng rÃµ"
 
 
 def _normalize_answer(value):
     text = str(value or "").lower().strip()
-    text = re.sub(r"[^0-9a-zà-ỹđ]+", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"[^0-9a-zÃ -á»¹Ä‘]+", " ", text, flags=re.IGNORECASE)
     return re.sub(r"\s+", " ", text).strip()
 
 
 def _is_concrete_answer(answer):
     return _normalize_answer(answer) not in {
         "",
-        "không rõ",
-        "chưa rõ",
+        "khÃ´ng rÃµ",
+        "chÆ°a rÃµ",
         "none",
-        "không có",
+        "khÃ´ng cÃ³",
     }
 
 
@@ -9428,12 +9453,12 @@ def _answer_matches_type(answer, qa_type):
         if re.search(r"\d", text):
             return True
         number_words = {
-            "không", "một", "hai", "ba", "bốn", "tư", "năm", "lăm",
-            "sáu", "bảy", "tám", "chín", "mười", "trăm", "nghìn",
+            "khÃ´ng", "má»™t", "hai", "ba", "bá»‘n", "tÆ°", "nÄƒm", "lÄƒm",
+            "sÃ¡u", "báº£y", "tÃ¡m", "chÃ­n", "mÆ°á»i", "trÄƒm", "nghÃ¬n",
         }
         return any(token in number_words for token in text.split())
     if qa_type in {"place_name", "read_text"}:
-        return bool(re.search(r"[a-zà-ỹđ]{2,}", text, flags=re.IGNORECASE))
+        return bool(re.search(r"[a-zÃ -á»¹Ä‘]{2,}", text, flags=re.IGNORECASE))
     return True
 
 
@@ -9443,7 +9468,7 @@ def _ocr_quality(text, qa_type):
     if not text:
         return 0.0
     digits = re.findall(r"\d+(?:[.,]\d+)?", text)
-    letters = re.findall(r"[A-Za-zÀ-ỹĐđ]{2,}", text)
+    letters = re.findall(r"[A-Za-zÃ€-á»¹ÄÄ‘]{2,}", text)
     if qa_type in {"read_number", "sign_number"}:
         return min(1.0, 0.25 + 0.25 * len(digits)) if digits else 0.1
     if qa_type in {"place_name", "read_text"}:
@@ -9531,25 +9556,25 @@ def select_evidence_keyframes(
 def _instruction_for_type(qa_type):
     if qa_type == "read_number":
         return (
-            "Đọc đúng con số ở trạng thái cuối/ổn định được hỏi. "
-            "Ưu tiên vùng màn hình cân; không lấy số từ phụ đề hoặc logo."
+            "Äá»c Ä‘Ãºng con sá»‘ á»Ÿ tráº¡ng thÃ¡i cuá»‘i/á»•n Ä‘á»‹nh Ä‘Æ°á»£c há»i. "
+            "Æ¯u tiÃªn vÃ¹ng mÃ n hÃ¬nh cÃ¢n; khÃ´ng láº¥y sá»‘ tá»« phá»¥ Ä‘á» hoáº·c logo."
         )
     if qa_type == "sign_number":
         return (
-            "Đọc đúng con số trên biển báo được mô tả. "
-            "Phân biệt biển báo với số xe, phụ đề và watermark."
+            "Äá»c Ä‘Ãºng con sá»‘ trÃªn biá»ƒn bÃ¡o Ä‘Æ°á»£c mÃ´ táº£. "
+            "PhÃ¢n biá»‡t biá»ƒn bÃ¡o vá»›i sá»‘ xe, phá»¥ Ä‘á» vÃ  watermark."
         )
     if qa_type == "counting":
         return (
-            "Đếm trên frame rõ nhất. Các ảnh là những thời điểm/góc nhìn của cùng video: "
-            "không cộng số lượng giữa các ảnh và không đếm bảng chú giải."
+            "Äáº¿m trÃªn frame rÃµ nháº¥t. CÃ¡c áº£nh lÃ  nhá»¯ng thá»i Ä‘iá»ƒm/gÃ³c nhÃ¬n cá»§a cÃ¹ng video: "
+            "khÃ´ng cá»™ng sá»‘ lÆ°á»£ng giá»¯a cÃ¡c áº£nh vÃ  khÃ´ng Ä‘áº¿m báº£ng chÃº giáº£i."
         )
     if qa_type == "place_name":
         return (
-            "Tìm chữ/tên địa danh xuất hiện trên biển, cột mốc, bản đồ hoặc phụ đề liên quan. "
-            "Đối chiếu OCR gợi ý với hình ảnh trước khi trả lời."
+            "TÃ¬m chá»¯/tÃªn Ä‘á»‹a danh xuáº¥t hiá»‡n trÃªn biá»ƒn, cá»™t má»‘c, báº£n Ä‘á»“ hoáº·c phá»¥ Ä‘á» liÃªn quan. "
+            "Äá»‘i chiáº¿u OCR gá»£i Ã½ vá»›i hÃ¬nh áº£nh trÆ°á»›c khi tráº£ lá»i."
         )
-    return "Trả lời từ frame có bằng chứng trực tiếp và chọn đúng evidence image."
+    return "Tráº£ lá»i tá»« frame cÃ³ báº±ng chá»©ng trá»±c tiáº¿p vÃ  chá»n Ä‘Ãºng evidence image."
 
 
 def _parse_vlm_json(raw_text, question, image_count):
@@ -9653,7 +9678,7 @@ def solve_single_video_vqa(
         return {
             "video_id": video_id,
             "frame_id": None,
-            "answer": "Không rõ",
+            "answer": "KhÃ´ng rÃµ",
             "confidence": None,
             "evidence_source": "no_evidence_frame",
             "evidence_score": 0.0,
@@ -9663,7 +9688,7 @@ def solve_single_video_vqa(
 
     content = []
     for image_number, item in enumerate(usable, start=1):
-        ocr_hint = item.get("ocr_text") or "(không có OCR precomputed)"
+        ocr_hint = item.get("ocr_text") or "(khÃ´ng cÃ³ OCR precomputed)"
         content.append({
             "type": "text",
             "text": (
@@ -9674,18 +9699,18 @@ def solve_single_video_vqa(
         content.append({"type": "image", "image": item["image_path"]})
 
     prompt = (
-        "Bối cảnh cần tìm: %s\n"
-        "Câu hỏi: %s\n"
-        "Loại câu hỏi: %s\n"
+        "Bá»‘i cáº£nh cáº§n tÃ¬m: %s\n"
+        "CÃ¢u há»i: %s\n"
+        "Loáº¡i cÃ¢u há»i: %s\n"
         "%s\n"
-        "Hãy đối chiếu tất cả ảnh nhưng chỉ chọn ảnh có bằng chứng trực tiếp nhất. "
-        "OCR_HINT có thể sai, chỉ dùng khi khớp hình ảnh. "
-        "Nếu không đủ bằng chứng, answer phải là 'Không rõ'.\n"
-        "Trả về DUY NHẤT JSON hợp lệ, không markdown, ví dụ đúng định dạng "
-        "(không copy nguyên văn các giá trị mẫu dưới đây):\n"
-        "{\"answer\": \"<đáp án ngắn dưới 20 từ>\", "
-        "\"evidence_image\": <số thứ tự ảnh>, \"confidence\": <0.0-1.0>, "
-        "\"evidence_source\": \"<ocr hoặc visual hoặc ocr+visual>\"}"
+        "HÃ£y Ä‘á»‘i chiáº¿u táº¥t cáº£ áº£nh nhÆ°ng chá»‰ chá»n áº£nh cÃ³ báº±ng chá»©ng trá»±c tiáº¿p nháº¥t. "
+        "OCR_HINT cÃ³ thá»ƒ sai, chá»‰ dÃ¹ng khi khá»›p hÃ¬nh áº£nh. "
+        "Náº¿u khÃ´ng Ä‘á»§ báº±ng chá»©ng, answer pháº£i lÃ  'KhÃ´ng rÃµ'.\n"
+        "Tráº£ vá» DUY NHáº¤T JSON há»£p lá»‡, khÃ´ng markdown, vÃ­ dá»¥ Ä‘Ãºng Ä‘á»‹nh dáº¡ng "
+        "(khÃ´ng copy nguyÃªn vÄƒn cÃ¡c giÃ¡ trá»‹ máº«u dÆ°á»›i Ä‘Ã¢y):\n"
+        "{\"answer\": \"<Ä‘Ã¡p Ã¡n ngáº¯n dÆ°á»›i 20 tá»«>\", "
+        "\"evidence_image\": <sá»‘ thá»© tá»± áº£nh>, \"confidence\": <0.0-1.0>, "
+        "\"evidence_source\": \"<ocr hoáº·c visual hoáº·c ocr+visual>\"}"
         % (query_text, question, qa_type, _instruction_for_type(qa_type))
     )
     content.append({"type": "text", "text": prompt})
@@ -9857,7 +9882,7 @@ def solve_task2(
         return {
             "video_id": "none",
             "frame_id": None,
-            "answer": "Không rõ",
+            "answer": "KhÃ´ng rÃµ",
             "promoted_idx": 0,
             "candidate_results": [],
         }
@@ -9935,10 +9960,10 @@ def _consensus_answer(candidate_results, qa_config):
         if key:
             groups.setdefault(key, []).append(item)
     if not groups:
-        return "Không rõ", False
+        return "KhÃ´ng rÃµ", False
     _, group = max(groups.items(), key=lambda pair: len(pair[1]))
     if len(group) < minimum:
-        return "Không rõ", False
+        return "KhÃ´ng rÃµ", False
     return str(group[0]["answer"]), True
 
 
@@ -9977,7 +10002,7 @@ def build_task2_top100_predictions(
         frame_id = coarse_frame_id
         result = result_lookup.get(video_id)
         if result is not None:
-            answer = result.get("answer", "Không rõ")
+            answer = result.get("answer", "KhÃ´ng rÃµ")
             if video_id not in first_video_occurrence and result.get("frame_id") is not None:
                 evidence_frame_id = str(result["frame_id"])
                 if evidence_frame_id != coarse_frame_id:
@@ -9995,7 +10020,7 @@ def build_task2_top100_predictions(
             score = None
             confidence = None
         else:
-            answer = "Không rõ"
+            answer = "KhÃ´ng rÃµ"
             source = "unevaluated_no_consensus"
             score = None
             confidence = None
@@ -10648,17 +10673,17 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
     config = load_config(config_path) if os.path.exists(config_path) else {"data": {}, "models": {}}
     
     print("================================================================")
-    print("🔬 KHOI CHAY CHAN DOAN TRICH XUAT TU KHOA & NGU NGHIA DE THI")
+    print("ðŸ”¬ KHOI CHAY CHAN DOAN TRICH XUAT TU KHOA & NGU NGHIA DE THI")
     print(f"Thu muc de thi: {input_dir}")
     print("================================================================")
     
-    query_processor = QueryProcessor()
+    query_processor = QueryProcessor(config)
     object_searcher = ObjectSearcher(config)
     
     txt_files = []
     if input_dir and os.path.exists(input_dir):
         if os.path.isfile(input_dir) and input_dir.lower().endswith(".zip"):
-            unzip_tmp = "C:/Users/acer/Downloads/Bộ câu hỏi vòng thi (25 câu).txt"
+            unzip_tmp = "C:/Users/acer/Downloads/Bá»™ cÃ¢u há»i vÃ²ng thi (25 cÃ¢u).txt"
             os.makedirs(unzip_tmp, exist_ok=True)
             with zipfile.ZipFile(input_dir, "r") as zf:
                 zf.extractall(unzip_tmp)
@@ -10697,14 +10722,14 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         
         print("----------------------------------------------------------------")
         print(f"[{idx}/{len(txt_files)}] ID: {q_id} | TASK: {task_type.upper()}")
-        print(f"📝 Nội dung Tiếng Việt  : {q_text}")
+        print(f"ðŸ“ Ná»™i dung Tiáº¿ng Viá»‡t  : {q_text}")
         
         if task_type == "qa":
-            print(f"❓ Câu hỏi cần trả lời  : {parsed.get('question', '')}")
+            print(f"â“ CÃ¢u há»i cáº§n tráº£ lá»i  : {parsed.get('question', '')}")
         elif task_type == "trake":
-            print(f"⏱️  Chuỗi sự kiện ({len(parsed.get('events', []))} bước):")
+            print(f"â±ï¸  Chuá»—i sá»± kiá»‡n ({len(parsed.get('events', []))} bÆ°á»›c):")
             for ev_idx, ev in enumerate(parsed.get("events", []), 1):
-                print(f"    - Bước {ev_idx}: {ev}")
+                print(f"    - BÆ°á»›c {ev_idx}: {ev}")
                 
         # 1. Xu ly dich & Prompt Ensemble
         # Giong production: video retrieval/query processing chi dung visual/context description.
@@ -10714,12 +10739,12 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
         intent_info = proc_res.get("intent_info", {})
         prompts = proc_res.get("prompt_ensemble", [])
         
-        print(f"🌐 Dịch Tiếng Anh (NLLB): {trans_en}")
-        print(f"🎯 Phân loại Intent     : {intent_info.get('intent')} (Dense weight: {intent_info.get('dense_weight')}, Sparse weight: {intent_info.get('sparse_weight')})")
+        print(f"ðŸŒ Dá»‹ch Tiáº¿ng Anh (NLLB): {trans_en}")
+        print(f"ðŸŽ¯ PhÃ¢n loáº¡i Intent     : {intent_info.get('intent')} (Dense weight: {intent_info.get('dense_weight')}, Sparse weight: {intent_info.get('sparse_weight')})")
         
         # 2. Trich xuat thuc the & Named Entities dong theo chuan NLP
-        VN_UPPER = 'A-ZĐÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ'
-        VN_LOWER = 'a-zđáàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ'
+        VN_UPPER = 'A-ZÄÃÃ€áº¢Ãƒáº Ã‚áº¤áº¦áº¨áºªáº¬Ä‚áº®áº°áº²áº´áº¶Ã‰Ãˆáººáº¼áº¸ÃŠáº¾á»€á»‚á»„á»†ÃÃŒá»ˆÄ¨á»ŠÃ“Ã’á»ŽÃ•á»ŒÃ”á»á»’á»”á»–á»˜Æ á»šá»œá»žá» á»¢ÃšÃ™á»¦Å¨á»¤Æ¯á»¨á»ªá»¬á»®á»°Ãá»²á»¶á»¸á»´'
+        VN_LOWER = 'a-zÄ‘Ã¡Ã áº£Ã£áº¡Ã¢áº¥áº§áº©áº«áº­Äƒáº¯áº±áº³áºµáº·Ã©Ã¨áº»áº½áº¹Ãªáº¿á»á»ƒá»…á»‡Ã­Ã¬á»‰Ä©á»‹Ã³Ã²á»Ãµá»Ã´á»‘á»“á»•á»—á»™Æ¡á»›á»á»Ÿá»¡á»£ÃºÃ¹á»§Å©á»¥Æ°á»©á»«á»­á»¯á»±Ã½á»³á»·á»¹á»µ'
         
         sentences = re.split(r'[\.\?\!\n]+', search_target)
         proper_names = []
@@ -10732,30 +10757,30 @@ def run_keyword_test(input_dir=None, config_path="configs/default.yaml"):
                 
         acronyms = re.findall(rf'\b(?:[{VN_UPPER}]{{2,}}[0-9\-]*|[{VN_UPPER}]+-[0-9]+)\b', search_target)
         
-        print(f"🏷️  Thực thể viết hoa    : {proper_names if proper_names else 'Không có'}")
-        print(f"🔑 Từ viết tắt / Mã hiệu: {acronyms if acronyms else 'Không có'}")
+        print(f"ðŸ·ï¸  Thá»±c thá»ƒ viáº¿t hoa    : {proper_names if proper_names else 'KhÃ´ng cÃ³'}")
+        print(f"ðŸ”‘ Tá»« viáº¿t táº¯t / MÃ£ hiá»‡u: {acronyms if acronyms else 'KhÃ´ng cÃ³'}")
         
         # 3. Anh xa sang lop vat the Object Detection & 3 Tier Ham luong Thong tin
         tiered_res = object_searcher.extract_tiered_entities(search_target)
         mapped_objects = tiered_res["all"]
-        print(f"📦 Objects tương ứng    : {mapped_objects if mapped_objects else 'Không có'}")
+        print(f"ðŸ“¦ Objects tÆ°Æ¡ng á»©ng    : {mapped_objects if mapped_objects else 'KhÃ´ng cÃ³'}")
         if mapped_objects:
-            print(f"   ⭐ Tier 1 (Chủ thể quyết định x3.5) : {tiered_res['tier1']}")
-            print(f"   🔹 Tier 2 (Đạo cụ & Bối cảnh x2.0)   : {tiered_res['tier2']}")
-            print(f"   🔸 Tier 3 (Tác nhân nền x0.5)        : {tiered_res['tier3']}")
+            print(f"   â­ Tier 1 (Chá»§ thá»ƒ quyáº¿t Ä‘á»‹nh x3.5) : {tiered_res['tier1']}")
+            print(f"   ðŸ”¹ Tier 2 (Äáº¡o cá»¥ & Bá»‘i cáº£nh x2.0)   : {tiered_res['tier2']}")
+            print(f"   ðŸ”¸ Tier 3 (TÃ¡c nhÃ¢n ná»n x0.5)        : {tiered_res['tier3']}")
 
 
         
         # 4. Cac bien the Prompt Ensemble gui cho CLIP
-        print(f"🚀 Prompt Ensemble ({len(prompts)} biến thể):")
+        print(f"ðŸš€ Prompt Ensemble ({len(prompts)} biáº¿n thá»ƒ):")
         for p_idx, p in enumerate(prompts[:3], 1):
             print(f"    {p_idx}. \"{p}\"")
         if len(prompts) > 3:
-            print(f"    ... và {len(prompts) - 3} biến thể khác")
+            print(f"    ... vÃ  {len(prompts) - 3} biáº¿n thá»ƒ khÃ¡c")
 
             
     print("\n================================================================")
-    print("✅ HOAN TAT KIEM TRA TOAN BO QUERY!")
+    print("âœ… HOAN TAT KIEM TRA TOAN BO QUERY!")
     print("Ban hay quan sat toan bo ket qua dich va tu khoa o tren.")
     print("Neu tat ca deu chuan xac, ban co the tu tin chay Cell tiep theo de tao submission.zip!")
     print("================================================================")
@@ -10807,9 +10832,9 @@ def write_query_file(folder, filename, content):
 
 def test_kis(tmp_dir):
     content = (
-        "Cảnh quay một nhóm hơn 5 người xếp thành hàng tập thể dục, "
-        "cùng thực hiện động tác hai tay chạm mũi chân. "
-        "Trong nhóm chỉ có một người đeo kính và ba người đội nón có màu đỏ."
+        "Cáº£nh quay má»™t nhÃ³m hÆ¡n 5 ngÆ°á»i xáº¿p thÃ nh hÃ ng táº­p thá»ƒ dá»¥c, "
+        "cÃ¹ng thá»±c hiá»‡n Ä‘á»™ng tÃ¡c hai tay cháº¡m mÅ©i chÃ¢n. "
+        "Trong nhÃ³m chá»‰ cÃ³ má»™t ngÆ°á»i Ä‘eo kÃ­nh vÃ  ba ngÆ°á»i Ä‘á»™i nÃ³n cÃ³ mÃ u Ä‘á»."
     )
 
     path = write_query_file(
@@ -10830,18 +10855,18 @@ def test_kis(tmp_dir):
 
 def test_qa(tmp_dir):
     content = (
-        "Hình ảnh một con cá được đặt lên cân, sau đó có cảnh "
-        "một con cá khác cùng loại bị một người cầm đuôi. "
-        "Con số hiển thị cuối cùng trên cân là bao nhiêu?"
+        "HÃ¬nh áº£nh má»™t con cÃ¡ Ä‘Æ°á»£c Ä‘áº·t lÃªn cÃ¢n, sau Ä‘Ã³ cÃ³ cáº£nh "
+        "má»™t con cÃ¡ khÃ¡c cÃ¹ng loáº¡i bá»‹ má»™t ngÆ°á»i cáº§m Ä‘uÃ´i. "
+        "Con sá»‘ hiá»ƒn thá»‹ cuá»‘i cÃ¹ng trÃªn cÃ¢n lÃ  bao nhiÃªu?"
     )
 
     expected_query = (
-        "Hình ảnh một con cá được đặt lên cân, sau đó có cảnh "
-        "một con cá khác cùng loại bị một người cầm đuôi."
+        "HÃ¬nh áº£nh má»™t con cÃ¡ Ä‘Æ°á»£c Ä‘áº·t lÃªn cÃ¢n, sau Ä‘Ã³ cÃ³ cáº£nh "
+        "má»™t con cÃ¡ khÃ¡c cÃ¹ng loáº¡i bá»‹ má»™t ngÆ°á»i cáº§m Ä‘uÃ´i."
     )
 
     expected_question = (
-        "Con số hiển thị cuối cùng trên cân là bao nhiêu?"
+        "Con sá»‘ hiá»ƒn thá»‹ cuá»‘i cÃ¹ng trÃªn cÃ¢n lÃ  bao nhiÃªu?"
     )
 
     path = write_query_file(
@@ -10861,33 +10886,33 @@ def test_qa(tmp_dir):
 
 def test_official_trake(tmp_dir):
     content = (
-        "Đoạn video bắt đầu bằng ảnh cận đầu một con lân trắng, "
-        "mũi đỏ, bên cạnh lá cờ trắng viền đỏ.\n"
-        "E1 Khoảnh khắc đầu tiên xuất hiện đầy đủ hai con rồng vàng "
-        "đang xoay vòng.\n"
-        "E2 Khoảnh khắc đầu tiên con lân hoàn tất cú xoay người trên "
-        "các thanh trụ (thời điểm đâu tiên các chân của lân đặt trên "
-        "trụ sau khi xoay).\n"
-        "E3 Khoảnh khắc đầu tiên dùi chạm vào kẻng đồng múa lân."
+        "Äoáº¡n video báº¯t Ä‘áº§u báº±ng áº£nh cáº­n Ä‘áº§u má»™t con lÃ¢n tráº¯ng, "
+        "mÅ©i Ä‘á», bÃªn cáº¡nh lÃ¡ cá» tráº¯ng viá»n Ä‘á».\n"
+        "E1 Khoáº£nh kháº¯c Ä‘áº§u tiÃªn xuáº¥t hiá»‡n Ä‘áº§y Ä‘á»§ hai con rá»“ng vÃ ng "
+        "Ä‘ang xoay vÃ²ng.\n"
+        "E2 Khoáº£nh kháº¯c Ä‘áº§u tiÃªn con lÃ¢n hoÃ n táº¥t cÃº xoay ngÆ°á»i trÃªn "
+        "cÃ¡c thanh trá»¥ (thá»i Ä‘iá»ƒm Ä‘Ã¢u tiÃªn cÃ¡c chÃ¢n cá»§a lÃ¢n Ä‘áº·t trÃªn "
+        "trá»¥ sau khi xoay).\n"
+        "E3 Khoáº£nh kháº¯c Ä‘áº§u tiÃªn dÃ¹i cháº¡m vÃ o káº»ng Ä‘á»“ng mÃºa lÃ¢n."
     )
 
     expected_context = (
-        "Đoạn video bắt đầu bằng ảnh cận đầu một con lân trắng, "
-        "mũi đỏ, bên cạnh lá cờ trắng viền đỏ."
+        "Äoáº¡n video báº¯t Ä‘áº§u báº±ng áº£nh cáº­n Ä‘áº§u má»™t con lÃ¢n tráº¯ng, "
+        "mÅ©i Ä‘á», bÃªn cáº¡nh lÃ¡ cá» tráº¯ng viá»n Ä‘á»."
     )
 
     expected_events = [
         (
-            "Khoảnh khắc đầu tiên xuất hiện đầy đủ hai con rồng vàng "
-            "đang xoay vòng."
+            "Khoáº£nh kháº¯c Ä‘áº§u tiÃªn xuáº¥t hiá»‡n Ä‘áº§y Ä‘á»§ hai con rá»“ng vÃ ng "
+            "Ä‘ang xoay vÃ²ng."
         ),
         (
-            "Khoảnh khắc đầu tiên con lân hoàn tất cú xoay người trên "
-            "các thanh trụ (thời điểm đâu tiên các chân của lân đặt trên "
-            "trụ sau khi xoay)."
+            "Khoáº£nh kháº¯c Ä‘áº§u tiÃªn con lÃ¢n hoÃ n táº¥t cÃº xoay ngÆ°á»i trÃªn "
+            "cÃ¡c thanh trá»¥ (thá»i Ä‘iá»ƒm Ä‘Ã¢u tiÃªn cÃ¡c chÃ¢n cá»§a lÃ¢n Ä‘áº·t trÃªn "
+            "trá»¥ sau khi xoay)."
         ),
         (
-            "Khoảnh khắc đầu tiên dùi chạm vào kẻng đồng múa lân."
+            "Khoáº£nh kháº¯c Ä‘áº§u tiÃªn dÃ¹i cháº¡m vÃ o káº»ng Ä‘á»“ng mÃºa lÃ¢n."
         ),
     ]
 
@@ -10916,10 +10941,10 @@ def test_official_trake(tmp_dir):
 
 def test_fallback_trake_detection(tmp_dir):
     content = (
-        "Một đoạn video trình diễn múa lân.\n"
-        "E1 Hai con rồng xuất hiện.\n"
-        "E2 Con lân xoay trên trụ.\n"
-        "E3 Dùi chạm kẻng."
+        "Má»™t Ä‘oáº¡n video trÃ¬nh diá»…n mÃºa lÃ¢n.\n"
+        "E1 Hai con rá»“ng xuáº¥t hiá»‡n.\n"
+        "E2 Con lÃ¢n xoay trÃªn trá»¥.\n"
+        "E3 DÃ¹i cháº¡m káº»ng."
     )
 
     path = write_query_file(
@@ -11014,11 +11039,11 @@ def build_fixture():
             {
                 "query_id": "qa_1",
                 "query": "QA unit test",
-                "question": "Màu gì?",
+                "question": "MÃ u gÃ¬?",
                 "video_id": "V_GT_2",
                 "frame_start": 200,
                 "frame_end": 210,
-                "answer": "màu xanh",
+                "answer": "mÃ u xanh",
                 "acceptable_answers": ["xanh", "blue"],
             }
         ],
@@ -11046,7 +11071,7 @@ def build_fixture():
         },
         "task2": {
             "qa_1": [
-                {"video_id": "V_GT_2", "frame_id": 205, "answer": "màu đỏ"},
+                {"video_id": "V_GT_2", "frame_id": 205, "answer": "mÃ u Ä‘á»"},
                 {"video_id": "V_GT_2", "frame_id": 205, "answer": "blue"},
             ]
         },
@@ -11075,7 +11100,7 @@ def main():
     ground_truth, predictions, retrieval = build_fixture()
     evaluator = Evaluator(ground_truth, ground_truth_source="smoke_test.json")
 
-    assert not evaluator.check_answer_match("màu đỏ", evaluator.gt["task2"]["qa_1"])
+    assert not evaluator.check_answer_match("mÃ u Ä‘á»", evaluator.gt["task2"]["qa_1"])
     assert evaluator.check_answer_match("blue", evaluator.gt["task2"]["qa_1"])
 
     metrics = evaluator.evaluate_all(predictions, retrieval_dict=retrieval)
@@ -11264,8 +11289,8 @@ def collect_videos(root: Path) -> dict[str, Path]:
 
 def collect_keyframe_dirs(root: Path) -> dict[str, Path]:
     """
-    Không giả định keyframe là 0000.jpg/001.jpg.
-    Một thư mục được coi là video keyframe folder nếu chứa ảnh trực tiếp bên trong.
+    KhÃ´ng giáº£ Ä‘á»‹nh keyframe lÃ  0000.jpg/001.jpg.
+    Má»™t thÆ° má»¥c Ä‘Æ°á»£c coi lÃ  video keyframe folder náº¿u chá»©a áº£nh trá»±c tiáº¿p bÃªn trong.
     """
     result = {}
     if not root.exists():
@@ -11446,7 +11471,7 @@ def inspect_video(
         if map_info["count"] > 1 and not map_info["n_monotonic"]:
             warnings.append("map_n_not_strictly_increasing")
 
-    # BTC nói object JSON có cùng tên với keyframe tương ứng.
+    # BTC nÃ³i object JSON cÃ³ cÃ¹ng tÃªn vá»›i keyframe tÆ°Æ¡ng á»©ng.
     filename_alignment_ok = None
     if kfs and objs and len(kfs) == len(objs):
         kf_stems = [p.stem for p in kfs]
@@ -11489,7 +11514,7 @@ def inspect_video(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Audit toàn bộ dataset AIC 2026 mà không thay đổi inference pipeline."
+        description="Audit toÃ n bá»™ dataset AIC 2026 mÃ  khÃ´ng thay Ä‘á»•i inference pipeline."
     )
     parser.add_argument("--config", default="configs/default.yaml")
     parser.add_argument(
@@ -11500,7 +11525,7 @@ def main():
         "--limit",
         type=int,
         default=0,
-        help="0 = audit toàn bộ; >0 = chỉ audit N video đầu."
+        help="0 = audit toÃ n bá»™; >0 = chá»‰ audit N video Ä‘áº§u."
     )
     args = parser.parse_args()
 
@@ -11606,9 +11631,9 @@ TEXT_EXTENSIONS = {
     ".py", ".json", ".yaml", ".yml", ".txt", ".md", ".toml", ".ini", ".cfg", ".csv"
 }
 
-# Các dấu hiệu điển hình của UTF-8 đã bị giải mã nhầm theo CP1252/Latin-1.
+# CÃ¡c dáº¥u hiá»‡u Ä‘iá»ƒn hÃ¬nh cá»§a UTF-8 Ä‘Ã£ bá»‹ giáº£i mÃ£ nháº§m theo CP1252/Latin-1.
 MOJIBAKE_MARKERS = (
-    "Ã", "Â", "Ä", "áº", "á»", "Æ", "Å", "ðŸ", "â€", "â€™", "â€œ", "â€", "â€“", "â€”"
+    "Ãƒ", "Ã‚", "Ã„", "Ã¡Âº", "Ã¡Â»", "Ã†", "Ã…", "Ã°Å¸", "Ã¢â‚¬", "Ã¢â‚¬â„¢", "Ã¢â‚¬Å“", "Ã¢â‚¬Â", "Ã¢â‚¬â€œ", "Ã¢â‚¬â€"
 )
 
 SKIP_DIRS = {
@@ -11633,14 +11658,14 @@ def mojibake_score(text: str) -> int:
 
 def try_repair_cp1252_utf8(text: str) -> str | None:
     """
-    Thử sửa dạng mojibake phổ biến:
-        'mÃºa lÃ¢n' -> 'múa lân'
-        'Ä‘'         -> 'đ'
-        'ðŸŽ¬'       -> emoji đúng
+    Thá»­ sá»­a dáº¡ng mojibake phá»• biáº¿n:
+        'mÃƒÂºa lÃƒÂ¢n' -> 'mÃºa lÃ¢n'
+        'Ã„â€˜'         -> 'Ä‘'
+        'Ã°Å¸Å½Â¬'       -> emoji Ä‘Ãºng
 
-    Chỉ trả bản sửa nếu:
-    - encode CP1252 + decode UTF-8 thành công;
-    - số dấu hiệu mojibake giảm.
+    Chá»‰ tráº£ báº£n sá»­a náº¿u:
+    - encode CP1252 + decode UTF-8 thÃ nh cÃ´ng;
+    - sá»‘ dáº¥u hiá»‡u mojibake giáº£m.
     """
     try:
         repaired = text.encode("cp1252").decode("utf-8")
@@ -11677,9 +11702,9 @@ def inspect_file(path: Path) -> dict:
 
         repaired = try_repair_cp1252_utf8(line)
 
-        # Một số ký tự như "Ã", "Â" có thể là Unicode tiếng Việt hợp lệ.
-        # Chỉ coi là mojibake khi phép CP1252 -> UTF-8 thực sự sửa được
-        # và try_repair_cp1252_utf8() đã xác nhận mojibake_score giảm.
+        # Má»™t sá»‘ kÃ½ tá»± nhÆ° "Ãƒ", "Ã‚" cÃ³ thá»ƒ lÃ  Unicode tiáº¿ng Viá»‡t há»£p lá»‡.
+        # Chá»‰ coi lÃ  mojibake khi phÃ©p CP1252 -> UTF-8 thá»±c sá»± sá»­a Ä‘Æ°á»£c
+        # vÃ  try_repair_cp1252_utf8() Ä‘Ã£ xÃ¡c nháº­n mojibake_score giáº£m.
         if repaired is None:
             continue
 
@@ -11700,8 +11725,8 @@ def inspect_file(path: Path) -> dict:
 
 def repair_file_safely(path: Path) -> tuple[bool, int]:
     """
-    Chỉ sửa từng dòng khi phép chuyển đổi làm GIẢM rõ ràng dấu hiệu mojibake.
-    Tạo .bak trước khi ghi.
+    Chá»‰ sá»­a tá»«ng dÃ²ng khi phÃ©p chuyá»ƒn Ä‘á»•i lÃ m GIáº¢M rÃµ rÃ ng dáº¥u hiá»‡u mojibake.
+    Táº¡o .bak trÆ°á»›c khi ghi.
     """
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines(keepends=True)
@@ -11734,17 +11759,17 @@ def repair_file_safely(path: Path) -> tuple[bool, int]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Kiểm tra UTF-8 và mojibake trong source AIC 2026."
+        description="Kiá»ƒm tra UTF-8 vÃ  mojibake trong source AIC 2026."
     )
     parser.add_argument(
         "--root",
         default=".",
-        help="Project root. Mặc định: thư mục hiện tại."
+        help="Project root. Máº·c Ä‘á»‹nh: thÆ° má»¥c hiá»‡n táº¡i."
     )
     parser.add_argument(
         "--fix",
         action="store_true",
-        help="Sửa an toàn các dòng mojibake nhận diện chắc chắn và tạo file .bak."
+        help="Sá»­a an toÃ n cÃ¡c dÃ²ng mojibake nháº­n diá»‡n cháº¯c cháº¯n vÃ  táº¡o file .bak."
     )
     args = parser.parse_args()
 
@@ -11784,12 +11809,12 @@ def main() -> None:
                 print(f"        -> {item['suggested'][:180]}")
 
         if len(bad) > 8:
-            print(f"  ... còn {len(bad) - 8} dòng.")
+            print(f"  ... cÃ²n {len(bad) - 8} dÃ²ng.")
 
         if args.fix:
             changed, count = repair_file_safely(path)
             if changed:
-                print(f"  [FIXED] {count} dòng; backup: {path.name}.bak")
+                print(f"  [FIXED] {count} dÃ²ng; backup: {path.name}.bak")
 
     print("\n" + "=" * 72)
     print("SUMMARY")
@@ -11833,7 +11858,7 @@ from src.tasks.task3_trake import solve_task3
 
 st.set_page_config(
     page_title="AI Challenge HCMC 2026 - Video Search System",
-    page_icon="🎬",
+    page_icon="ðŸŽ¬",
     layout="wide"
 )
 
@@ -11842,7 +11867,7 @@ def init_engine():
     config = load_config("configs/default.yaml")
     dense = DenseSearcher(config)
     sparse = SparseSearcher(config)
-    qp = QueryProcessor()
+    qp = QueryProcessor(config)
     return config, dense, sparse, qp
 
 config, dense_searcher, sparse_searcher, query_processor = init_engine()
@@ -11853,13 +11878,13 @@ map_keyframes_dir = (
     or metadata_dir
 )
 
-st.title("🎬 AI Challenge HCMC 2026 - He Thong Truy Xuat Video")
+st.title("ðŸŽ¬ AI Challenge HCMC 2026 - He Thong Truy Xuat Video")
 st.markdown("*He thong tim kiem video da phuong thuc sieu toc danh cho Vong So Tuyen AIC 2026*")
 
 # Sidebar
 st.sidebar.header("Cai Dat & Chuc Nang")
 task_mode = st.sidebar.radio(
-    "Chon Dạng Bai Thi:",
+    "Chon Dáº¡ng Bai Thi:",
     ["Task 1: Textual KIS (Tim kiem su kien)", "Task 2: Visual Q&A (Hoi - Dap)", "Task 3: TRAKE (Chuoi su kien)"]
 )
 top_k = st.sidebar.slider("So luong ket qua hien thi (Top K):", 1, 20, 5)
@@ -11876,8 +11901,8 @@ def get_keyframe_index_from_frame_id(video_id, frame_id):
         actual video frame_id
         -> keyframe/vector ordinal (0-based)
 
-    Chỉ trả về ordinal khi frame_id tồn tại chính xác trong Map-Keyframes.
-    Không đoán nearest frame.
+    Chá»‰ tráº£ vá» ordinal khi frame_id tá»“n táº¡i chÃ­nh xÃ¡c trong Map-Keyframes.
+    KhÃ´ng Ä‘oÃ¡n nearest frame.
     """
     try:
         actual_frame_id = int(frame_id)
@@ -11960,10 +11985,10 @@ def find_keyframe_image(video_id, frame_id):
 
 # --- TASK 1: TEXTUAL KIS ---
 if "Task 1" in task_mode:
-    st.subheader("📌 Task 1: Tim Kiem Chinh Xac Theo Van Ban (Textual KIS)")
+    st.subheader("ðŸ“Œ Task 1: Tim Kiem Chinh Xac Theo Van Ban (Textual KIS)")
     query_input = st.text_input("Nhap cau mo ta su kien can tim:", "mot dien gia dang phat bieu truoc may quay")
     
-    if st.button("🔍 Tim Kiem Video", key="btn_task1"):
+    if st.button("ðŸ” Tim Kiem Video", key="btn_task1"):
         with st.spinner("Dang tim kiem..."):
             q_info = query_processor.process(query_input)
             intent = q_info["intent_info"]
@@ -12027,11 +12052,11 @@ if "Task 1" in task_mode:
 
 # --- TASK 2: VISUAL Q&A ---
 elif "Task 2" in task_mode:
-    st.subheader("❓ Task 2: Truy Van Hoi - Dap Truc Quan (Visual Q&A)")
+    st.subheader("â“ Task 2: Truy Van Hoi - Dap Truc Quan (Visual Q&A)")
     query_input = st.text_input("Mo ta boi canh / su kien:", "dien gia phat bieu tai cuoc hop bao")
     question_input = st.text_input("Cau hoi can tra loi:", "Nguoi dien gia mac ao mau gi?")
     
-    if st.button("🔍 Tim Kiem & Tra Loi", key="btn_task2"):
+    if st.button("ðŸ” Tim Kiem & Tra Loi", key="btn_task2"):
         with st.spinner("Dang tim kiem va goi VLM Qwen2-VL..."):
             q_info = query_processor.process(query_input)
             intent = q_info["intent_info"]
@@ -12070,7 +12095,7 @@ elif "Task 2" in task_mode:
 
 # --- TASK 3: TRAKE ---
 elif "Task 3" in task_mode:
-    st.subheader("⏱️ Task 3: Can Chinh Chuoi Su Kien (TRAKE)")
+    st.subheader("â±ï¸ Task 3: Can Chinh Chuoi Su Kien (TRAKE)")
     query_input = st.text_input("Mo ta tong quat chuoi su kien:", "Hoi thao va phat bieu")
     
     events_str = st.text_area(
@@ -12079,7 +12104,7 @@ elif "Task 3" in task_mode:
     )
     events_list = [e.strip() for e in events_str.split("\n") if e.strip()]
     
-    if st.button("🔍 Can Chinh Chuoi Su Kien", key="btn_task3"):
+    if st.button("ðŸ” Can Chinh Chuoi Su Kien", key="btn_task3"):
         with st.spinner("Dang can chinh thoi gian bang Quy hoach dong (DP)..."):
             q_info = query_processor.process(query_input)
             dense_res = dense_searcher.search(q_info["semantic_views"], top_k_videos=10)
@@ -12095,7 +12120,7 @@ elif "Task 3" in task_mode:
             frame_ids = align_res["frame_ids"]
             
             st.success(f"Video khop nhat: **{vid}**")
-            st.markdown("### Dòng Thoi Gian Su Kien (Timeline):")
+            st.markdown("### DÃ²ng Thoi Gian Su Kien (Timeline):")
             
             cols = st.columns(len(events_list))
             for i, ev_name in enumerate(events_list):
@@ -12105,7 +12130,7 @@ elif "Task 3" in task_mode:
                     st.markdown(f"**Event {i+1}:** {ev_name}")
 
                     if fid is None:
-                        st.warning("Không có frame hợp lệ để hiển thị.")
+                        st.warning("KhÃ´ng cÃ³ frame há»£p lá»‡ Ä‘á»ƒ hiá»ƒn thá»‹.")
                         continue
 
                     st.markdown(f"**Frame:** `{fid}`")

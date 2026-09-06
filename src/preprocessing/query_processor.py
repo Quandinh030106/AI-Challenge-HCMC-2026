@@ -432,6 +432,8 @@ Query:
                 )
             )
 
+            print("[DEBUG] Qwen raw output:", text[:500])
+
 
             # Thay vi regex greedy \{.*\}, dung json.JSONDecoder.raw_decode
             # tu vi tri dau "{" dau tien de chi lay DUY NHAT object JSON
@@ -522,6 +524,11 @@ Query:
 
 
         replacements = [
+            (
+                r'\bcon cá\b',
+                'fish'
+            ),
+
             (
                 r'\b(?<!cân bằng)(?<!cân nặng)(?<!cân đo)(?<!cân nhắc)(?<!cân đối)cân\b',
                 'scale'
