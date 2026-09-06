@@ -335,6 +335,7 @@ class ObjectSearcher:
             "clothing", "shirt", "dress", "pants", "suit",
             "plant", "tree", "building", "window", "door", "wall", "sky", "floor", "ground", "road", "sand",
             "food", "animal", "vehicle"
+            "mammal", "carnivore",
         }
         
         tier2_props = {
