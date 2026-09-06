@@ -378,22 +378,14 @@ class QueryProcessor:
 
         prompt = f"""
 Bạn là chuyên gia phân tích truy vấn video.
-Hãy phân tích câu tiếng Việt sau và trả về JSON.
-QUAN TRỌNG: mọi giá trị trong JSON (scene, objects, actions, ...) PHẢI được dịch sang TIẾNG ANH.
-Chỉ trả về JSON hợp lệ, không thêm giải thích.
+Hãy phân tích câu tiếng Việt sau và trả về JSON MÔ TẢ ĐÚNG NỘI DUNG câu đó.
+QUAN TRỌNG: mọi giá trị PHẢI dịch sang TIẾNG ANH và PHẢN ÁNH ĐÚNG nội dung câu, KHÔNG để trống nếu câu có thông tin liên quan.
 
-Cấu trúc:
+Ví dụ định dạng (chỉ minh họa, không phải nội dung cần trả lời):
+Query: "Một người đàn ông đang chiên trứng trong chảo trên bếp gas."
+{{"scene": "cooking scene in a kitchen", "objects": ["man", "pan", "egg", "gas stove"], "actions": ["frying"], "attributes": [], "relationships": [], "temporal_order": [], "environment": ["kitchen"], "domain": "cooking"}}
 
-{{
-"scene":"",
-"objects":[],
-"actions":[],
-"attributes":[],
-"relationships":[],
-"temporal_order":[],
-"environment":[],
-"domain":""
-}}
+Bây giờ hãy phân tích câu sau, CHỈ trả về JSON, không thêm giải thích:
 
 Query:
 
@@ -413,7 +405,6 @@ Query:
 
 
             with torch.no_grad():
-
                 outputs = (
                     self.semantic_model.generate(
                         **inputs,
@@ -423,11 +414,16 @@ Query:
                     )
                 )
 
+            # CHI lay phan token MOI duoc sinh ra, khong lay lai prompt dau vao.
+            # Neu decode ca outputs[0] (gom ca prompt), text.find("{") se bat nham
+            # dau "{" cua vi du cau truc RONG trong chinh prompt, khong bao gio
+            # doc toi JSON that su model sinh ra o cuoi chuoi.
+            generated_ids = outputs[0][inputs["input_ids"].shape[-1]:]
 
             text = (
                 self.semantic_tokenizer
                 .decode(
-                    outputs[0],
+                    generated_ids,
                     skip_special_tokens=True
                 )
             )

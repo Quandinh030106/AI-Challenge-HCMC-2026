@@ -246,6 +246,9 @@ class ObjectSearcher:
                     if not any(s in text_lower for s in ["bức tượng", "tượng đài", "tạc tượng", "pho tượng"]):
                         continue
 
+                if kw == "mèo" and "nấm mèo" in text_lower:
+                    continue
+                
                 if kw == "đàn":
                     # "đàn" là từ chỉ số lượng (herd/flock) khi đứng ngay truoc mot loai
                     # dong vat khac, KHONG phai nhac cu. Kiem tra tong quat thay vi liet
@@ -334,7 +337,7 @@ class ObjectSearcher:
             "person", "man", "woman", "girl", "boy", "human",
             "clothing", "shirt", "dress", "pants", "suit",
             "plant", "tree", "building", "window", "door", "wall", "sky", "floor", "ground", "road", "sand",
-            "food", "animal", "vehicle"
+            "food", "animal", "vehicle",
             "mammal", "carnivore",
         }
         
