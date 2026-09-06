@@ -52,8 +52,8 @@ search:
     temporal_weight: 0.15
     event_sparse_weight: 0.10
     object_weight: 0.05
-    
-    semantic_temporal_hint_enabled: false 
+
+    semantic_temporal_hint_enabled: false      # Kích hoạt true để sử dụng gợi ý ngữ nghĩa-thời gian trong xếp hạng chuỗi. Nếu false, chỉ sử dụng các trọng số đã cho. 
     log_evidence: true
     log_dir: "output/sequence_evidence"
 
