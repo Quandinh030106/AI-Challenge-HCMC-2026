@@ -52,7 +52,8 @@ search:
     temporal_weight: 0.15
     event_sparse_weight: 0.10
     object_weight: 0.05
-
+    
+    semantic_temporal_hint_enabled: false 
     log_evidence: true
     log_dir: "output/sequence_evidence"
 

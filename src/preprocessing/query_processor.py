@@ -376,6 +376,99 @@ class QueryProcessor:
 
 
     # ======================================================
+    # SAFE TYPE COERCION (fix: Qwen JSON schema drift)
+    # ======================================================
+
+    @staticmethod
+    def _coerce_to_text(value):
+        """
+        Ep 1 gia tri JSON bat ky (str/list/dict/number/None...) thanh string
+        an toan. Qwen doi khi tra sai kieu cho cac truong duoc ky vong la
+        string (vi du "scene" tra ve list 4 phan tu thay vi 1 cau - da xac
+        nhan qua traceback thuc te tai query-p1-7-kis: "TypeError: sequence
+        item 0: expected str instance, list found"). Ham nay dam bao khong
+        bao gio crash vi sai kieu, chi giam chat luong text (van con noi dung,
+        khong bia them).
+        """
+        if value is None:
+            return ""
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (list, tuple)):
+            return ", ".join(
+                part for part in (
+                    QueryProcessor._coerce_to_text(item) for item in value
+                )
+                if part
+            )
+        if isinstance(value, dict):
+            return ", ".join(
+                part for part in (
+                    QueryProcessor._coerce_to_text(item) for item in value.values()
+                )
+                if part
+            )
+        return str(value)
+
+    @staticmethod
+    def _coerce_to_list(value):
+        """
+        Ep 1 gia tri JSON bat ky thanh list[str] an toan (flatten neu long
+        nhau). Dung cho cac truong ky vong la list (objects/actions/...)
+        phong khi Qwen tra sai kieu (string don, hoac phan tu la list/dict).
+        """
+        if value is None:
+            return []
+        if isinstance(value, str):
+            text = value.strip()
+            return [text] if text else []
+        if isinstance(value, (list, tuple)):
+            result = []
+            for item in value:
+                if isinstance(item, (list, tuple, dict)):
+                    text = QueryProcessor._coerce_to_text(item)
+                elif item is None:
+                    text = ""
+                else:
+                    text = str(item).strip()
+                if text:
+                    result.append(text)
+            return result
+        text = QueryProcessor._coerce_to_text(value)
+        return [text] if text else []
+
+    @staticmethod
+    def _sanitize_semantic_result(data, default_result):
+        """
+        Chuan hoa dict JSON Qwen tra ve dung schema mong doi cua
+        default_result: "scene"/"domain" PHAI la string, cac truong con lai
+        PHAI la list[str]. Khong lam vay se crash o build_dynamic_semantic_views
+        (da xac nhan thuc te: "scene" bi tra ve dang list gay TypeError).
+
+        Field nao Qwen khong tra hoac khong the ep kieu -> giu default (rong),
+        KHONG bia du lieu gia.
+        """
+        if not isinstance(data, dict):
+            return dict(default_result)
+
+        sanitized = dict(default_result)
+
+        list_keys = (
+            "objects", "actions", "attributes",
+            "relationships", "temporal_order", "environment",
+        )
+        for key in list_keys:
+            if key in data:
+                sanitized[key] = QueryProcessor._coerce_to_list(data[key])
+
+        for key in ("scene", "domain"):
+            if key in data:
+                sanitized[key] = QueryProcessor._coerce_to_text(data[key])
+
+        return sanitized
+
+
+    # ======================================================
     # SEMANTIC QUERY PARSER
     # ======================================================
 
@@ -534,9 +627,11 @@ Query:
                         )
 
                 if data is not None:
-                    for key in default_result:
-                        if key not in data:
-                            data[key] = default_result[key]
+                    # Fix: Qwen doi khi tra sai kieu cho 1 vai truong (vi du
+                    # "scene" la list thay vi string). Ep kieu ve dung
+                    # schema truoc khi tra ve, KHONG chi merge key thieu
+                    # nhu truoc (khong du de tranh TypeError).
+                    data = self._sanitize_semantic_result(data, default_result)
                     return data
 
 
@@ -994,19 +1089,13 @@ Query:
         )
 
 
-        object_text = ", ".join(
-            objects
-        )
+        objects = self._coerce_to_list(objects)
+        actions = self._coerce_to_list(actions)
+        environment = self._coerce_to_list(environment)
 
-
-        action_text = ", ".join(
-            actions
-        )
-
-
-        env_text = ", ".join(
-            environment
-        )
+        object_text = ", ".join(objects)
+        action_text = ", ".join(actions)
+        env_text = ", ".join(environment)
 
 
         prompts = []
@@ -1252,40 +1341,16 @@ Query:
 
 
 
-        objects = semantic_query.get(
-            "objects",
-            []
-        )
-
-
-        actions = semantic_query.get(
-            "actions",
-            []
-        )
-
-
-        attributes = semantic_query.get(
-            "attributes",
-            []
-        )
-
-
-        environment = semantic_query.get(
-            "environment",
-            []
-        )
-
-
-        scene = semantic_query.get(
-            "scene",
-            ""
-        )
-
-
-        relationships = semantic_query.get(
-            "relationships",
-            []
-        )
+        # Fix: ep kieu ngay tai diem lay bien, dam bao moi ".join()" phia
+        # sau trong ham nay luon an toan du semantic_query co sanitize
+        # truoc do hay khong (ham nay la static method, co the bi goi
+        # truc tiep tu noi khac trong tuong lai ma khong qua semantic_parse()).
+        objects = QueryProcessor._coerce_to_list(semantic_query.get("objects", []))
+        actions = QueryProcessor._coerce_to_list(semantic_query.get("actions", []))
+        attributes = QueryProcessor._coerce_to_list(semantic_query.get("attributes", []))
+        environment = QueryProcessor._coerce_to_list(semantic_query.get("environment", []))
+        scene = QueryProcessor._coerce_to_text(semantic_query.get("scene", ""))
+        relationships = QueryProcessor._coerce_to_list(semantic_query.get("relationships", []))
 
 
 

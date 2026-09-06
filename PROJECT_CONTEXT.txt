@@ -2,7 +2,7 @@
 AI CHALLENGE HCMC 2026 - PROJECT CONTEXT
 ============================================================
 
-Generated: 09/06/2026 17:09:00
+Generated: 09/06/2026 21:57:34
 
 Mục đích:
 File này chứa cấu trúc và source code của project để ChatGPT
@@ -218,7 +218,7 @@ semantic_query:
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"
-    max_new_tokens: 250
+    max_new_tokens: 400
     temperature: 0.1
 
   fallback_translation:
@@ -321,7 +321,7 @@ semantic_query:
 
   model:
     name: "Qwen/Qwen2.5-7B-Instruct"
-    max_new_tokens: 250
+    max_new_tokens: 400
     temperature: 0.1
 
   fallback_translation:
@@ -3655,6 +3655,66 @@ class QueryProcessor:
 
             self.semantic_enabled = False
             self.semantic_loaded = False
+
+
+    # ======================================================
+    # PARTIAL JSON RECOVERY (Prompt 10)
+    # ======================================================
+
+    @staticmethod
+    def _partial_recover_semantic_json(text, default_result):
+        """
+        Khi json.JSONDecoder.raw_decode() that bai (thuong do Qwen output
+        bi CAT CUT vi vuot max_new_tokens - da xac nhan qua log thuc te:
+        "Unterminated string starting at: line 1 column 1133"), hanh vi cu
+        vut bo TOAN BO du lieu da sinh ra, ke ca cac truong da hoan chinh
+        truoc diem cat.
+
+        Ham nay co gang cuu lai TUNG TRUONG da hoan chinh (dung format
+        JSON that su cho truong do: co du dau ngoac dong/mo), bo qua
+        truong bi cat cut giua chung (KHONG doan bua du lieu). Vi thu tu
+        key trong prompt la scene -> objects -> actions -> attributes ->
+        relationships -> temporal_order -> environment -> domain, cac
+        truong quan trong nhat cho CLIP retrieval (scene/objects/actions)
+        thuong nam o DAU nen co xac suat con nguyen ven cao nhat.
+
+        Tra ve dict day du (default cho truong khong cuu duoc) neu cuu
+        duoc IT NHAT 1 truong, hoac None neu khong cuu duoc gi (giu
+        nguyen hanh vi cu: roll ve fallback_semantic_parse).
+        """
+        recovered = dict(default_result)
+        found_any = False
+
+        list_keys = (
+            "objects", "actions", "attributes",
+            "relationships", "temporal_order", "environment",
+        )
+        for key in list_keys:
+            match = re.search(
+                r'"%s"\s*:\s*\[(.*?)\]' % re.escape(key),
+                text,
+                flags=re.DOTALL,
+            )
+            if not match:
+                continue
+            items = re.findall(r'"((?:[^"\\]|\\.)*)"', match.group(1))
+            if items:
+                recovered[key] = items
+                found_any = True
+
+        for key in ("scene", "domain"):
+            match = re.search(
+                r'"%s"\s*:\s*"((?:[^"\\]|\\.)*)"' % re.escape(key),
+                text,
+            )
+            if match:
+                recovered[key] = match.group(1)
+                found_any = True
+
+        return recovered if found_any else None
+
+
+    # ======================================================
     # SEMANTIC QUERY PARSER
     # ======================================================
 
@@ -3724,12 +3784,11 @@ VÃ­ dá»¥ Ä‘á»‹nh dáº¡ng (chá»‰ minh há»a, khÃ´ng pháº
 Query: "Má»™t ngÆ°á»i Ä‘Ã n Ã´ng Ä‘ang chiÃªn trá»©ng trong cháº£o trÃªn báº¿p gas."
 {{"scene": "cooking scene in a kitchen", "objects": ["man", "pan", "egg", "gas stove"], "actions": ["frying"], "attributes": [], "relationships": [], "temporal_order": [], "environment": ["kitchen"], "domain": "cooking"}}
 
-Viá»‡c chá»‰ tÃ¬m cÃ¡c tá»« riÃªng láº» cÃ³ thá»ƒ tráº£ vá» ráº¥t nhiá»u káº¿t quáº£ sai; há»‡ thá»‘ng cáº§n hiá»ƒu Ä‘á»“ng thá»i object, action vÃ  context
-YÃªu cáº§u cá»§a tÃ´i lÃ  pháº£i cÃ³ Ä‘áº§y Ä‘á»§ táº¥t cáº£ cÃ¡c danh tá»«, Ä‘á»™ng tá»«, tÃ­nh tá»«, tráº¡ng tá»«, má»‘i quan há»‡, thá»© tá»± thá»i gian, mÃ´i trÆ°á»ng vÃ  bá»‘i cáº£nh liÃªn quan Ä‘áº¿n cÃ¢u truy váº¥n.
-KhÃ´ng giá»›i háº¡n vá» Ä‘á»™ dÃ i hay sá»‘ lÆ°á»£ng cÃ¡c thá»±c thá»ƒ, hÃ nh Ä‘á»™ng, thuá»™c tÃ­nh, má»‘i quan há»‡, thá»© tá»± thá»i gian, mÃ´i trÆ°á»ng vÃ  bá»‘i cáº£nh.
-CÃ¡i tÃ´i cáº§n lÃ  toÃ n bá»™ thÃ´ng tin liÃªn quan Ä‘áº¿n cÃ¢u truy váº¥n, khÃ´ng bá» sÃ³t báº¥t ká»³ chi tiáº¿t nÃ o.
+Viá»‡c chá»‰ tÃ¬m cÃ¡c tá»« riÃªng láº» cÃ³ thá»ƒ tráº£ vá» ráº¥t nhiá»u káº¿t quáº£ sai; há»‡ thá»‘ng cáº§n hiá»ƒu Ä‘á»“ng thá»i object, action vÃ  context.
+YÃªu cáº§u: liá»‡t kÃª Äáº¦Y Äá»¦ cÃ¡c danh tá»«, Ä‘á»™ng tá»«, tÃ­nh tá»«, má»‘i quan há»‡, thá»© tá»± thá»i gian, mÃ´i trÆ°á»ng vÃ  bá»‘i cáº£nh CÃ“ THáº¬T trong cÃ¢u, khÃ´ng bá» sÃ³t chi tiáº¿t nÃ o vÃ  khÃ´ng bá»‹a thÃªm chi tiáº¿t khÃ´ng cÃ³ trong cÃ¢u.
+Má»—i má»¥c trong danh sÃ¡ch viáº¿t Ä‘áº§y Ä‘á»§, trÃ¡nh láº·p láº¡i Ã½ Ä‘Ã£ cÃ³ á»Ÿ má»¥c khÃ¡c, chÃº Ã½ Ä‘á»ƒ toÃ n bá»™ JSON sinh ra khÃ´ng bá»‹ vÆ°á»£t quÃ¡ giá»›i háº¡n Ä‘á»™ dÃ i cho phÃ©p.
 
-BÃ¢y giá» hÃ£y phÃ¢n tÃ­ch cÃ¢u sau, CHá»ˆ tráº£ vá» JSON, khÃ´ng thÃªm giáº£i thÃ­ch:
+BÃ¢y giá» hÃ£y phÃ¢n tÃ­ch cÃ¢u sau, CHá»ˆ tráº£ vá» JSON há»£p lá»‡ (Ä‘Ãºng cÃº phÃ¡p, Ä‘Ã³ng Ä‘á»§ dáº¥u ngoáº·c), khÃ´ng thÃªm giáº£i thÃ­ch:
 
 Query:
 
@@ -3738,6 +3797,18 @@ Query:
 
 
         try:
+            # Prompt 11: don GPU truoc generate(), giong pattern da dung o
+            # visual_reranker.py::verify_single_image() va
+            # task2_vqa.py::solve_single_video_vqa(). semantic_parse() la ham
+            # generate() DUY NHAT trong code truoc day KHONG lam viec nay.
+            # Voi prompt hien tai (khong con gioi han do dai muc liet ke),
+            # Qwen thuong sinh gan sat max_new_tokens MOI LAN goi, va ham nay
+            # co the bi goi NHIEU LAN cho 1 cau hoi (moi semantic event trong
+            # sequence_search.py goi lai process() -> semantic_parse() rieng),
+            # nen rui ro tich luy phan manh VRAM qua nhieu lan generate() lien
+            # tiep la co that.
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
             inputs = (
                 self.semantic_tokenizer(
@@ -3786,7 +3857,20 @@ Query:
                     data, _ = decoder.raw_decode(text[brace_index:])
                 except json.JSONDecodeError as parse_exc:
                     print("Semantic parser JSON decode failed:", parse_exc)
-                    data = None
+                    # Prompt 10: KHONG vut bo toan bo output khi JSON bi cat
+                    # cut (thuong do vuot max_new_tokens voi cau phuc tap -
+                    # da xac nhan qua log query-p1-23-kis). Cac truong o DAU
+                    # JSON (scene/objects/actions) van thuong con nguyen ven
+                    # va co gia tri retrieval cao hon nhieu so voi roll het
+                    # ve fallback_semantic_parse (chi vai tu khoa hardcode).
+                    data = self._partial_recover_semantic_json(
+                        text[brace_index:], default_result,
+                    )
+                    if data is not None:
+                        print(
+                            "Semantic parser: da cuu duoc mot phan JSON "
+                            "bi cat cut (partial recovery)."
+                        )
 
                 if data is not None:
                     for key in default_result:
@@ -3802,6 +3886,12 @@ Query:
                 e
             )
 
+        finally:
+            # Luon giai phong CUDA cache sau generate(), bat ke thanh cong
+            # hay that bai, vi ham nay bi goi lap lai nhieu lan trong cung
+            # 1 query (sequence-aware KIS goi rieng cho tung event).
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         return default_result
 
@@ -4448,12 +4538,12 @@ Query:
         return unique
 
 
-        # ======================================================
+    # ======================================================
     # BUILD DYNAMIC SEMANTIC VIEWS
     # ======================================================
 
+    @staticmethod
     def build_dynamic_semantic_views(
-        self,
         query_en,
         semantic_query
     ):
@@ -4468,6 +4558,17 @@ Query:
             scene
 
         View nÃ o cÃ³ dá»¯ liá»‡u má»›i sinh.
+
+        Prompt 10: THEM view "context" ghep object+action+attribute+scene
+        thanh MOT cau tu nhien (thay vi cac cum tu roi rac), vi cac view
+        rieng le duoi day duoc CLIP encode DOC LAP roi cong trong so lai
+        (weighted sum trong encode_dynamic_query), nen mat het lien ket
+        "ai lam gi voi gi" (vi du "nguoi cam keo mau den" bi tach thanh
+        hai vector rieng "person" va "black scissors" khong con gan voi
+        nhau). View "context" bo sung mot cau gan voi phong cach caption
+        CLIP duoc huan luyen, giup giu duoc quan he giua cac thanh phan.
+        Cac view cu KHONG bi xoa, chi them view moi -> an toan rollback
+        bang cach chinh importance ve 0.
 
         Output:
 
@@ -4619,6 +4720,37 @@ Query:
 
                 }
 
+            )
+
+
+        # ---------------------------------
+        # Context view (Prompt 10 - relational)
+        # ---------------------------------
+
+        context_parts = []
+
+        if actions and objects:
+            context_parts.append(
+                "%s %s" % (", ".join(actions), ", ".join(objects))
+            )
+        elif objects:
+            context_parts.append(", ".join(objects))
+        elif actions:
+            context_parts.append(", ".join(actions))
+
+        if attributes:
+            context_parts.append(", ".join(attributes))
+
+        if scene_text:
+            context_parts.append(", ".join(scene_text))
+
+        if context_parts:
+            views.append(
+                {
+                    "type": "context",
+                    "text": ". ".join(context_parts),
+                    "importance": 0.25,
+                }
             )
 
 

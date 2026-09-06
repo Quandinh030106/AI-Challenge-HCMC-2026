@@ -152,6 +152,7 @@ def run_video_retrieval(
             query_processor=query_processor,
             config=dense_searcher.config,
             pre_object_candidates=pre_object_fused,
+            query_info=query_info,
         )
 
     return {

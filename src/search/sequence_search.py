@@ -28,25 +28,25 @@ class KISQueryDecomposer:
     """Tach query KIS thanh cac semantic anchor theo quy tac nhe, deterministic."""
 
     _marker_pattern = re.compile(
-        r"(?P<reverse>\btrước\s+đó\b)"
+        r"(?P<reverse>\btrÆ°á»›c\s+Ä‘Ã³\b)"
         r"|(?P<forward>"
-        r"\b(?:sau\s+đó|tiếp\s+theo|tiếp\s+đến|kế\s+tiếp)\b"
-        r"|\bngay\s+sau(?:\s+cảnh\s+này)?\b"
-        r"|\bsau\s+vài\s+(?:giây|phút|khoảnh\s+khắc)(?:\s+nghỉ)?\b"
-        r"|\b(?:đoạn\s+clip|đoạn\s+phim|mẩu\s+tin|cảnh\s+quay)?\s*"
-        r"bắt\s+đầu\s+(?:bằng|với)\b"
-        r"|\b(?:đoạn\s+clip|đoạn\s+phim|cảnh\s+quay)?\s*"
-        r"(?:kết\s+thúc\s+(?:bằng|với|khi)|kết\s+thúc)\b"
-        r"|\bcảnh\s+quay\s+tiếp\s+theo(?:\s+là)?\b"
-        r"|\bđầu\s+tiên\s+là\b"
-        r"|\bslide\s+bài\s+giảng\b"
+        r"\b(?:sau\s+Ä‘Ã³|tiáº¿p\s+theo|tiáº¿p\s+Ä‘áº¿n|káº¿\s+tiáº¿p)\b"
+        r"|\bngay\s+sau(?:\s+cáº£nh\s+nÃ y)?\b"
+        r"|\bsau\s+vÃ i\s+(?:giÃ¢y|phÃºt|khoáº£nh\s+kháº¯c)(?:\s+nghá»‰)?\b"
+        r"|\b(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|máº©u\s+tin|cáº£nh\s+quay)?\s*"
+        r"báº¯t\s+Ä‘áº§u\s+(?:báº±ng|vá»›i)\b"
+        r"|\b(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|cáº£nh\s+quay)?\s*"
+        r"(?:káº¿t\s+thÃºc\s+(?:báº±ng|vá»›i|khi)|káº¿t\s+thÃºc)\b"
+        r"|\bcáº£nh\s+quay\s+tiáº¿p\s+theo(?:\s+lÃ )?\b"
+        r"|\bÄ‘áº§u\s+tiÃªn\s+lÃ \b"
+        r"|\bslide\s+bÃ i\s+giáº£ng\b"
         r")",
         flags=re.IGNORECASE,
     )
 
     _leading_noise = re.compile(
-        r"^(?:đoạn\s+clip|đoạn\s+phim|mẩu\s+tin|cảnh\s+quay|hình\s+ảnh)"
-        r"\s*(?:cho\s+thấy|là|về)?\s*",
+        r"^(?:Ä‘oáº¡n\s+clip|Ä‘oáº¡n\s+phim|máº©u\s+tin|cáº£nh\s+quay|hÃ¬nh\s+áº£nh)"
+        r"\s*(?:cho\s+tháº¥y|lÃ |vá»)?\s*",
         flags=re.IGNORECASE,
     )
 
@@ -65,8 +65,34 @@ class KISQueryDecomposer:
         anchor = self._leading_noise.sub("", anchor).strip(" ,;:-.")
         return anchor
 
-    def _is_meaningful(self, text):
-        return len(re.findall(r"\w+", text, flags=re.UNICODE)) >= self.min_event_words
+    def _is_meaningful(self, text, min_words=None):
+        threshold = self.min_event_words if min_words is None else max(2, int(min_words))
+        return len(re.findall(r"\w+", text, flags=re.UNICODE)) >= threshold
+
+    @staticmethod
+    def _count_semantic_temporal_steps(semantic_temporal_order):
+        """
+        Dem so buoc thoi gian PHAN BIET ma Qwen (QueryProcessor.semantic_parse)
+        da trich xuat trong truong "temporal_order". Truong nay truoc gio
+        duoc sinh ra nhung KHONG duoc dung o dau ca trong sequence_search.py.
+        Ham nay la lan dau tien khai thac no, dung lam TIN HIEU HO TRO quyet
+        dinh decompose - KHONG dung de tao noi dung event (temporal_order la
+        tieng Anh do Qwen dich, con anchor thuc su can la substring tieng
+        Viet trich tu chinh cau query goc de dich lai/dense-search cho dung).
+        """
+        if not semantic_temporal_order:
+            return 0
+        seen = set()
+        count = 0
+        for item in semantic_temporal_order:
+            text = str(item or "").strip().lower()
+            if len(re.findall(r"\w+", text, flags=re.UNICODE)) < 2:
+                continue
+            key = re.sub(r"\W+", " ", text, flags=re.UNICODE).strip()
+            if key and key not in seen:
+                seen.add(key)
+                count += 1
+        return count
 
     def _limit_events(self, events):
         events = list(events)
@@ -79,8 +105,26 @@ class KISQueryDecomposer:
             events[pair_index:pair_index + 2] = [merged]
         return events
 
-    def decompose(self, query_text):
+    def decompose(self, query_text, semantic_temporal_order=None, apply_semantic_hint=True):
+        """
+        semantic_temporal_order: list tieng Anh tu semantic_query["temporal_order"]
+            (co the None/rong neu caller khong co hoac khong muon dung).
+        apply_semantic_hint: co dung tin hieu nay de NOI LONG nguong
+            min_event_words hay khong (config-gated boi caller - CHI relax
+            threshold cho anchor DA duoc regex phat hien, khong tu bia anchor
+            moi tu tieng Anh cua Qwen).
+
+        semantic_temporal_hint_count LUON duoc tinh va tra ve trong output
+        (phuc vu logging/danh gia) bat ke apply_semantic_hint co bat hay
+        khong - giup thu thap evidence truoc khi quyet dinh bat mac dinh.
+        """
         query = self._normalize(query_text)
+        semantic_hint_count = self._count_semantic_temporal_steps(semantic_temporal_order)
+        has_semantic_hint = bool(apply_semantic_hint) and semantic_hint_count >= 2
+        min_words_effective = (
+            max(2, self.min_event_words - 1) if has_semantic_hint else self.min_event_words
+        )
+
         matches = list(self._marker_pattern.finditer(query))
         if not matches:
             return {
@@ -88,12 +132,14 @@ class KISQueryDecomposer:
                 "events": [query] if query else [],
                 "markers": [],
                 "reason": "no_strong_temporal_marker",
+                "semantic_temporal_hint_count": semantic_hint_count,
+                "semantic_hint_relaxed_threshold": False,
             }
 
         events = []
         marker_log = []
         prefix = self._clean_anchor(query[:matches[0].start()])
-        if self._is_meaningful(prefix):
+        if self._is_meaningful(prefix, min_words=min_words_effective):
             events.append(prefix)
 
         for marker_index, match in enumerate(matches):
@@ -104,11 +150,11 @@ class KISQueryDecomposer:
                 "marker": match.group(0).strip(),
                 "relation": relation,
             })
-            if not self._is_meaningful(anchor):
+            if not self._is_meaningful(anchor, min_words=min_words_effective):
                 continue
 
             if relation == "reverse" and events:
-                # "Trước đó" mô tả event đứng trước cảnh vừa nêu (query p1-12).
+                # "TrÆ°á»›c Ä‘Ã³" mÃ´ táº£ event Ä‘á»©ng trÆ°á»›c cáº£nh vá»«a nÃªu (query p1-12).
                 events.insert(max(0, len(events) - 1), anchor)
             else:
                 events.append(anchor)
@@ -129,6 +175,8 @@ class KISQueryDecomposer:
                 "events": [query] if query else [],
                 "markers": marker_log,
                 "reason": "fewer_than_two_meaningful_events",
+                "semantic_temporal_hint_count": semantic_hint_count,
+                "semantic_hint_relaxed_threshold": has_semantic_hint,
             }
 
         return {
@@ -136,6 +184,8 @@ class KISQueryDecomposer:
             "events": unique_events,
             "markers": marker_log,
             "reason": "strong_temporal_structure",
+            "semantic_temporal_hint_count": semantic_hint_count,
+            "semantic_hint_relaxed_threshold": has_semantic_hint,
         }
 
 
@@ -257,6 +307,7 @@ def rerank_sequence_aware_kis(
     config,
     pre_object_candidates=None,
     query_id=None,
+    query_info=None,
 ):
     """
     Re-rank video KIS bang evidence cua chuoi event; giu fallback query don.
@@ -269,11 +320,29 @@ def rerank_sequence_aware_kis(
     """
     sequence_config = config.get("search", {}).get("sequence_aware", {})
     enabled = bool(sequence_config.get("enabled", True))
+
+    # Fix: khai thac truong "temporal_order" da duoc Qwen trich xuat san
+    # trong query_info (neu caller truyen vao). KHONG tu goi them
+    # query_processor.process() o day de KHONG phat sinh them 1 lan
+    # generate() Qwen2.5-7B nua (tranh cham them vao van de GPU dual-model
+    # dang xu ly rieng). semantic_temporal_hint_enabled mac dinh TAT (giong
+    # pattern kis_ocr_boost.enabled) - chi BAT sau khi da xem log
+    # output/sequence_evidence va thay tin hieu that su co ich.
+    semantic_query = (query_info or {}).get("semantic_query", {}) or {}
+    semantic_temporal_order = semantic_query.get("temporal_order") or []
+    semantic_hint_enabled = bool(
+        sequence_config.get("semantic_temporal_hint_enabled", False)
+    )
+
     decomposer = KISQueryDecomposer(
         min_event_words=sequence_config.get("min_event_words", 4),
         max_events=sequence_config.get("max_events", 4),
     )
-    decomposition = decomposer.decompose(query_text)
+    decomposition = decomposer.decompose(
+        query_text,
+        semantic_temporal_order=semantic_temporal_order,
+        apply_semantic_hint=semantic_hint_enabled,
+    )
     base_trace = {
         "query_id": str(query_id or ""),
         "query": str(query_text),
@@ -281,6 +350,9 @@ def rerank_sequence_aware_kis(
         "reason": decomposition["reason"],
         "events": decomposition["events"],
         "markers": decomposition["markers"],
+        "semantic_temporal_hint_count": decomposition.get("semantic_temporal_hint_count", 0),
+        "semantic_hint_relaxed_threshold": decomposition.get("semantic_hint_relaxed_threshold", False),
+        "semantic_hint_enabled_in_config": semantic_hint_enabled,
         "coordinate_system": "keyframe_ordinal_0_based",
         "weights_are_configurable_not_claimed_optimal": True,
         "top_candidates": [],

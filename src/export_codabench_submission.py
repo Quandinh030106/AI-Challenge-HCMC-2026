@@ -575,6 +575,7 @@ def run_codabench_pipeline(input_dir, config_path="configs/default.yaml", output
                 config=config,
                 pre_object_candidates=pre_object_fused,
                 query_id=query_id,
+                query_info=q_info,
             )
             if visual_reranker is not None:
                 fused = visual_reranker.rerank_candidates(
