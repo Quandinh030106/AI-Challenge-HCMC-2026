@@ -447,7 +447,7 @@ Query: "Một người đàn ông đang chiên trứng trong chảo trên bếp 
 
 Việc chỉ tìm các từ riêng lẻ có thể trả về rất nhiều kết quả sai; hệ thống cần hiểu đồng thời object, action và context.
 Yêu cầu: liệt kê ĐẦY ĐỦ các danh từ, động từ, tính từ, mối quan hệ, thứ tự thời gian, môi trường và bối cảnh CÓ THẬT trong câu, không bỏ sót chi tiết nào và không bịa thêm chi tiết không có trong câu.
-Mỗi mục trong danh sách viết đầy đủ, tránh lặp lại ý đã có ở mục khác.
+Mỗi mục trong danh sách viết đầy đủ, tránh lặp lại ý đã có ở mục khác, chú ý để toàn bộ JSON sinh ra không bị vượt quá giới hạn độ dài cho phép.
 
 Bây giờ hãy phân tích câu sau, CHỈ trả về JSON hợp lệ (đúng cú pháp, đóng đủ dấu ngoặc), không thêm giải thích:
 
@@ -458,6 +458,18 @@ Query:
 
 
         try:
+            # Prompt 11: don GPU truoc generate(), giong pattern da dung o
+            # visual_reranker.py::verify_single_image() va
+            # task2_vqa.py::solve_single_video_vqa(). semantic_parse() la ham
+            # generate() DUY NHAT trong code truoc day KHONG lam viec nay.
+            # Voi prompt hien tai (khong con gioi han do dai muc liet ke),
+            # Qwen thuong sinh gan sat max_new_tokens MOI LAN goi, va ham nay
+            # co the bi goi NHIEU LAN cho 1 cau hoi (moi semantic event trong
+            # sequence_search.py goi lai process() -> semantic_parse() rieng),
+            # nen rui ro tich luy phan manh VRAM qua nhieu lan generate() lien
+            # tiep la co that.
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
             inputs = (
                 self.semantic_tokenizer(
@@ -535,6 +547,12 @@ Query:
                 e
             )
 
+        finally:
+            # Luon giai phong CUDA cache sau generate(), bat ke thanh cong
+            # hay that bai, vi ham nay bi goi lap lai nhieu lan trong cung
+            # 1 query (sequence-aware KIS goi rieng cho tung event).
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         return default_result
 
